@@ -62,6 +62,10 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS user ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "email VARCHAR NOT NULL, "+
+                    "name VARCHAR NOT NULL, "+
+                    "surname VARCHAR NOT NULL, "+
+                    "birth_date DATE NOT NULL, " +
+                    "phone VARCHAR, " +
                     "FOREIGN KEY (email) REFERENCES credentials(email));");
 
             statement.execute("CREATE TABLE IF NOT EXISTS community ("+
@@ -72,24 +76,37 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS building ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "community_id INTEGER NOT NULL, "+
+                    "address VARCHAR NOT NULL, "+
+                    "floors INTEGER NOT NULL, " +
                     "FOREIGN KEY (community_id) REFERENCES community(id));");
 
             statement.execute("CREATE TABLE IF NOT EXISTS building_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "name VARCHAR NOT NULL, "+
+                    "log_path VARCHAR NOT NULL, "+
+                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
+                    "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS household ("+
+            statement.execute("CREATE TABLE IF NOT EXISTS apartment ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "residents INTEGER NOT NULL, "+
+                    "square_footage FLOAT NOT NULL, "+
+                    "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+
                     "user_id INTEGER NOT NULL, "+
                     "FOREIGN KEY (user_id) REFERENCES user(id), "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS household_device ("+
+            statement.execute("CREATE TABLE IF NOT EXISTS apartment_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "household_id INTEGER NOT NULL, "+
-                    "FOREIGN KEY (household_id) REFERENCES household(id));");
+                    "name VARCHAR NOT NULL, "+
+                    "log_path VARCHAR NOT NULL, "+
+                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
+                    "energy_class CHAR(1), " +
+                    "apartment_id INTEGER NOT NULL, "+
+                    "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
 
         } catch (SQLException ignored) {
             return false;
