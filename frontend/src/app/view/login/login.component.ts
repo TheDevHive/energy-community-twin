@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-//import { AuthService } from '../../../service/auth/auth.service';
 import { Router } from '@angular/router';
-import { FormCheck } from '../../../FormCheck';
+import { FormCheck } from '../../FormCheck';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +21,6 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    //private auth: AuthService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', Validators.required],
@@ -36,9 +34,8 @@ export class LoginComponent {
 
     if(emailControl && passwordControl){
       const email = emailControl.value;
-      const password = passwordControl.value;
 
-      //Email
+      // Email check
       if (email && !FormCheck.checkEmail(email)) {
         emailControl.setErrors({ 'invalidEmail': true });
       } else {
@@ -50,22 +47,12 @@ export class LoginComponent {
     }
   }
 
-  /*
+  
   submitForm() {
-    this.auth.login(this.loginForm.get('email')?.value, this.loginForm.get('password')?.value, this.loginForm.get('rememberMe')?.value).
-      subscribe(
-        result => {
-          if (result) {
-            this.router.navigate(['/']);
-          }
-          else {
-            this.success = false;
-          }
-        },
-        error => {
-          this.serverError = true;
-        });
+    //this.success = false;
+    //this.serverError = true;
+
+    this.router.navigate(['/']);
   }
-  */
 
 }
