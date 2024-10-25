@@ -70,6 +70,7 @@ public class DBManager {
 
             statement.execute("CREATE TABLE IF NOT EXISTS community ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "name VARCHAR NOT NULL, "+
                     "admin_id INTEGER NOT NULL, "+
                     "FOREIGN KEY (admin_id) REFERENCES admin(id));");
 
