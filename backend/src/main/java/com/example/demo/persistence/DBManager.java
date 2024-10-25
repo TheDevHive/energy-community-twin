@@ -51,8 +51,45 @@ public class DBManager {
             statement = connection.createStatement();
 
             statement.execute("CREATE TABLE IF NOT EXISTS credentials ("+
-                    "email varchar PRIMARY KEY, "+
-                    "password varchar not null);");
+                    "email VARCHAR PRIMARY KEY, "+
+                    "password VARCHAR NOT NULL);");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS admin ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "email VARCHAR NOT NULL, "+
+                    "FOREIGN KEY (email) REFERENCES credentials(email));");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS user ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "email VARCHAR NOT NULL, "+
+                    "FOREIGN KEY (email) REFERENCES credentials(email));");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS community ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "admin_id INTEGER NOT NULL, "+
+                    "FOREIGN KEY (admin_id) REFERENCES admin(id));");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS building ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "community_id INTEGER NOT NULL, "+
+                    "FOREIGN KEY (community_id) REFERENCES community(id));");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS building_device ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "building_id INTEGER NOT NULL, "+
+                    "FOREIGN KEY (building_id) REFERENCES building(id));");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS household ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "building_id INTEGER NOT NULL, "+
+                    "user_id INTEGER NOT NULL, "+
+                    "FOREIGN KEY (user_id) REFERENCES user(id), "+
+                    "FOREIGN KEY (building_id) REFERENCES building(id));");
+
+            statement.execute("CREATE TABLE IF NOT EXISTS household_device ("+
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    "household_id INTEGER NOT NULL, "+
+                    "FOREIGN KEY (household_id) REFERENCES household(id));");
 
         } catch (SQLException ignored) {
             return false;
