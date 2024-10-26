@@ -1,0 +1,80 @@
+<div class="container py-5">
+    <h1 class="mb-4">Aggiungi Nuovo Edificio</h1>
+
+    <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+    </div>
+
+    <form [formGroup]="buildingForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+        <label for="name" class="form-label">Nome Edificio</label>
+        <input type="text" class="form-control" id="name" formControlName="name">
+        <div *ngIf="buildingForm.get('name')?.invalid && buildingForm.get('name')?.touched" 
+            class="text-danger">
+            Campo obbligatorio
+        </div>
+    </div>
+
+    <div class="mb-3">
+            <label for="address" class="form-label">Indirizzo</label>
+            <input type="text" class="form-control" id="address" formControlName="address">
+        <div *ngIf="buildingForm.get('address')?.invalid && buildingForm.get('address')?.touched" 
+            class="text-danger">
+            Campo obbligatorio
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="floors" class="form-label">Numero di Piani</label>
+            <input type="number" class="form-control" id="floors" formControlName="floors" min="1">
+            <div *ngIf="buildingForm.get('floors')?.invalid && buildingForm.get('floors')?.touched" 
+                class="text-danger">
+                Inserire un numero valido maggiore di 0
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label for="apartments" class="form-label">Numero di Appartamenti</label>
+            <input type="number" class="form-control" id="apartments" formControlName="apartments" min="1">
+            <div *ngIf="buildingForm.get('apartments')?.invalid && buildingForm.get('apartments')?.touched" 
+                class="text-danger">
+                Inserire un numero valido maggiore di 0
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="energyConsumption" class="form-label">Consumo Energetico (kWh/mese)</label>
+            <input type="number" class="form-control" id="energyConsumption" 
+                    formControlName="energyConsumption" min="0">
+            <div *ngIf="buildingForm.get('energyConsumption')?.invalid && 
+                        buildingForm.get('energyConsumption')?.touched" 
+                class="text-danger">
+                Inserire un valore valido maggiore o uguale a 0
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label for="energyProduction" class="form-label">Produzione Energetica (kWh/mese)</label>
+            <input type="number" class="form-control" id="energyProduction" 
+                formControlName="energyProduction" min="0">
+            <div *ngIf="buildingForm.get('energyProduction')?.invalid && 
+                    buildingForm.get('energyProduction')?.touched" 
+                    class="text-danger">
+                Inserire un valore valido maggiore o uguale a 0
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="!buildingForm.valid || loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        Aggiungi Edificio
+    </button>
+    <button type="button" class="btn btn-secondary ms-2" 
+            [routerLink]="['/communities', communityId, 'buildings']">
+        Indietro
+        </button>
+    </form>
+</div>

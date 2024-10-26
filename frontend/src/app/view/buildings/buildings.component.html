@@ -1,0 +1,42 @@
+<div class="container py-5">
+    <h1 class="mb-4">Edifici della Comunità</h1>
+
+    <div *ngIf="loading$ | async" class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div *ngIf="error$ | async as error" class="alert alert-danger">
+        {{ error.message }}
+    </div>
+
+    <div *ngIf="buildings$ | async as buildings" class="row g-4">
+        <div *ngFor="let building of buildings" class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ building.name }}</h5>
+                    <p class="card-text">
+                        <strong>Indirizzo:</strong> {{ building.address }}<br>
+                        <strong>Piani:</strong> {{ building.floors }}<br>
+                        <strong>Appartamenti:</strong> {{ building.apartments }}
+                    </p>
+                    <div class="mt-3">
+                        <strong>Consumo:</strong> {{ building.energyConsumption }} kWh/mese<br>
+                        <strong>Produzione:</strong> {{ building.energyProduction }} kWh/mese
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a [routerLink]="['/communities', communityId, 'buildings', building.id]" 
+                    class="btn btn-primary">Dettagli</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a [routerLink]="['/communities', communityId, 'buildings', 'add']" 
+        class="btn btn-success">Aggiungi Edificio</a>
+        <a [routerLink]="['/communities']" class="btn btn-secondary ms-2">Indietro</a>
+    </div>
+</div>

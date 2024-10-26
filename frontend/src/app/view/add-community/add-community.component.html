@@ -1,0 +1,11 @@
+<div class="container py-5">
+    <h1 class="mb-4">Crea Nuova Comunità</h1>
+    <form [formGroup]="communityForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nome Comunità</label>
+            <input type="text" class="form-control" id="name" formControlName="name">
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="!communityForm.valid">Crea Comunità</button>
+        <button type="button" class="btn btn-secondary ms-2" routerLink="/communities">Indietro</button>
+    </form>
+</div>
