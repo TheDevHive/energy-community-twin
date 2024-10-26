@@ -2,18 +2,34 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
+import { of } from 'rxjs';
 
 import { LoginComponent } from './login.component';
+import { AuthService } from '../../service/auth.service'; // Adjust path if necessary
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let router: Router;
+  let authService: AuthService;
 
   beforeEach(async () => {
+    const authServiceMock = {
+      login: jasmine.createSpy('login').and.callFake((email: string, password: string) => {
+        if (email === 'test@example.com' && password === 'password123') {
+          return of(true); // Simulate successful login
+        } else {
+          return of(false); // Simulate failed login
+        }
+      })
+    };
+
     await TestBed.configureTestingModule({
       declarations: [LoginComponent],
-      imports: [ReactiveFormsModule, RouterTestingModule]
+      imports: [ReactiveFormsModule, RouterTestingModule.withRoutes([])],
+      providers: [
+        { provide: AuthService, useValue: authServiceMock } // Provide mock AuthService
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
@@ -75,6 +91,18 @@ describe('LoginComponent', () => {
     component.submitForm();
 
     expect(router.navigate).toHaveBeenCalledWith(['/']);
+  });
+
+  it('should show error when credentials are wrong', () => {
+    component.credentialsWrong = false; 
+
+    spyOn(router, 'navigate');
+    component.loginForm.controls['email'].setValue('wrong@example.com');
+    component.loginForm.controls['password'].setValue('wrongpassword');
+    component.submitForm();
+
+    expect(component.credentialsWrong).toBeTrue();
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it('should not navigate if the form is invalid', () => {

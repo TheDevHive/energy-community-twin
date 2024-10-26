@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
 import { Router } from '@angular/router';
+
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private fb: FormBuilder,
+    private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', Validators.required],
@@ -47,7 +49,24 @@ export class LoginComponent {
 
   submitForm() {
     if (this.loginForm.valid) {
-      this.router.navigate(['/']);
+      const { email, password } = this.loginForm.value;
+  
+      this.authService.login(email, password).subscribe({
+        next: (isLoggedIn) => {
+          if (isLoggedIn) {
+            // Navigate to the dashboard on successful login
+            this.router.navigate(['/']);
+          } else {
+            // Show credentials wrong message if login fails
+            this.credentialsWrong = true;
+          }
+        },
+        error: (error) => {
+          console.error('Login error:', error);
+          // Show server error message
+          this.serverError = true;
+        }
+      });
     }
   }
   
