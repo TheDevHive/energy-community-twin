@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommunityService } from '../../services/community.service';
+import { BuildingService } from '../../services/building.service';
+import { Building } from '../../models/building';
 
 @Component({
   selector: 'app-add-building',
@@ -15,7 +17,9 @@ export class AddBuildingComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private building: Building,
     private communityService: CommunityService,
+    private buildingService: BuildingService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -38,10 +42,10 @@ export class AddBuildingComponent implements OnInit {
       this.loading = true;
       this.error = null;
 
-      this.communityService.createBuilding(this.communityId, {
-        ...this.buildingForm.value,
-        communityId: this.communityId
-      }).subscribe({
+      this.buildingService.createBuilding(this.buildingForm.value).subscribe(
+        building => { this.building = building; },
+      );
+      this.communityService.addBuilding(this.communityId, this.building.id).subscribe({
         next: () => {
           this.router.navigate(['/communities', this.communityId, 'buildings']);
         },
