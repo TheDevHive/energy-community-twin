@@ -3,7 +3,6 @@ import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
-import { FormCheck } from '../../FormCheck';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +14,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   model: NgbDateStruct | undefined;
 
-  success: boolean = true;
+  credentialsWrong: boolean = false;
   serverError: boolean = false;
 
   constructor(
@@ -28,31 +27,33 @@ export class LoginComponent {
     }, { validators: this.customValidation });
   }
 
-  customValidation(group: FormGroup) {
+  customValidation = (group: FormGroup) => {
     const emailControl = group.get('email');
     const passwordControl = group.get('password');
 
-    if(emailControl && passwordControl){
+    if (emailControl && passwordControl) {
       const email = emailControl.value;
 
       // Email check
-      if (email && !FormCheck.checkEmail(email)) {
+      if (email && !this.checkEmail(email)) {
         emailControl.setErrors({ 'invalidEmail': true });
       } else {
         if (emailControl.hasError('invalidEmail')) {
           emailControl.setErrors(null);
         }
       }
+    }
+  };
 
+  submitForm() {
+    if (this.loginForm.valid) {
+      this.router.navigate(['/']);
     }
   }
-
   
-  submitForm() {
-    //this.success = false;
-    //this.serverError = true;
-
-    this.router.navigate(['/']);
+  checkEmail(email: string): boolean {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   }
 
 }
