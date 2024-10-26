@@ -50,5 +50,9 @@ public class Community {
         if (id != community.id) return false;
         return true;
     }
+
+    public Community(){
+
+    }
 }
 

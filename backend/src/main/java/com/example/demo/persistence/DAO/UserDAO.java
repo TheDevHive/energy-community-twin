@@ -63,6 +63,7 @@ public class UserDAO {
                 pstmt.setString(3, user.getCredentials().getEmail());
                 pstmt.setDate(4, user.getBirthDate());
                 pstmt.setString(5, user.getPhone());
+                pstmt.setInt(6, user.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
