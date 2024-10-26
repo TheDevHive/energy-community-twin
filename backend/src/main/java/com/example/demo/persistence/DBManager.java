@@ -1,5 +1,7 @@
 package com.example.demo.persistence;
 
+import com.example.demo.persistence.DAO.*;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -8,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBManager {
-    private final String dbPath = "backend/src/main/resources/";
+    private final String dbPath = "src/main/resources/";
     private final String dbName = "database.db";
 
     private static DBManager instance;
@@ -120,5 +122,37 @@ public class DBManager {
             }
         }
         return true;
+    }
+
+    public CredentialsDAO getCredentialsDAO() {
+        return new CredentialsDAO(getConnection());
+    }
+
+    public AdminDAO getAdminDAO() {
+        return new AdminDAO(getConnection());
+    }
+
+    public UserDAO getUserDAO() {
+        return new UserDAO(getConnection());
+    }
+
+    public CommunityDAO getCommunityDAO() {
+        return new CommunityDAO(getConnection());
+    }
+
+    public BuildingDAO getBuildingDAO() {
+        return new BuildingDAO(getConnection());
+    }
+
+    public BuildingDeviceDAO getBuildingDeviceDAO() {
+        return new BuildingDeviceDAO(getConnection());
+    }
+
+    public ApartmentDAO getApartmentDAO() {
+        return new ApartmentDAO(getConnection());
+    }
+
+    public ApartmentDeviceDAO getApartmentDeviceDAO() {
+        return new ApartmentDeviceDAO(getConnection());
     }
 }
