@@ -8,7 +8,7 @@ import { Apartment } from '../models/apartment';
   providedIn: 'root'
 })
 export class BuildingService {
-  private apiUrl = 'api/communities';
+  private apiUrl = 'localhost:8080/api/communities';
 
   constructor(private http: HttpClient) { }
 

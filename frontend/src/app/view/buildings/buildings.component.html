@@ -15,16 +15,11 @@
         <div *ngFor="let building of buildings" class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">{{ building.name }}</h5>
+                    <h5 class="card-title">{{ building.address }}</h5>
                     <p class="card-text">
                         <strong>Indirizzo:</strong> {{ building.address }}<br>
-                        <strong>Piani:</strong> {{ building.floors }}<br>
-                        <strong>Appartamenti:</strong> {{ building.apartments }}
+                        <strong>Piani:</strong> {{ building.floors }}
                     </p>
-                    <div class="mt-3">
-                        <strong>Consumo:</strong> {{ building.energyConsumption }} kWh/mese<br>
-                        <strong>Produzione:</strong> {{ building.energyProduction }} kWh/mese
-                    </div>
                 </div>
                 <div class="card-footer">
                     <a [routerLink]="['/communities', communityId, 'buildings', building.id]" 

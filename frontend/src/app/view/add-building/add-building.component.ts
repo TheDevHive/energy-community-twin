@@ -17,7 +17,7 @@ export class AddBuildingComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private building: Building,
+    //private building: Building,
     private communityService: CommunityService,
     private buildingService: BuildingService,
     private route: ActivatedRoute,
@@ -41,19 +41,19 @@ export class AddBuildingComponent implements OnInit {
     if (this.buildingForm.valid) {
       this.loading = true;
       this.error = null;
-
       this.buildingService.createBuilding(this.buildingForm.value).subscribe(
-        building => { this.building = building; },
-      );
-      this.communityService.addBuilding(this.communityId, this.building.id).subscribe({
-        next: () => {
-          this.router.navigate(['/communities', this.communityId, 'buildings']);
+        build => {
+          this.communityService.addBuilding(this.communityId, build.id).subscribe({
+            next: () => {
+              this.router.navigate(['/communities', this.communityId, 'buildings']);
+            },
+            error: err => {
+              this.error = err.message;
+              this.loading = false;
+            }
+          });
         },
-        error: err => {
-          this.error = err.message;
-          this.loading = false;
-        }
-      });
-    }
+      );
+      }
   }
 }

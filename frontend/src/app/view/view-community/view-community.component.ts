@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommunityService } from '../../services/community.service';
-import { Community } from '../../models/community.model';
+import { Community } from '../../models/community';
 
 @Component({
   selector: 'app-view-community',
