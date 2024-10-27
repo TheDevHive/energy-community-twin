@@ -23,6 +23,7 @@ public class BuildingDAO {
             String sql = "INSERT INTO building (community_id, address, floors) VALUES (?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, building.getCommunity().getId());
+                System.out.println("Community id AAA: " + building.getCommunity().getId());
                 pstmt.setString(2, building.getAddress());
                 pstmt.setInt(3, building.getFloors());
                 pstmt.executeUpdate();
@@ -84,9 +85,12 @@ public class BuildingDAO {
             ResultSet rs = pstmt.executeQuery();
             List<Building> buildings = new ArrayList<>();
             while (rs.next()) {
+                System.out.println("community id " + rs.getInt("community_id"));
                 Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(rs.getInt("community_id"));
                 if(community == null) {
-                    return null;
+                    continue;
+                    //System.out.println("Community not found");
+                    //return null;
                 }
                 buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors")));
             }

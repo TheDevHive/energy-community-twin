@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 
 import { LoginComponent } from './login.component';
-import { AuthService } from '../../service/auth.service'; // Adjust path if necessary
+import { AuthService } from '../../services/auth.service'; // Adjust path if necessary
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

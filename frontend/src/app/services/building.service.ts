@@ -8,31 +8,31 @@ import { Apartment } from '../models/apartment';
   providedIn: 'root'
 })
 export class BuildingService {
-  private apiUrl = 'localhost:8080/api/communities';
+  private apiUrl = 'http://localhost:8080/api/buildings';
 
   constructor(private http: HttpClient) { }
 
   getBuilding(buildingId: number): Observable<Building> {
-    return this.http.get<Building>(`${this.apiUrl}/buildings/${buildingId}`);
+    return this.http.get<Building>(`${this.apiUrl}/${buildingId}`);
   }
 
   createBuilding(building: Partial<Building>): Observable<Building> {
-    return this.http.post<Building>(`${this.apiUrl}/buildings/create`, building);
+    console.log('community id:', building.community?.id);
+    return this.http.post<Building>(`${this.apiUrl}`, building);
   }
 
   removeBuilding(buildingId: number): Observable<Building> {
-    return this.http.get<Building>(`${this.apiUrl}/buildings/${buildingId}/remove`);
+    return this.http.delete<Building>(`${this.apiUrl}/${buildingId}`);
   }
   getApartments(buildingId: number): Observable<Apartment[]> {
-    return this.http.get<Apartment[]>(`${this.apiUrl}/buildings/${buildingId}/apartments`);
+    return this.http.get<Apartment[]>(`${this.apiUrl}/${buildingId}/apartments`);
   }
 
   addApartment(buildingId: number, apartmentId: number): Observable<Building> {
-    return this.http.post<Building>(`${this.apiUrl}/buildings/${buildingId}/apartments`, { apartmentId });
+    return this.http.post<Building>(`${this.apiUrl}/${buildingId}/apartments/${apartmentId}`, { apartmentId });
   }
 
   removeApartment(buildingId: number, apartmentId: number): Observable<Building> {
-    return this.http.get<Building>(`${this.apiUrl}/buildings/${buildingId}/apartments/${apartmentId}/remove`);
+    return this.http.delete<Building>(`${this.apiUrl}/${buildingId}/apartments/${apartmentId}`);
   }
-
 }

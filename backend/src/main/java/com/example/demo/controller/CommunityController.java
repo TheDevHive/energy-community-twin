@@ -23,13 +23,17 @@ public class CommunityController {
     @GetMapping("/{id}")
     public Community getCommunityById(@PathVariable int id) {
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        return dao.findByPrimaryKey(id);
+        Community community = dao.findByPrimaryKey(id);
+        System.out.println("Getting community with id: " + community.getId());
+
+        return community;
     }
 
     @PostMapping
-    public void createCommunity(@RequestBody Community community) {
+    public Community createCommunity(@RequestBody Community community) {
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
         dao.saveOrUpdate(community);
+        return community;
     }
 
     @PostMapping("/{commId}/buildings/{buildingId}")
@@ -67,10 +71,10 @@ public class CommunityController {
     @GetMapping("/{commId}/buildings")
     public List<Building> getBuildings(@PathVariable int commId) {
         BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
-        List<Building> buildings = buildingDAO.findAll();
+        List<Building> buildings = buildingDAO.findAll().stream()
+            .filter(building -> building.getCommunity().getId() == commId)
+            .toList();
 
-        return buildings.stream()
-                .filter(building -> building.getCommunity().getId() == commId)
-                .toList();
+        return buildings;
     }
 }

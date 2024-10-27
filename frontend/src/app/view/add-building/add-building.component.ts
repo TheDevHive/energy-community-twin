@@ -1,59 +1,79 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CommunityService } from '../../services/community.service';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BuildingService } from '../../services/building.service';
+import { CommunityService } from '../../services/community.service';
+import { Location } from '@angular/common';
 import { Building } from '../../models/building';
 
 @Component({
   selector: 'app-add-building',
-  templateUrl: './add-building.component.html'
+  templateUrl: './add-building.component.html',
+  styleUrls: ['./add-building.component.scss']
 })
 export class AddBuildingComponent implements OnInit {
-  buildingForm!: FormGroup;
-  communityId: number;
+  buildingForm: FormGroup;
   loading = false;
-  error: string | null = null;
+  communityId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
-    //private building: Building,
-    private communityService: CommunityService,
     private buildingService: BuildingService,
+    private communityService: CommunityService,
+    private router: Router,
     private route: ActivatedRoute,
-    private router: Router
+    private location: Location
   ) {
-    this.communityId = Number(this.route.snapshot.paramMap.get('communityId'));
-  }
-
-  ngOnInit(): void {
     this.buildingForm = this.fb.group({
-      name: ['', [Validators.required]],
-      address: ['', [Validators.required]],
-      floors: ['', [Validators.required, Validators.min(1)]],
-      apartments: ['', [Validators.required, Validators.min(1)]],
-      energyConsumption: ['', [Validators.required, Validators.min(0)]],
-      energyProduction: ['', [Validators.required, Validators.min(0)]]
+      address: ['', Validators.required],
+      floors: ['', [Validators.required, Validators.min(1)]]
     });
   }
 
+  ngOnInit(): void {
+    // Get communityId from query params
+    this.route.queryParams.subscribe(params => {
+      this.communityId = params['communityId'] ? Number(params['communityId']) : null;
+    });
+    console.log('Community ID:', this.communityId);
+  }
+
   onSubmit(): void {
-    if (this.buildingForm.valid) {
+    if (this.buildingForm.valid && this.communityId) {
+      console.log("communityIdA:", this.communityId);
       this.loading = true;
-      this.error = null;
-      this.buildingService.createBuilding(this.buildingForm.value).subscribe(
-        build => {
-          this.communityService.addBuilding(this.communityId, build.id).subscribe({
-            next: () => {
-              this.router.navigate(['/communities', this.communityId, 'buildings']);
-            },
-            error: err => {
-              this.error = err.message;
-              this.loading = false;
-            }
-          });
-        },
-      );
-      }
+      const building: Building = this.buildingForm.value;
+      this.communityService.getCommunity(this.communityId).subscribe( community => {
+        console.log('Community:', community);
+
+        building.community = community;
+        
+        this.buildingService.createBuilding(building).subscribe({
+          next: (createdBuilding) => {
+            this.loading = false;
+            console.log('Building created:', createdBuilding);
+            // Navigate back to add community page with the same community ID
+            this.router.navigate(['/communities/add'], { 
+              queryParams: { communityId: this.communityId }
+            });
+          },
+          error: (error) => {
+            console.error('Error creating building:', error);
+            this.loading = false;
+          }
+        });
+      });
+    }
+  }
+
+  goBack(): void {
+    // Always navigate back to add community with the community ID
+    if (this.communityId) {
+      this.router.navigate(['/communities/add'], { 
+        queryParams: { communityId: this.communityId }
+      });
+    } else {
+      this.location.back();
+    }
   }
 }

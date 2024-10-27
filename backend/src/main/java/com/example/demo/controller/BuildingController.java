@@ -22,12 +22,14 @@ public class BuildingController {
     }
 
     @PostMapping
-    public void createBuilding(@RequestBody Building building) {
+    public Building createBuilding(@RequestBody Building building) {
         BuildingDAO dao = DBManager.getInstance().getBuildingDAO();
+        System.out.println(building.getCommunity().getId());
         dao.saveOrUpdate(building);
+        return building;
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void deleteBuilding(@RequestBody Building building) {
         BuildingDAO dao = DBManager.getInstance().getBuildingDAO();
         dao.delete(building);
