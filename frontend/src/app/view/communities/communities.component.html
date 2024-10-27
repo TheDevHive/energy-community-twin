@@ -1,0 +1,34 @@
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Le Mie Comunità Energetiche</h1>
+    <button class="btn btn-primary" routerLink="/communities/add">
+      <i class="bi bi-plus-circle me-2"></i>
+      Aggiungi Comunità
+    </button>
+  </div>
+  
+  <div class="row g-4">
+    <div *ngFor="let community of communities" class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{community.name}}</h5>
+          <a [routerLink]="['/communities', community.id]" class="btn btn-primary">Visualizza</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card vuota mostrata quando non ci sono comunità -->
+    <div *ngIf="communities.length === 0" class="col-12 text-center">
+      <div class="card py-5">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Nessuna comunità presente</h5>
+          <p class="card-text text-muted mb-4">Inizia creando la tua prima comunità energetica</p>
+          <button class="btn btn-primary" routerLink="/communities/add">
+            <i class="bi bi-plus-circle me-2"></i>
+            Crea Nuova Comunità
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
