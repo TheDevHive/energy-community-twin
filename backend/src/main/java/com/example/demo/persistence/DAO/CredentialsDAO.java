@@ -82,4 +82,16 @@ public class CredentialsDAO {
         }
         return null;
     }
+
+    public boolean isAdmin(Credentials creds) {
+        String sql = "SELECT * FROM admin WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, creds.getEmail());
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
