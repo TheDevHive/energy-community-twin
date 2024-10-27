@@ -1,6 +1,5 @@
-package com.example.demo.controller;
+package com.example.demo.controller.Auth;
 
-import com.example.demo.model.Admin;
 import com.example.demo.model.Credentials;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;

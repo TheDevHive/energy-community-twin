@@ -1,10 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.Auth.AuthUtility;
+import com.example.demo.model.Admin;
 import com.example.demo.model.Building;
 import com.example.demo.model.Community;
+import com.example.demo.model.Credentials;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.CommunityDAO;
 import com.example.demo.persistence.DBManager;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +19,24 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/communities")
 public class CommunityController {
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addCommunity(HttpServletRequest req, @RequestBody Community community) {
+        Credentials creds = AuthUtility.getRequestCredential(req);
+        if (creds == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        community.setAdmin((Admin) creds);
+        return creds.addCommunity(community);
+    }
+
+    public ResponseEntity<String> addCommunity(Community community){
+        if(DBManager.getInstance().getCommunityDAO().saveOrUpdate(community)){
+            System.out.println("Community added successfully");
+            return ResponseEntity.ok("Community added successfully");
+        } else {
+            System.out.println("Error adding community");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding community");
+        }
+    }
 
     @GetMapping
     public List<Community> getCommunities() {

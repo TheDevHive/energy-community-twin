@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import org.springframework.http.ResponseEntity;
+
 public class Credentials {
     private String email;
     private String password;
@@ -35,4 +37,6 @@ public class Credentials {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public ResponseEntity<String> addCommunity(Community community){return null;}
 }

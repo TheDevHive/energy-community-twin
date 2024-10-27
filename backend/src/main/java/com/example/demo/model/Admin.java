@@ -1,8 +1,13 @@
 package com.example.demo.model;
 
-public class Admin {
+import com.example.demo.controller.CommunityController;
+import org.springframework.http.ResponseEntity;
+
+public class Admin extends Credentials {
     private int id;
     private Credentials credentials;
+
+    public Admin() {}
 
     public Admin(int id, Credentials credentials) {
         this.id = id;
@@ -42,5 +47,11 @@ public class Admin {
         Admin admin = (Admin) o;
         if (id != admin.id) return false;
         return true;
+    }
+
+    @Override
+    public ResponseEntity<String> addCommunity(Community community){
+        CommunityController communityController = new CommunityController();
+        return communityController.addCommunity(community);
     }
 }

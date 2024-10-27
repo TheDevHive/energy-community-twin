@@ -24,12 +24,17 @@ public class DBManager {
         return instance;
     }
 
-    public Connection getConnection(){
+    private Connection connection;
+
+    public Connection getConnection() {
         try {
-            return DriverManager.getConnection("jdbc:sqlite:" + dbPath + dbName);
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath + dbName);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return connection;
     }
 
     public boolean checkAndCreateDatabase() {

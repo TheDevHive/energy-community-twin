@@ -37,7 +37,7 @@ public class CommunityDAO {
         return community;
     }
 
-    public void saveOrUpdate(Community community) {
+    public boolean saveOrUpdate(Community community) {
         if(findByPrimaryKey(community.getId()) == null) {
             String sql = "INSERT INTO community (name, admin_id) VALUES (?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -47,6 +47,7 @@ public class CommunityDAO {
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
                     community.setId(rs.getInt(1));
+                    return true;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -58,10 +59,12 @@ public class CommunityDAO {
                 pstmt.setInt(2, community.getAdmin().getId());
                 pstmt.setInt(3, community.getId());
                 pstmt.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     public boolean delete(Community community) {

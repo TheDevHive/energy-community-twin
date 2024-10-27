@@ -113,4 +113,24 @@ public class AdminDAO {
         }
         return false;
     }
+
+    public Admin findByEmail(String email) {
+        String sql = "SELECT * FROM admin WHERE email = ?";
+        Admin admin = null;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Credentials credentials = DBManager.getInstance().getCredentialsDAO().findByPrimaryKey(rs.getString("email"));
+                if (credentials == null) {
+                    return null;
+                }
+                admin = new Admin(rs.getInt("id"), credentials);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return admin;
+    }
 }

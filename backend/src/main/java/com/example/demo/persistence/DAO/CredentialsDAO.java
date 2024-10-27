@@ -1,6 +1,8 @@
 package com.example.demo.persistence.DAO;
 
+import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.Credentials;
+import com.example.demo.persistence.DBManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -93,5 +95,26 @@ public class CredentialsDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public Credentials findByToken(String token) {
+        String email = AuthUtility.getTokenEmail(token);
+        String query = "SELECT * FROM credentials WHERE email = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(query);
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()){
+                Credentials creds;
+                if(AuthUtility.isAdmin(token))
+                    creds = DBManager.getInstance().getAdminDAO().findByEmail(email);
+                else
+                    creds = DBManager.getInstance().getUserDAO().findByEmail(email);
+                return creds;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }
