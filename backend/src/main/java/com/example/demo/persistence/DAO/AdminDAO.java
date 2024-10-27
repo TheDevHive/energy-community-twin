@@ -38,7 +38,7 @@ public class AdminDAO {
         return admin;
     }
 
-    public void saveOrUpdate(Admin admin) {
+    public boolean saveOrUpdate(Admin admin) {
         if(findByPrimaryKey(admin.getId()) == null) {
             String sql = "INSERT INTO admin (email) VALUES (?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -47,6 +47,7 @@ public class AdminDAO {
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
                     admin.setId(rs.getInt(1));
+                    return true;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -57,10 +58,12 @@ public class AdminDAO {
                 pstmt.setString(1, admin.getCredentials().getEmail());
                 pstmt.setInt(2, admin.getId());
                 pstmt.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     public boolean delete(Admin admin) {
@@ -93,5 +96,41 @@ public class AdminDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean registerAdmin(Admin admin) {
+        String sql = "INSERT INTO credentials (email, password) VALUES (?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, admin.getCredentials().getEmail());
+            pstmt.setString(2, admin.getCredentials().getPassword());
+            // if the credentials are not already in the database, insert them in credential
+            // then insert a new admin with the same email in the admin table
+            if(pstmt.executeUpdate() == 1) {
+                return saveOrUpdate(admin);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Admin findByEmail(String email) {
+        String sql = "SELECT * FROM admin WHERE email = ?";
+        Admin admin = null;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Credentials credentials = DBManager.getInstance().getCredentialsDAO().findByPrimaryKey(rs.getString("email"));
+                if (credentials == null) {
+                    return null;
+                }
+                admin = new Admin(rs.getInt("id"), credentials);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return admin;
     }
 }

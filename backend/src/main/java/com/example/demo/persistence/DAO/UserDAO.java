@@ -101,4 +101,24 @@ public class UserDAO {
         }
         return null;
     }
+
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM user WHERE email = ?";
+        User user = null;
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Credentials credentials = DBManager.getInstance().getCredentialsDAO().findByPrimaryKey(rs.getString("email"));
+                if (credentials == null) {
+                    return null;
+                }
+                user = new User(rs.getInt("id"), rs.getString("name"), rs.getString("surname"), credentials, rs.getDate("birth_date"), rs.getString("phone"));
+                return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
 }

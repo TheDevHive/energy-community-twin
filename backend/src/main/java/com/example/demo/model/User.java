@@ -1,8 +1,12 @@
 package com.example.demo.model;
 
+import com.example.demo.controller.CommunityController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import java.sql.Date;
 
-public class User {
+public class User extends Credentials {
     private int id;
     private String name;
     private String surname;
@@ -10,6 +14,7 @@ public class User {
     private String phone;
     private Credentials credentials;
 
+    public User(){}
 
     public User(int id, String name, String surname, Credentials credentials, Date birth_date, String phone) {
         this.id = id;
@@ -86,8 +91,9 @@ public class User {
         return id == user.id;
     }
 
-    public User(){
-
+    @Override
+    public ResponseEntity<String> addCommunity(Community community){
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
 
