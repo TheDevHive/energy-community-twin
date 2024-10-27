@@ -17,7 +17,6 @@ export class BuildingService {
   }
 
   createBuilding(building: Partial<Building>): Observable<Building> {
-    console.log('community id:', building.community?.id);
     return this.http.post<Building>(`${this.apiUrl}`, building);
   }
 

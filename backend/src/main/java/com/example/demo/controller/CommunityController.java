@@ -24,7 +24,6 @@ public class CommunityController {
     public Community getCommunityById(@PathVariable int id) {
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
         Community community = dao.findByPrimaryKey(id);
-        System.out.println("Getting community with id: " + community.getId());
 
         return community;
     }

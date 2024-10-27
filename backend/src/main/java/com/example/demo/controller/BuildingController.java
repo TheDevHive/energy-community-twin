@@ -24,7 +24,6 @@ public class BuildingController {
     @PostMapping
     public Building createBuilding(@RequestBody Building building) {
         BuildingDAO dao = DBManager.getInstance().getBuildingDAO();
-        System.out.println(building.getCommunity().getId());
         dao.saveOrUpdate(building);
         return building;
     }

@@ -33,9 +33,6 @@ public class DBManager {
     }
 
     public boolean checkAndCreateDatabase() {
-        System.out.println(dbPath);
-        System.out.println(dbName);
-        System.out.println(dbPath + dbName);
         Path path = Path.of(dbPath + dbName);
         if (!Files.exists(path)) {
             try {

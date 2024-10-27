@@ -35,23 +35,19 @@ export class AddBuildingComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.communityId = params['communityId'] ? Number(params['communityId']) : null;
     });
-    console.log('Community ID:', this.communityId);
   }
 
   onSubmit(): void {
     if (this.buildingForm.valid && this.communityId) {
-      console.log("communityIdA:", this.communityId);
       this.loading = true;
       const building: Building = this.buildingForm.value;
       this.communityService.getCommunity(this.communityId).subscribe( community => {
-        console.log('Community:', community);
 
         building.community = community;
         
         this.buildingService.createBuilding(building).subscribe({
           next: (createdBuilding) => {
             this.loading = false;
-            console.log('Building created:', createdBuilding);
             // Navigate back to add community page with the same community ID
             this.router.navigate(['/communities/add'], { 
               queryParams: { communityId: this.communityId }
