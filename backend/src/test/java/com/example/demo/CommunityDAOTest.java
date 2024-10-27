@@ -38,19 +38,22 @@ public class CommunityDAOTest {
     @InjectMocks
     private CommunityDAO communityDAO;
 
+    private CommunityDAO spyCommunityDAO;
+
+
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         communityDAO = new CommunityDAO(mockConnection);
         community= new Community(1, "Test Community", mockAdmin);
+        spyCommunityDAO = Mockito.spy(communityDAO);
     }
 
     @Test
     public void testSaveOrUpdate_InsertNewBuilding() throws SQLException {
-        // Arrange
+        // Set up
         when(mockAdmin.getId()).thenReturn(1);
 
-        CommunityDAO spyCommunityDAO = Mockito.spy(communityDAO);
         doReturn(null).when(spyCommunityDAO).findByPrimaryKey(community.getId());
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
@@ -59,7 +62,7 @@ public class CommunityDAOTest {
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(1);
 
-        // Act
+        // Execute
         spyCommunityDAO.saveOrUpdate(community);
 
         // Assert
@@ -72,16 +75,15 @@ public class CommunityDAOTest {
 
     @Test
     public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
-        // Arrange
+        // Set up
         when(mockAdmin.getId()).thenReturn(1);
 
-        CommunityDAO spyCommunityDAO = Mockito.spy(communityDAO);
         doReturn(community).when(spyCommunityDAO).findByPrimaryKey(community.getId());
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        // Act
+        // Execute
         spyCommunityDAO.saveOrUpdate(community);
 
         // Assert
@@ -93,7 +95,7 @@ public class CommunityDAOTest {
 
     @Test
     public void testFindAll() throws SQLException {
-        // Arrange
+        // Set up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
@@ -111,7 +113,7 @@ public class CommunityDAOTest {
             mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
             when(mockDBManager.getAdminDAO()).thenReturn(mockAdminDAO);
 
-            // Act
+            // Execute
             List<Community> communities = communityDAO.findAll();
 
             // Assert
@@ -122,7 +124,7 @@ public class CommunityDAOTest {
 
     @Test
     public void testFindByPrimaryKey_Found() throws SQLException {
-        // Arrange
+        // Set up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
@@ -138,7 +140,7 @@ public class CommunityDAOTest {
             mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
             when(mockDBManager.getAdminDAO()).thenReturn(mockAdminDAO);
 
-            // Act
+            // Execute
             Community result = communityDAO.findByPrimaryKey(1);
 
             // Assert
@@ -156,7 +158,7 @@ public class CommunityDAOTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        // Act
+        // Execute
         Community result = communityDAO.findByPrimaryKey(1);
 
         // Assert
@@ -165,14 +167,14 @@ public class CommunityDAOTest {
 
     @Test
     public void testDelete_Success() throws SQLException {
-        // Arrange
+        // Set up
         Community com = new Community();
         com.setId(1);
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        // Act
+        // Execute
         boolean result = communityDAO.delete(community);
 
         // Assert

@@ -51,7 +51,7 @@ public class BuildingDAOTest {
 
     @Test
     public void testSaveOrUpdate_InsertNewBuilding() throws SQLException {
-        // Arrange
+        // Set up
         when(mockCommunity.getId()).thenReturn(1);
         when(mockUser.getId()).thenReturn(1);
 
@@ -64,7 +64,7 @@ public class BuildingDAOTest {
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(1);
 
-        // Act
+        // Execute
         spyBuildingDAO.saveOrUpdate(building);
 
         // Assert
@@ -78,7 +78,7 @@ public class BuildingDAOTest {
 
     @Test
     public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
-        // Arrange
+        // Set up
         when(mockCommunity.getId()).thenReturn(1);
         when(mockUser.getId()).thenReturn(1);
 
@@ -88,7 +88,7 @@ public class BuildingDAOTest {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        // Act
+        // Execute
         spyBuildingDAO.saveOrUpdate(building);
 
         // Assert
@@ -101,7 +101,7 @@ public class BuildingDAOTest {
 
     @Test
     public void testFindAll() throws SQLException {
-        // Arrange
+        // Set up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
@@ -121,7 +121,7 @@ public class BuildingDAOTest {
             mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
             when(mockDBManager.getCommunityDAO()).thenReturn(mockCommunityDAO);
 
-            // Act
+            // Execute
             List<Building> buildings = buildingDAO.findAll();
 
             // Assert
@@ -132,7 +132,7 @@ public class BuildingDAOTest {
 
     @Test
     public void testFindByPrimaryKey_Found() throws SQLException {
-        // Arrange
+        // Set up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
@@ -149,7 +149,7 @@ public class BuildingDAOTest {
             mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
             when(mockDBManager.getCommunityDAO()).thenReturn(mockCommunityDAO);
 
-            // Act
+            // Execute
             Building result = buildingDAO.findByPrimaryKey(1);
 
             // Assert
@@ -168,7 +168,7 @@ public class BuildingDAOTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        // Act
+        // Execute
         Building result = buildingDAO.findByPrimaryKey(1);
 
         // Assert
@@ -177,14 +177,14 @@ public class BuildingDAOTest {
 
     @Test
     public void testDelete_Success() throws SQLException {
-        // Arrange
+        // Set up
         Building building = new Building();
         building.setId(1);
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        // Act
+        // Execute
         boolean result = buildingDAO.delete(building);
 
         // Assert

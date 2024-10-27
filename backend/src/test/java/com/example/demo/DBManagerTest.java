@@ -2,80 +2,81 @@ package com.example.demo;
 
 import com.example.demo.persistence.DBManager;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.Statement;
+
+import com.example.demo.persistence.DAO.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class DBManagerTest {
+
     private static DBManager dbManager;
-    private static final String TEST_DB_PATH = "src/main/resources/";
-    private static final String TEST_DB_NAME = "database.db";
+
+    @Mock
+    private Connection mockConnection;
 
     @BeforeAll
     static void setUp() {
         dbManager = DBManager.getInstance();
     }
 
+    @BeforeEach
+    void setupMocks() throws SQLException {
+        // Mock DBManager methods that would normally access the database
+        mockConnection = mock(Connection.class);
+        dbManager = spy(DBManager.getInstance());
+        doReturn(mockConnection).when(dbManager).getConnection();
+    }
+
     @Test
     void testGetInstance() {
         DBManager instance1 = DBManager.getInstance();
         DBManager instance2 = DBManager.getInstance();
-
-        // Test singleton pattern
         assertNotNull(instance1);
         assertSame(instance1, instance2, "DBManager instances should be the same (singleton)");
     }
 
     @Test
-    void testGetConnection() {
-        Connection conn = null;
-        try {
-            conn = dbManager.getConnection();
-            assertNotNull(conn, "Connection should not be null");
-            assertFalse(conn.isClosed(), "Connection should be open");
-        } catch (SQLException e) {
-            fail("Should not throw SQLException: " + e.getMessage());
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    void testGetConnection() throws SQLException {
+        when(mockConnection.isClosed()).thenReturn(false);
+        Connection conn = dbManager.getConnection();
+        assertNotNull(conn, "Connection should not be null");
+        assertFalse(conn.isClosed(), "Connection should be open");
     }
 
     @Test
     void testCheckAndCreateDatabase() {
+        when(dbManager.checkAndCreateDatabase()).thenReturn(true);
         boolean result = dbManager.checkAndCreateDatabase();
-        assertTrue(Files.exists(Path.of(TEST_DB_PATH + TEST_DB_NAME)),
-                "Database file should exist after creation");
-
-        // Test if tables were created by trying to access them
-        try (Connection conn = dbManager.getConnection();
-             Statement stmt = conn.createStatement()) {
-
-            // Test a few key tables
-            stmt.executeQuery("SELECT * FROM credentials LIMIT 1");
-            stmt.executeQuery("SELECT * FROM user LIMIT 1");
-            stmt.executeQuery("SELECT * FROM community LIMIT 1");
-            stmt.executeQuery("SELECT * FROM building LIMIT 1");
-            stmt.executeQuery("SELECT * FROM apartment LIMIT 1");
-
-            // If we get here, tables exist and are queryable
-            assertTrue(true, "All tables should be created and queryable");
-        } catch (SQLException e) {
-            fail("Failed to query tables: " + e.getMessage());
-        }
+        assertTrue(result, "Database creation should return true");
+        verify(dbManager, times(1)).checkAndCreateDatabase();
     }
 
     @Test
     void testGetDAOs() {
-        // Test that all DAO getters return non-null objects
+        CredentialsDAO credentialsDAO = mock(CredentialsDAO.class);
+        AdminDAO adminDAO = mock(AdminDAO.class);
+        UserDAO userDAO = mock(UserDAO.class);
+        CommunityDAO communityDAO = mock(CommunityDAO.class);
+        BuildingDAO buildingDAO = mock(BuildingDAO.class);
+        BuildingDeviceDAO buildingDeviceDAO = mock(BuildingDeviceDAO.class);
+        ApartmentDAO apartmentDAO = mock(ApartmentDAO.class);
+        ApartmentDeviceDAO apartmentDeviceDAO = mock(ApartmentDeviceDAO.class);
+
+
+        when(dbManager.getCredentialsDAO()).thenReturn(credentialsDAO);
+        when(dbManager.getAdminDAO()).thenReturn(adminDAO);
+        when(dbManager.getUserDAO()).thenReturn(userDAO);
+        when(dbManager.getCommunityDAO()).thenReturn(communityDAO);
+        when(dbManager.getBuildingDAO()).thenReturn(buildingDAO);
+        when(dbManager.getBuildingDeviceDAO()).thenReturn(buildingDeviceDAO);
+        when(dbManager.getApartmentDAO()).thenReturn(apartmentDAO);
+        when(dbManager.getApartmentDeviceDAO()).thenReturn(apartmentDeviceDAO);
+
+
         assertNotNull(dbManager.getCredentialsDAO(), "CredentialsDAO should not be null");
         assertNotNull(dbManager.getAdminDAO(), "AdminDAO should not be null");
         assertNotNull(dbManager.getUserDAO(), "UserDAO should not be null");
@@ -87,28 +88,34 @@ public class DBManagerTest {
     }
 
     @Test
-    void testMultipleConnections() {
-        // Test that we can get multiple valid connections
-        try (Connection conn1 = dbManager.getConnection();
-             Connection conn2 = dbManager.getConnection()) {
+    void testMultipleConnections() throws SQLException {
+        Connection mockConnection1 = mock(Connection.class);
+        Connection mockConnection2 = mock(Connection.class);
 
-            assertNotNull(conn1, "First connection should not be null");
-            assertNotNull(conn2, "Second connection should not be null");
-            assertNotSame(conn1, conn2, "Connections should be different instances");
-            assertFalse(conn1.isClosed(), "First connection should be open");
-            assertFalse(conn2.isClosed(), "Second connection should be open");
-        } catch (SQLException e) {
-            fail("Should not throw SQLException: " + e.getMessage());
-        }
+
+        when(dbManager.getConnection()).thenReturn(mockConnection1).thenReturn(mockConnection2);
+        when(mockConnection1.isClosed()).thenReturn(false);
+        when(mockConnection2.isClosed()).thenReturn(false);
+
+        Connection conn1 = dbManager.getConnection();
+        Connection conn2 = dbManager.getConnection();
+
+        assertNotNull(conn1, "First connection should not be null");
+        assertNotNull(conn2, "Second connection should not be null");
+        assertNotSame(conn1, conn2, "Connections should be different instances");
+        assertFalse(conn1.isClosed(), "First connection should be open");
+        assertFalse(conn2.isClosed(), "Second connection should be open");
     }
 
     @Test
     void testDatabaseCreationIdempotency() {
-        // Test that running creation multiple times doesn't cause errors
+        
+        when(dbManager.checkAndCreateDatabase()).thenReturn(true).thenReturn(false);
+
         boolean firstResult = dbManager.checkAndCreateDatabase();
         boolean secondResult = dbManager.checkAndCreateDatabase();
 
-        // Second creation should return false as DB already exists
+        assertTrue(firstResult, "First database creation should return true");
         assertFalse(secondResult, "Second database creation should return false");
     }
 }

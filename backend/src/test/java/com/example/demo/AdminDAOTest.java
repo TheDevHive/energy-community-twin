@@ -46,8 +46,6 @@ class AdminDAOTest {
         adminDAO = new AdminDAO(connection);
         testCredentials = new Credentials("test@email.com", "password");
         testAdmin = new Admin(1, testCredentials);
-
-        // Setup common mock behaviors
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
     }
 
@@ -131,12 +129,11 @@ class AdminDAOTest {
     @Test
     void testVerifyUpdateChanges() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        // Setup initial state
+        // Setup
         Credentials oldCredentials = new Credentials("old@email.com", "password");
         Credentials newCredentials = new Credentials("new@email.com", "password");
         Admin admin = new Admin(1, oldCredentials);
 
-        // Mock first query to find existing admin
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("id")).thenReturn(1);
         when(resultSet.getString("email")).thenReturn("old@email.com");

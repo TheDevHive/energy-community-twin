@@ -33,17 +33,19 @@ public class CredentialsDAOTest {
     @InjectMocks
     private CredentialsDAO credentialsDAO;
 
+    private CredentialsDAO spyCredentialsDAO;
+
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         credentialsDAO= new CredentialsDAO(mockConnection);
         credentials= new Credentials("username@email.com", "password");
+        spyCredentialsDAO= Mockito.spy(credentialsDAO);
     }
 
     @Test
     public void testSaveOrUpdate_InsertNewBuilding() throws SQLException {
-        // Arrange
-        CredentialsDAO spyCredentialsDAO = Mockito.spy(credentialsDAO);
+        // Set Up
         doReturn(null).when(spyCredentialsDAO).findByPrimaryKey(credentials.getEmail());
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
@@ -51,7 +53,7 @@ public class CredentialsDAOTest {
         when(mockPreparedStatement.getGeneratedKeys()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(1);
-        // Act
+        // Execute
         spyCredentialsDAO.saveOrUpdate(credentials);
 
         // Assert
@@ -64,14 +66,13 @@ public class CredentialsDAOTest {
 
     @Test
     public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
-        // Arrange
-        CredentialsDAO spyCredentialsDAO = Mockito.spy(credentialsDAO);
+        // Set Up
         doReturn(credentials).when(spyCredentialsDAO).findByPrimaryKey(credentials.getEmail());
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        // Act
+        // Execute
         spyCredentialsDAO.saveOrUpdate(credentials);
 
         // Assert
@@ -82,7 +83,7 @@ public class CredentialsDAOTest {
 
     @Test
     public void testFindAll() throws SQLException {
-        // Arrange
+        // Set Up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
@@ -95,7 +96,7 @@ public class CredentialsDAOTest {
             mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
             when(mockDBManager.getCredentialsDAO()).thenReturn(credentialsDAO);
 
-            // Act
+            // Execute
             List<Credentials> credentials = credentialsDAO.findAll();
 
             // Assert
@@ -106,7 +107,7 @@ public class CredentialsDAOTest {
 
     @Test
     public void testFindByPrimaryKey_Found() throws SQLException {
-        // Arrange
+        // Set Up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
@@ -119,7 +120,7 @@ public class CredentialsDAOTest {
             mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
             when(mockDBManager.getCredentialsDAO()).thenReturn(credentialsDAO);
 
-            // Act
+            // Execute
             Credentials result = credentialsDAO.findByPrimaryKey("Test Community 1");
 
             // Assert
@@ -136,7 +137,7 @@ public class CredentialsDAOTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        // Act
+        // Execute
         Credentials result = credentialsDAO.findByPrimaryKey("Test Community 1");
 
         // Assert
@@ -145,14 +146,14 @@ public class CredentialsDAOTest {
 
     @Test
     public void testDelete_Success() throws SQLException {
-        // Arrange
+        // Set Up
         Credentials cred = new Credentials();
         cred.setEmail("Test Community 1");
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        // Act
+        // Execute
         boolean result = credentialsDAO.delete(cred);
 
         // Assert
