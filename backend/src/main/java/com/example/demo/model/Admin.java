@@ -9,6 +9,10 @@ public class Admin {
         this.credentials = credentials;
     }
 
+    public Admin(Credentials credentials) {
+        this.credentials = credentials;
+    }
+
     public int getId() {
         return id;
     }
