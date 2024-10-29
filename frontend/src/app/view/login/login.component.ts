@@ -51,21 +51,15 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
   
-      this.authService.login(email, password).subscribe({
-        next: (isLoggedIn) => {
-          if (isLoggedIn) {
-            // Navigate to the dashboard on successful login
-            this.router.navigate(['/']);
-          } else {
-            // Show credentials wrong message if login fails
-            this.credentialsWrong = true;
-          }
-        },
-        error: (error) => {
-          console.error('Login error:', error);
-          // Show server error message
-          this.serverError = true;
+      // subscribe to the login method in the auth service
+      this.authService.login(email, password).subscribe((success: boolean) => {
+        if (success) {
+          this.router.navigate(['/']);
+        } else {
+          this.credentialsWrong = true;
         }
+      }, (error: any) => {
+        this.serverError = true;
       });
     }
   }
