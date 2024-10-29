@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBManager {
-    private final String dbPath = "backend/src/main/resources/";
+    private final String dbPath = "src/main/resources/";
     private final String dbName = "database.db";
 
     private static DBManager instance;

@@ -8,17 +8,20 @@ import { ViewCommunityComponent } from './view/view-community/view-community.com
 import { AddBuildingComponent } from './view/add-building/add-building.component';
 import { ViewBuildingComponent } from './view/view-building/view-building.component';
 
+import { AuthGuard } from './guards/auth.guard';
+import { LogoutGuard } from './guards/logout.guard';
+
 const routes: Routes = [
   { path: '', redirectTo: '/communities', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'communities', component: CommunitiesComponent },
-  { path: 'communities/add', component: AddCommunityComponent },
-  { path: 'buildings/add', component: AddBuildingComponent },
-  { path: 'communities/:id', component: ViewCommunityComponent },
-  { path: 'communities/:id/buildings/add', component: AddBuildingComponent },
-  { path: 'communities/:communityId/buildings/:buildingId', component: ViewBuildingComponent }
-
+  { path: 'login', component: LoginComponent, canActivate: [LogoutGuard] },
+  { path: 'communities', component: CommunitiesComponent, canActivate: [AuthGuard] },
+  { path: 'communities/add', component: AddCommunityComponent, canActivate: [AuthGuard] },
+  { path: 'buildings/add', component: AddBuildingComponent, canActivate: [AuthGuard] },
+  { path: 'communities/:id', component: ViewCommunityComponent, canActivate: [AuthGuard] },
+  { path: 'communities/:id/buildings/add', component: AddBuildingComponent, canActivate: [AuthGuard] },
+  { path: 'communities/:communityId/buildings/:buildingId', component: ViewBuildingComponent, canActivate: [AuthGuard] }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

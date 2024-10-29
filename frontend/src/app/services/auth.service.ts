@@ -7,18 +7,27 @@ import { environment } from '../../environments/environment';
 import { Credentials } from '../models/credentials';
 import { AuthToken } from '../models/auth_token';
 
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn = false;
-
   private token?: string;
   private role?: string;
 
+  private headers = new HttpHeaders().set('Authorization', `Basic ${this.getToken()}`);
 
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient) {
+    // Restore token and logged-in status from localStorage
+    const savedToken = localStorage.getItem('authToken');
+    const savedRole = localStorage.getItem('authRole');
+    if (savedToken) {
+      this.token = savedToken;
+      this.role = savedRole || '';
+    }
+  }
 
   login(email: string, password: string): Observable<boolean> {
     const creds: Credentials = { email, password };
@@ -28,15 +37,13 @@ export class AuthService {
         map((authToken: AuthToken) => {
           this.token = authToken.token;
           this.role = authToken.role;
-          this.isLoggedIn = true;
+          // Save token and role to localStorage
+          localStorage.setItem('authToken', authToken.token);
+          localStorage.setItem('authRole', authToken.role);
           return true;
         }),
-        // catch 3 types of errors (unauthorized(401), not-found(404) and generic server error)
         catchError((error: HttpErrorResponse) => {
-          if (error.status === 401) {
-            return of(false);
-          }
-          if (error.status === 404) {
+          if (error.status === 401 || error.status === 404) {
             return of(false);
           }
           return throwError(error);
@@ -45,10 +52,25 @@ export class AuthService {
   }
 
   logout() {
-    this.isLoggedIn = false;
+    this.token = undefined;
+    this.role = undefined;
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authRole');
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn;
+    return !!this.token;
+  }
+
+  getHeaders(): HttpHeaders {
+    return this.headers;
+  }
+
+  private getToken(){
+    const savedToken = localStorage.getItem('authToken');
+    if (savedToken) {
+      return savedToken;
+    }
+    return '';
   }
 }
