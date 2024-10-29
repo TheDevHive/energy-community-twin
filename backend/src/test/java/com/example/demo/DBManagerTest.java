@@ -48,14 +48,6 @@ public class DBManagerTest {
     }
 
     @Test
-    void testCheckAndCreateDatabase() {
-        when(dbManager.checkAndCreateDatabase()).thenReturn(true);
-        boolean result = dbManager.checkAndCreateDatabase();
-        assertTrue(result, "Database creation should return true");
-        verify(dbManager, times(1)).checkAndCreateDatabase();
-    }
-
-    @Test
     void testGetDAOs() {
         CredentialsDAO credentialsDAO = mock(CredentialsDAO.class);
         AdminDAO adminDAO = mock(AdminDAO.class);
@@ -107,15 +99,4 @@ public class DBManagerTest {
         assertFalse(conn2.isClosed(), "Second connection should be open");
     }
 
-    @Test
-    void testDatabaseCreationIdempotency() {
-        
-        when(dbManager.checkAndCreateDatabase()).thenReturn(true).thenReturn(false);
-
-        boolean firstResult = dbManager.checkAndCreateDatabase();
-        boolean secondResult = dbManager.checkAndCreateDatabase();
-
-        assertTrue(firstResult, "First database creation should return true");
-        assertFalse(secondResult, "Second database creation should return false");
-    }
 }

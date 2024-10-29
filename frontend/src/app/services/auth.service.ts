@@ -2,31 +2,77 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+
+import { Credentials } from '../models/credentials';
+import { AuthToken } from '../models/auth_token';
+
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn = false;
-  private loginUrl = 'api/login';
+  private token?: string;
+  private role?: string;
 
-  constructor(private http: HttpClient) {}
-
-  login(email: string, password: string): Observable<boolean> {
-    // Simulate an API call
-    if (email === 'test@example.com' && password === 'password123') {
-      this.isLoggedIn = true;
-      return of(true); // Simulate a successful login
-    } else {
-      return of(false); // Simulate a failed login
+  constructor(private http: HttpClient) {
+    // Restore token and logged-in status from localStorage
+    const savedToken = localStorage.getItem('authToken');
+    const savedRole = localStorage.getItem('authRole');
+    if (savedToken) {
+      this.token = savedToken;
+      this.role = savedRole || '';
     }
   }
 
+  login(email: string, password: string): Observable<boolean> {
+    const creds: Credentials = { email, password };
+    
+    return this.http.post<AuthToken>(`${environment.API_ENDPOINT}/login`, creds)
+      .pipe(
+        map((authToken: AuthToken) => {
+          this.token = authToken.token;
+          this.role = authToken.role;
+          // Save token and role to localStorage
+          localStorage.setItem('authToken', authToken.token);
+          localStorage.setItem('authRole', authToken.role);
+          return true;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401 || error.status === 404) {
+            return of(false);
+          }
+          return throwError(error);
+        })
+      );
+  }
+
   logout() {
-    this.isLoggedIn = false;
+    this.token = undefined;
+    this.role = undefined;
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authRole');
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn;
+    //check if token exists in local storage
+    if(localStorage.getItem('authToken')){
+      return true;
+    }
+    return !!this.token;
+  }
+
+  private getToken(){
+    const savedToken = localStorage.getItem('authToken');
+    if (savedToken) {
+      return savedToken;
+    }
+    return '';
+  }
+
+  // Remove the static headers property and make getHeaders() dynamic
+  getHeaders(): HttpHeaders {
+    return new HttpHeaders().set('Authorization', `Basic ${this.getToken()}`);
   }
 }
