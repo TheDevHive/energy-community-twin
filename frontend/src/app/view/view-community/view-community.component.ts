@@ -7,7 +7,7 @@ import { Building } from '../../models/building';
 @Component({
   selector: 'app-view-community',
   templateUrl: './view-community.component.html',
-  styleUrls: ['./view-community.component.scss']
+  styleUrls: ['./view-community.component.css']
 })
 export class ViewCommunityComponent implements OnInit {
   community?: Community;

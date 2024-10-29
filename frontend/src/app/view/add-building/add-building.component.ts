@@ -9,7 +9,7 @@ import { Building } from '../../models/building';
 @Component({
   selector: 'app-add-building',
   templateUrl: './add-building.component.html',
-  styleUrls: ['./add-building.component.scss']
+  styleUrls: ['./add-building.component.css']
 })
 export class AddBuildingComponent implements OnInit {
   buildingForm: FormGroup;

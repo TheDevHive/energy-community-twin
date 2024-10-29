@@ -16,9 +16,6 @@ export class AuthService {
   private token?: string;
   private role?: string;
 
-  private headers = new HttpHeaders().set('Authorization', `Basic ${this.getToken()}`);
-
-
   constructor(private http: HttpClient) {
     // Restore token and logged-in status from localStorage
     const savedToken = localStorage.getItem('authToken');
@@ -59,11 +56,11 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
+    //check if token exists in local storage
+    if(localStorage.getItem('authToken')){
+      return true;
+    }
     return !!this.token;
-  }
-
-  getHeaders(): HttpHeaders {
-    return this.headers;
   }
 
   private getToken(){
@@ -72,5 +69,10 @@ export class AuthService {
       return savedToken;
     }
     return '';
+  }
+
+  // Remove the static headers property and make getHeaders() dynamic
+  getHeaders(): HttpHeaders {
+    return new HttpHeaders().set('Authorization', `Basic ${this.getToken()}`);
   }
 }

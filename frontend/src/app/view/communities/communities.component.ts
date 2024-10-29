@@ -5,7 +5,7 @@ import { Community } from '../../models/community';
 @Component({
   selector: 'app-communities',
   templateUrl: './communities.component.html',
-  styleUrls: ['./communities.component.scss']
+  styleUrls: ['./communities.component.css']
 })
 export class CommunitiesComponent implements OnInit {
   communities: Community[] = [];

@@ -7,7 +7,7 @@ import { Building } from '../../models/building';
 @Component({
   selector: 'app-add-community',
   templateUrl: './add-community.component.html',
-  styleUrls: ['./add-community.component.scss']
+  styleUrls: ['./add-community.component.css']
 })
 export class AddCommunityComponent implements OnInit {
   communityForm: FormGroup;
