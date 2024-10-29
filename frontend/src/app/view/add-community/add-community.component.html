@@ -1,109 +1,40 @@
-<div class="container py-5">
-    <!-- Community Creation Form -->
-    <form [formGroup]="communityForm" (ngSubmit)="onSubmit()">
-        <h1 class="mb-4">Crea Nuova Comunità</h1>
-
-        <!-- Community Information Card -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Informazioni Comunità</h5>
-                
-                <div class="form-group mb-3">
-                    <label for="communityName" class="form-label">Nome Comunità</label>
-                    <input 
-                        type="text" 
-                        id="communityName"
-                        class="form-control" 
-                        [formControlName]="'name'" 
-                        placeholder="Inserisci il nome della comunità"
-                    >
-                    <div 
-                        class="text-danger" 
-                        *ngIf="communityForm.get('name')?.invalid && communityForm.get('name')?.touched"
-                    >
-                        Il nome della comunità è obbligatorio
-                    </div>
-                </div>
-            </div>
+<div class="modal-header">
+    <h4 class="modal-title">Crea Nuova Comunità</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+  </div>
+  
+  <form [formGroup]="communityForm" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nome Comunità</label>
+        <input type="text" 
+               class="form-control" 
+               id="name" 
+               formControlName="name"
+               placeholder="Inserisci il nome della comunità"
+               [class.is-invalid]="communityForm.get('name')?.invalid && communityForm.get('name')?.touched">
+        <div class="invalid-feedback" 
+             *ngIf="communityForm.get('name')?.invalid && communityForm.get('name')?.touched">
+          Il nome della comunità è obbligatorio
         </div>
-
-        <!-- Buildings Card -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title mb-0">Edifici</h5>
-                    <button 
-                        type="button" 
-                        class="btn btn-primary" 
-                        (click)="addNewBuilding()"
-                    >
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Aggiungi Nuovo Edificio
-                    </button>
-                </div>
-
-                <!-- Buildings Table -->
-                <div class="table-responsive" *ngIf="selectedBuildings.length > 0">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Indirizzo</th>
-                                <th>Piani</th>
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let building of selectedBuildings">
-                                <td>{{ building.address }}</td>
-                                <td>{{ building.floors }}</td>
-                                <td>
-                                    <button 
-                                        type="button" 
-                                        class="btn btn-danger btn-sm" 
-                                        (click)="removeBuilding(building)">
-                                        <i class="bi bi-trash me-1"></i>
-                                        Rimuovi
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- No Buildings Message -->
-                <div 
-                    class="text-center py-4" 
-                    *ngIf="selectedBuildings.length === 0"
-                >
-                    <p class="text-muted mb-0">
-                        Nessun edificio aggiunto alla comunità
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="d-flex justify-content-between mt-4">
-            <button 
-                type="button" 
-                class="btn btn-secondary" 
-                routerLink="/communities"
-            >
-                <i class="bi bi-arrow-left me-2"></i>
-                Indietro
-            </button>
-            <button 
-                type="submit" 
-                class="btn btn-success" 
-                [disabled]="communityForm.invalid || loading"
-            >
-                <span 
-                    class="spinner-border spinner-border-sm me-2" 
-                    *ngIf="loading" 
-                    role="status"
-                ></span>
-                Crea Comunità
-            </button>
-        </div>
-    </form>
-</div>
+      </div>
+    </div>
+  
+    <div class="modal-footer">
+      <button type="button" 
+              class="btn btn-outline-secondary" 
+              (click)="dismiss()"
+              [disabled]="loading">
+        Annulla
+      </button>
+      <button type="submit" 
+              class="btn btn-primary submit-btn"
+              [disabled]="communityForm.invalid || loading">
+        <span class="spinner-border spinner-border-sm me-2" 
+              *ngIf="loading" 
+              role="status"></span>
+        Crea Comunità
+      </button>
+    </div>
+  </form>
+  

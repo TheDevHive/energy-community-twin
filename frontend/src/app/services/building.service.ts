@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Building } from '../models/building';
 import { Apartment } from '../models/apartment';
+import { ResponseEntity } from '../models/response-entity';
+import { ApiResponseService } from './api-response.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,28 +12,49 @@ import { Apartment } from '../models/apartment';
 export class BuildingService {
   private apiUrl = 'http://localhost:8080/api/buildings';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private apiResponseService: ApiResponseService
+  ) { }
 
   getBuilding(buildingId: number): Observable<Building> {
-    return this.http.get<Building>(`${this.apiUrl}/${buildingId}`);
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`)
+    );
   }
 
   createBuilding(building: Partial<Building>): Observable<Building> {
-    return this.http.post<Building>(`${this.apiUrl}`, building);
+    return this.apiResponseService.extractBody(
+      this.http.post<ResponseEntity<Building>>(`${this.apiUrl}`, building)
+    );
   }
 
   removeBuilding(buildingId: number): Observable<Building> {
-    return this.http.delete<Building>(`${this.apiUrl}/${buildingId}`);
+    return this.apiResponseService.extractBody(
+      this.http.delete<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`)
+    );
   }
+
   getApartments(buildingId: number): Observable<Apartment[]> {
-    return this.http.get<Apartment[]>(`${this.apiUrl}/${buildingId}/apartments`);
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<Apartment[]>>(`${this.apiUrl}/${buildingId}/apartments`)
+    );
   }
 
   addApartment(buildingId: number, apartmentId: number): Observable<Building> {
-    return this.http.post<Building>(`${this.apiUrl}/${buildingId}/apartments/${apartmentId}`, { apartmentId });
+    return this.apiResponseService.extractBody(
+      this.http.post<ResponseEntity<Building>>(
+        `${this.apiUrl}/${buildingId}/apartments/${apartmentId}`,
+        { apartmentId }
+      )
+    );
   }
 
   removeApartment(buildingId: number, apartmentId: number): Observable<Building> {
-    return this.http.delete<Building>(`${this.apiUrl}/${buildingId}/apartments/${apartmentId}`);
+    return this.apiResponseService.extractBody(
+      this.http.delete<ResponseEntity<Building>>(
+        `${this.apiUrl}/${buildingId}/apartments/${apartmentId}`
+      )
+    );
   }
 }

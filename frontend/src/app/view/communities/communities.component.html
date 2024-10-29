@@ -1,34 +1,76 @@
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Le Mie Comunità Energetiche</h1>
-    <button class="btn btn-primary" routerLink="/communities/add">
-      <i class="bi bi-plus-circle me-2"></i>
-      Aggiungi Comunità
-    </button>
-  </div>
-  
-  <div class="row g-4">
-    <div *ngFor="let community of communities" class="col-md-4">
-      <div class="card h-100">
-        <div class="card-body">
-          <h5 class="card-title">{{community.name}}</h5>
-          <a [routerLink]="['/communities', community.id]" class="btn btn-primary">Visualizza</a>
-        </div>
-      </div>
+<div class="background-gradient">
+
+  <button class="btn btn-primary login-btn">Login</button>
+
+  <div class="container carousel-container">
+    <div class="text-center title-section mb-5">
+      <h1 class="main-title">Hive Energy</h1>
+      <h2 class="sub-title">Le Mie Comunità</h2>
     </div>
 
-    <!-- Card vuota mostrata quando non ci sono comunità -->
-    <div *ngIf="communities.length === 0" class="col-12 text-center">
-      <div class="card py-5">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Nessuna comunità presente</h5>
-          <p class="card-text text-muted mb-4">Inizia creando la tua prima comunità energetica</p>
-          <button class="btn btn-primary" routerLink="/communities/add">
-            <i class="bi bi-plus-circle me-2"></i>
-            Crea Nuova Comunità
+    <ng-container *ngIf="communities.length > 0; else emptyState">
+      <div id="communitiesCarousel" class="carousel slide" data-bs-ride="carousel">
+        <!-- Indicators only if multiple pages -->
+        <div class="carousel-indicators" *ngIf="chunk(communities, 4).length > 1">
+          <button type="button" *ngFor="let chunk of chunk(communities, 4); let i = index"
+            data-bs-target="#communitiesCarousel" [attr.data-bs-slide-to]="i" [class.active]="i === 0"
+            [attr.aria-current]="i === 0" [attr.aria-label]="'Slide ' + (i + 1)">
           </button>
         </div>
+
+        <!-- Carousel items -->
+        <div class="carousel-inner">
+          <div class="carousel-item" *ngFor="let chunk of chunk(communities, 4); let first = first" [class.active]="first">
+            <div class="row">
+              <div class="col-md-6" *ngFor="let community of chunk">
+                <div class="card community-card" (click)="navigateToCommunity(community.id)">
+                  <div class="card-image-section">
+                    <img src="assets/card.png" alt="Community image">
+                  </div>
+                  <div class="card-content-section">
+                    <div>
+                      <h5 class="card-title">{{community.name}}</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls only if multiple pages -->
+        <ng-container *ngIf="chunk(communities, 4).length > 1">
+          <button class="carousel-control-prev" type="button" data-bs-target="#communitiesCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#communitiesCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </ng-container>
       </div>
-    </div>
+
+      <div class="text-center mt-5">
+        <button class="btn btn-primary add-community-btn" (click)="openAddCommunityDialog()">
+          Aggiungi Nuova Comunità
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Empty state template -->
+    <ng-template #emptyState>
+      <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="card empty-state-card py-5">
+          <div class="card-body text-center">
+            <h5 class="card-title mb-3 text-center">Nessuna comunità presente</h5>
+            <p class="mb-4">Inizia creando la tua prima comunità energetica</p>
+            <button class="btn btn-primary" (click)="openAddCommunityDialog()">Crea Nuova Comunità</button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
   </div>
+
+  <div class="footer-image"></div>
 </div>

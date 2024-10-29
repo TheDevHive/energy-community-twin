@@ -1,108 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CommunityService } from '../../services/community.service';
-import { Building } from '../../models/building';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-add-community',
   templateUrl: './add-community.component.html',
   styleUrls: ['./add-community.component.css']
 })
-export class AddCommunityComponent implements OnInit {
+export class AddCommunityComponent {
   communityForm: FormGroup;
-  selectedBuildings: Building[] = [];
   loading = false;
-  tempCommunityId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private communityService: CommunityService,
-    private router: Router,
-    private route: ActivatedRoute
+    public activeModal: NgbActiveModal
   ) {
     this.communityForm = this.fb.group({
-      name: ['', Validators.required]
+      name: ['', [Validators.required, this.noWhitespaceValidator]]
     });
   }
 
-  ngOnInit(): void {
-    // Check for existing communityId in query params
-    this.route.queryParams.subscribe(params => {
-      if (params['communityId']) {
-        this.tempCommunityId = Number(params['communityId']);
-        
-        // Fetch community details to populate the form
-        this.communityService.getCommunity(this.tempCommunityId).subscribe(community => {
-          this.communityForm.patchValue({
-            name: community.name
-          });
-
-          // Fetch buildings for this community
-          this.loadBuildings();
-
-        });
-      }
-    });
-  }
-
-  loadBuildings(): void {
-    if (this.tempCommunityId) {
-      this.communityService.getBuildings(this.tempCommunityId).subscribe({
-        next: (buildings) => {
-          this.selectedBuildings = buildings;
-        },
-        error: (error) => {
-          console.error('Error loading buildings:', error);
-        }
-      });
-    }
-  }
-
-  removeBuilding(building: Building): void {
-    this.selectedBuildings = this.selectedBuildings.filter(b => b.id !== building.id);
-  }
-
-  addNewBuilding(): void {
-    if (!this.tempCommunityId && this.communityForm.valid) {
-      this.loading = true;
-      this.communityService.createCommunity(this.communityForm.value).subscribe(
-        community => {
-          this.loading = false;
-          if (community) {
-            this.tempCommunityId = community.id;
-            this.router.navigate(['/buildings/add'], {
-              queryParams: { communityId: this.tempCommunityId }
-            });
-          }
-        }
-      );
-    } else if (this.tempCommunityId) {
-      this.router.navigate(['/buildings/add'], {
-        queryParams: { communityId: this.tempCommunityId }
-      });
-    }
+  noWhitespaceValidator(control: FormControl) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { whitespace: true };
   }
 
   onSubmit(): void {
-    if (this.communityForm.valid) {
-      if (this.tempCommunityId) {
-        // Community already exists, just navigate back to communities
-        this.router.navigate(['/communities']);
+    if (this.communityForm.valid && !this.loading) {  // Add loading check
+      this.loading = true;
+      // Trim whitespace from name
+      const formValue = {
+        name: this.communityForm.get('name')?.value?.trim()
+      };
+      if (formValue.name) {  // Only submit if name is not empty after trim
+        this.activeModal.close(formValue);
       } else {
-        this.loading = true;
-        this.communityService.createCommunity(this.communityForm.value)
-          .subscribe({
-            next: (community) => {
-              this.loading = false;
-              this.router.navigate(['/communities']);
-            },
-            error: (error) => {
-              console.error('Error creating community:', error);
-              this.loading = false;
-            }
-          });
+        this.loading = false;
+        this.communityForm.get('name')?.setErrors({ 'required': true });
       }
     }
+  }
+
+  dismiss(): void {
+    this.activeModal.dismiss();
   }
 }
