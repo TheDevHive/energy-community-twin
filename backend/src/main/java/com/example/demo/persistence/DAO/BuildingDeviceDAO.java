@@ -37,7 +37,7 @@ public class BuildingDeviceDAO {
         return buldingDevice;
     }
 
-    public void saveOrUpdate(BuildingDevice buldingDevice) {
+    public boolean saveOrUpdate(BuildingDevice buldingDevice) {
         if(findByPrimaryKey(buldingDevice.getId()) == null) {
             String sql = "INSERT INTO building_device (name, log_path, consumes_energy, energy_class, building_id) VALUES (?, ?, ?, ?, ?)";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -53,6 +53,7 @@ public class BuildingDeviceDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE building_device SET building_id = ?, name = ?, log_path = ?, consumes_energy = ?, energy_class = ? WHERE id = ?";
@@ -66,8 +67,10 @@ public class BuildingDeviceDAO {
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
+        return true;
     }
 
     public boolean delete(BuildingDevice buldingDevice) {

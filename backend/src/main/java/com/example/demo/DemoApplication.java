@@ -1,8 +1,12 @@
 package com.example.demo;
 
+import com.example.demo.model.*;
 import com.example.demo.persistence.DBManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.sqlite.core.DB;
+
+import java.sql.Date;
 
 
 @SpringBootApplication

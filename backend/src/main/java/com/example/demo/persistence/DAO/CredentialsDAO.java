@@ -35,7 +35,7 @@ public class CredentialsDAO {
         return credentials;
     }
 
-    public void saveOrUpdate(Credentials credentials) {
+    public boolean saveOrUpdate(Credentials credentials) {
         if (findByPrimaryKey(credentials.getEmail()) == null) {
             String sql = "INSERT INTO credentials (email, password) VALUES (?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -44,6 +44,7 @@ public class CredentialsDAO {
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE credentials SET password = ? WHERE email = ?";
@@ -53,8 +54,10 @@ public class CredentialsDAO {
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
+        return true;
     }
 
     public boolean delete(Credentials credential) {

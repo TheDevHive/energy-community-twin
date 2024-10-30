@@ -38,7 +38,7 @@ public class UserDAO {
         return user;
     }
 
-    public void saveOrUpdate(User user) {
+    public boolean saveOrUpdate(User user) {
         if (findByPrimaryKey(user.getId()) == null) {
             String sql = "INSERT INTO user (email, name, surname, birth_date, phone) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -54,6 +54,7 @@ public class UserDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE user SET name = ?, surname = ?, email = ?, birth_date = ?, phone = ? WHERE id = ?";
@@ -67,8 +68,10 @@ public class UserDAO {
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
+        return true;
     }
 
     public boolean delete(User user){

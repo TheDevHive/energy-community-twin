@@ -1,5 +1,6 @@
 package com.example.demo.controller.Auth;
 
+import com.example.demo.model.Admin;
 import com.example.demo.model.Credentials;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,10 @@ public class AuthUtility {
         return DBManager.getInstance().getCredentialsDAO().findByToken(getToken(req));
     }
 
+    public static boolean isAuthorized(HttpServletRequest req){
+        Credentials credentials=getRequestCredential(req);
+        return credentials instanceof Admin;
+    }
     private static String getToken(HttpServletRequest req){
         String auth = req.getHeader("Authorization");
         if (auth == null) return "";

@@ -1,7 +1,7 @@
 name: Maven Test
 
 on:
-  pull_request:
+  push:
     branches:
       - main
       - dev
@@ -10,17 +10,17 @@ jobs:
   test:
     name: Run JUnit Tests
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+      
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: "maven"
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
 
       - name: Run Tests
         run: cd backend && mvn -B test

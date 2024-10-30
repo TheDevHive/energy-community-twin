@@ -98,5 +98,4 @@ public class DBManagerTest {
         assertFalse(conn1.isClosed(), "First connection should be open");
         assertFalse(conn2.isClosed(), "Second connection should be open");
     }
-
 }
