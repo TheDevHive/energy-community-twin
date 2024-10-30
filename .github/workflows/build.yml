@@ -1,10 +1,9 @@
 name: Build Application
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-      - dev
 
 jobs:
   build:
@@ -18,13 +17,3 @@ jobs:
 
       - name: Build Docker images
         run: docker compose build
-
-      - name: Save Docker images
-        run: |
-          docker save $(docker images -q) > images.tar
-
-      - name: Upload Docker images
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-images
-          path: images.tar
