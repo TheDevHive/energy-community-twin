@@ -18,7 +18,7 @@ public class BuildingDAO {
         this.connection = connection;
     }
 
-    public void saveOrUpdate(Building building) {
+    public boolean saveOrUpdate(Building building) {
         if(findByPrimaryKey(building.getId()) == null) {
             String sql = "INSERT INTO building (community_id, address, floors) VALUES (?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -32,6 +32,7 @@ public class BuildingDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE building SET community_id = ?, address = ?, floors = ? WHERE id = ?";
@@ -43,8 +44,10 @@ public class BuildingDAO {
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
+        return true;
     }
 
     public Building findByPrimaryKey(int id) {

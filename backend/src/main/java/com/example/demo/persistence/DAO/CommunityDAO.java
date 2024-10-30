@@ -51,6 +51,7 @@ public class CommunityDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE community SET name = ?, admin_id = ? WHERE id = ?";
@@ -62,9 +63,10 @@ public class CommunityDAO {
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public boolean delete(Community community) {

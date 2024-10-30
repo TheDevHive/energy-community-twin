@@ -51,6 +51,7 @@ public class AdminDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE admin SET email = ? WHERE id = ?";
@@ -61,9 +62,10 @@ public class AdminDAO {
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public boolean delete(Admin admin) {

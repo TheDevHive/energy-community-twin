@@ -1,10 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.controller.Auth.AuthUtility;
-import com.example.demo.model.Admin;
-import com.example.demo.model.Building;
-import com.example.demo.model.Community;
-import com.example.demo.model.Credentials;
+import com.example.demo.model.*;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.CommunityDAO;
 import com.example.demo.persistence.DBManager;
@@ -20,84 +17,115 @@ import java.util.List;
 @RequestMapping("/api/communities")
 public class CommunityController {
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addCommunity(HttpServletRequest req, @RequestBody Community community) {
+    @PostMapping
+    public ResponseEntity<Community> addCommunity(HttpServletRequest req, @RequestBody Community community) {
         Credentials creds = AuthUtility.getRequestCredential(req);
-        if (creds == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        community.setAdmin((Admin) creds);
-        return creds.addCommunity(community);
-    }
-
-    public ResponseEntity<String> addCommunity(Community community){
-        if(DBManager.getInstance().getCommunityDAO().saveOrUpdate(community)){
-            System.out.println("Community added successfully");
-            return ResponseEntity.ok("Community added successfully");
-        } else {
-            System.out.println("Error adding community");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding community");
+        if (creds == null || creds instanceof User) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (community == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @GetMapping
-    public List<Community> getCommunities() {
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        return dao.findAll();
+        community.setAdmin((Admin) creds);
+        if(dao.saveOrUpdate(community)) {
+            return new ResponseEntity<>(community, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @GetMapping
+    public ResponseEntity<List<Community>> getAllCommunities(HttpServletRequest req) {
+        Credentials creds = AuthUtility.getRequestCredential(req);
+        if (creds == null || creds instanceof User) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
+        List<Community> communities = dao.findAll();
+        if (communities.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(communities, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Community getCommunityById(@PathVariable int id) {
-        CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        Community community = dao.findByPrimaryKey(id);
-
-        return community;
-    }
-
-    @PostMapping
-    public Community createCommunity(@RequestBody Community community) {
-        CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        dao.saveOrUpdate(community);
-        return community;
+    public ResponseEntity<Community> getCommunity(HttpServletRequest req, @PathVariable int id) {
+        if(AuthUtility.isAuthorized(req)) {
+            CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
+            Community community = dao.findByPrimaryKey(id);
+            if (community == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(community, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/{commId}/buildings/{buildingId}")
-    public void addBuilding(@PathVariable int commId, @PathVariable int buildingId) {
-        CommunityDAO communityDAO = DBManager.getInstance().getCommunityDAO();
-        BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
-        Community community = communityDAO.findByPrimaryKey(commId);
-        Building building = buildingDAO.findByPrimaryKey(buildingId);
-
-        if (community != null && building != null) {
-            building.setCommunity(community);
-            buildingDAO.saveOrUpdate(building);
+    public ResponseEntity<Community> addBuilding(HttpServletRequest req, @PathVariable int commId, @PathVariable int buildingId, @RequestBody int id) {
+        if(AuthUtility.isAuthorized(req)) {
+            CommunityDAO communityDAO = DBManager.getInstance().getCommunityDAO();
+            BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+            Community community = communityDAO.findByPrimaryKey(commId);
+            Building building = buildingDAO.findByPrimaryKey(buildingId);
+            if (community != null && building != null) {
+                building.setCommunity(community);
+                if(buildingDAO.saveOrUpdate(building))
+                    return new ResponseEntity<>(community, HttpStatus.CREATED);
+                else
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @DeleteMapping("/{commId}")
-    public void removeCommunity(@PathVariable int commId) {
-        CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        Community community = dao.findByPrimaryKey(commId);
-        if (community != null) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Community> deleteCommunity(HttpServletRequest req,@PathVariable int id) {
+        if(AuthUtility.isAuthorized(req)) {
+            CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
+            Community community = dao.findByPrimaryKey(id);
+            if (community == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
             dao.delete(community);
+            // Delete all buildings associated with the community
+            BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+            List<Building> buildings = buildingDAO.findAll().stream()
+                    .filter(building -> building.getCommunity().getId() == id)
+                    .toList();
+            for (Building building : buildings) {
+                BuildingController buildingController = new BuildingController();
+                if(buildingController.deleteBuilding(req, building.getId()).getStatusCode() != HttpStatus.OK)
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(community, HttpStatus.OK);
         }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @DeleteMapping("/{commId}/buildings/{buildingId}")
-    public void removeBuilding(@PathVariable int commId, @PathVariable int buildingId) {
-        BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
-        Building building = buildingDAO.findByPrimaryKey(buildingId);
-
-        if (building != null && building.getCommunity().getId() == commId) {
-            buildingDAO.delete(building);
+    public ResponseEntity<Community> removeBuilding(HttpServletRequest req, @PathVariable int commId, @PathVariable int buildingId) {
+        if(AuthUtility.isAuthorized(req)) {
+            BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+            Building building = buildingDAO.findByPrimaryKey(buildingId);
+            if (building != null && building.getCommunity().getId() == commId) {
+                if(!buildingDAO.delete(building))
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(building.getCommunity(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping("/{commId}/buildings")
-    public List<Building> getBuildings(@PathVariable int commId) {
-        BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
-        List<Building> buildings = buildingDAO.findAll().stream()
-            .filter(building -> building.getCommunity().getId() == commId)
-            .toList();
-
-        return buildings;
+    public ResponseEntity<List<Building>> getBuildings(HttpServletRequest req, @PathVariable int commId) {
+        if(AuthUtility.isAuthorized(req)) {
+            BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+            List<Building> buildings = buildingDAO.findAll().stream()
+                    .filter(building -> building.getCommunity().getId() == commId)
+                    .toList();
+            if (buildings.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(buildings, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

@@ -48,10 +48,4 @@ public class Admin extends Credentials {
         if (id != admin.id) return false;
         return true;
     }
-
-    @Override
-    public ResponseEntity<String> addCommunity(Community community){
-        CommunityController communityController = new CommunityController();
-        return communityController.addCommunity(community);
-    }
 }

@@ -2,7 +2,6 @@ package com.example.demo.persistence.DAO;
 
 import com.example.demo.model.Apartment;
 import com.example.demo.model.Building;
-import com.example.demo.model.Community;
 import com.example.demo.model.User;
 import com.example.demo.persistence.DBManager;
 
@@ -20,7 +19,7 @@ public class ApartmentDAO {
         this.connection = connection;
     }
 
-    public void saveOrUpdate(Apartment apartment) {
+    public boolean saveOrUpdate(Apartment apartment) {
         if(findByPrimaryKey(apartment.getId()) == null) {
             String sql = "INSERT INTO apartment (residents, square_footage, energy_class, building_id, user_id) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -36,6 +35,7 @@ public class ApartmentDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         } else {
             String sql = "UPDATE apartment SET residents = ?, square_footage = ?, energy_class = ?, building_id = ?, user_id = ? WHERE id = ?";
@@ -49,8 +49,10 @@ public class ApartmentDAO {
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
+        return true;
     }
 
     public Apartment findByPrimaryKey(int id) {

@@ -90,10 +90,5 @@ public class User extends Credentials {
         User user = (User) o;
         return id == user.id;
     }
-
-    @Override
-    public ResponseEntity<String> addCommunity(Community community){
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
 }
 
