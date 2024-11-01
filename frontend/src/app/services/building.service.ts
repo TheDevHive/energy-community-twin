@@ -22,25 +22,37 @@ export class BuildingService {
 
   getBuilding(buildingId: number): Observable<Building> {
     return this.apiResponseService.extractBody(
-      this.http.get<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`, {headers : this.auth.getHeaders()})
+      this.http.get<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
   createBuilding(building: Partial<Building>): Observable<Building> {
     return this.apiResponseService.extractBody(
-      this.http.post<ResponseEntity<Building>>(`${this.apiUrl}`, building, {headers : this.auth.getHeaders()})
+      this.http.post<ResponseEntity<Building>>(`${this.apiUrl}`, building, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
   removeBuilding(buildingId: number): Observable<Building> {
     return this.apiResponseService.extractBody(
-      this.http.delete<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`, {headers : this.auth.getHeaders()})
+      this.http.delete<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
   getApartments(buildingId: number): Observable<Apartment[]> {
     return this.apiResponseService.extractBody(
-      this.http.get<ResponseEntity<Apartment[]>>(`${this.apiUrl}/${buildingId}/apartments`, {headers : this.auth.getHeaders()})
+      this.http.get<ResponseEntity<Apartment[]>>(`${this.apiUrl}/${buildingId}/apartments`, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
@@ -48,7 +60,10 @@ export class BuildingService {
     return this.apiResponseService.extractBody(
       this.http.post<ResponseEntity<Building>>(
         `${this.apiUrl}/${buildingId}/apartments/${apartmentId}`,
-        { apartmentId }, {headers : this.auth.getHeaders()}
+        { apartmentId }, {
+          headers : this.auth.getHeaders(),
+          observe: 'response'
+        }
       )
     );
   }
@@ -56,8 +71,10 @@ export class BuildingService {
   removeApartment(buildingId: number, apartmentId: number): Observable<Building> {
     return this.apiResponseService.extractBody(
       this.http.delete<ResponseEntity<Building>>(
-        `${this.apiUrl}/${buildingId}/apartments/${apartmentId}`,
-        {headers : this.auth.getHeaders()}
+        `${this.apiUrl}/${buildingId}/apartments/${apartmentId}`, {
+          headers : this.auth.getHeaders(),
+          observe: 'response'
+        }
       )
     );
   }

@@ -5,6 +5,7 @@ import { Community } from '../../models/community';
 import { AddCommunityComponent } from './../add-community/add-community.component';
 import { Router } from '@angular/router';
 import { ErrorType } from '../../models/api-error';
+import { AuthService } from '../../services/auth.service';
 
 declare var bootstrap: any;
 
@@ -23,6 +24,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     private communityService: CommunityService,
     private modalService: NgbModal,
     private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +40,11 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
         wrap: true
       });
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   openAddCommunityDialog(): void {
