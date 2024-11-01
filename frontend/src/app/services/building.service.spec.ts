@@ -1,47 +1,73 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { BuildingService } from './building.service';
+import { Community } from '../models/community';
 import { Building } from '../models/building';
 import { Apartment } from '../models/apartment';
-import { ApiResponseService } from './api-response.service';
-import { ResponseEntity } from '../models/response-entity';
+import { Admin } from '../models/admin';
+import { User } from '../models/user';
+import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 describe('BuildingService', () => {
   let service: BuildingService;
   let httpMock: HttpTestingController;
-  let apiResponseService: ApiResponseService;
+  let authService: jasmine.SpyObj<AuthService>;
+  const apiUrl = `${environment.API_ENDPOINT}/api/buildings`;
 
-  const mockCommunity = {
+  const mockAdmin: Admin = {
+    id: 1,
+    email: 'admin@test.com'
+  };
+
+  const mockCommunity: Community = {
     id: 1,
     name: 'Test Community',
-    admin: { id: 1, email: 'admin@test.com' }
+    admin: mockAdmin
   };
 
   const mockBuilding: Building = {
     id: 1,
     community: mockCommunity,
-    address: 'Test Address',
-    floors: 5
+    address: '123 Test St',
+    floors: 3
+  };
+
+  const mockUser: User = {
+    id: 1,
+    name: 'John',
+    surname: 'Doe',
+    birth_date: new Date(),
+    phone: '1234567890',
+    email: 'john@test.com'
   };
 
   const mockApartment: Apartment = {
     id: 1,
+    building_id: mockBuilding.id,
     residents: 2,
     square_footage: 100,
     energy_class: 'A',
-    building_id: 1,
-    user_id: 1
+    user_id: mockUser.id
   };
 
   beforeEach(() => {
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getHeaders']);
+    authServiceSpy.getHeaders.and.returnValue({
+      set: () => ({ 'Authorization': 'Bearer test-token' })
+    });
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [BuildingService, ApiResponseService]
+      providers: [
+        BuildingService,
+        { provide: AuthService, useValue: authServiceSpy }
+      ]
     });
 
     service = TestBed.inject(BuildingService);
     httpMock = TestBed.inject(HttpTestingController);
-    apiResponseService = TestBed.inject(ApiResponseService);
+    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   });
 
   afterEach(() => {
@@ -53,119 +79,83 @@ describe('BuildingService', () => {
   });
 
   describe('getBuilding', () => {
-    it('should retrieve a specific building by id', () => {
-      const mockResponse: ResponseEntity<Building> = {
-        body: mockBuilding,
-        statusCode: 200,
-        statusCodeValue: 200
-      };
-
+    it('should return a building by id', () => {
       service.getBuilding(1).subscribe(building => {
         expect(building).toEqual(mockBuilding);
       });
 
-      const req = httpMock.expectOne('http://localhost:8080/api/buildings/1');
+      const req = httpMock.expectOne(`${apiUrl}/1`);
       expect(req.request.method).toBe('GET');
-      req.flush(mockResponse);
+      req.flush(mockBuilding);
     });
   });
 
   describe('createBuilding', () => {
     it('should create a new building', () => {
-      const newBuilding: Partial<Building> = {
-        address: 'New Address',
-        floors: 3,
-        community: mockCommunity
-      };
-
-      const mockResponse: ResponseEntity<Building> = {
-        body: { ...mockBuilding, ...newBuilding },
-        statusCode: 201,
-        statusCodeValue: 201
+      const newBuilding = {
+        community: mockCommunity,
+        address: '123 New St',
+        floors: 4
       };
 
       service.createBuilding(newBuilding).subscribe(building => {
-        expect(building.address).toBe('New Address');
-        expect(building.floors).toBe(3);
-        expect(building.community).toEqual(mockCommunity);
+        expect(building).toEqual(mockBuilding);
       });
 
-      const req = httpMock.expectOne('http://localhost:8080/api/buildings');
+      const req = httpMock.expectOne(apiUrl);
       expect(req.request.method).toBe('POST');
-      req.flush(mockResponse);
+      expect(req.request.body).toEqual(newBuilding);
+      req.flush(mockBuilding);
     });
   });
 
   describe('removeBuilding', () => {
-    it('should remove a building', () => {
-      const mockResponse: ResponseEntity<Building> = {
-        body: mockBuilding,
-        statusCode: 200,
-        statusCodeValue: 200
-      };
-
+    it('should delete a building', () => {
       service.removeBuilding(1).subscribe(building => {
         expect(building).toEqual(mockBuilding);
       });
 
-      const req = httpMock.expectOne('http://localhost:8080/api/buildings/1');
+      const req = httpMock.expectOne(`${apiUrl}/1`);
       expect(req.request.method).toBe('DELETE');
-      req.flush(mockResponse);
+      req.flush(mockBuilding);
     });
   });
 
   describe('getApartments', () => {
-    it('should retrieve all apartments for a building', () => {
+    it('should get all apartments for a building', () => {
       const mockApartments: Apartment[] = [mockApartment];
-      const mockResponse: ResponseEntity<Apartment[]> = {
-        body: mockApartments,
-        statusCode: 200,
-        statusCodeValue: 200
-      };
 
       service.getApartments(1).subscribe(apartments => {
         expect(apartments).toEqual(mockApartments);
       });
 
-      const req = httpMock.expectOne('http://localhost:8080/api/buildings/1/apartments');
+      const req = httpMock.expectOne(`${apiUrl}/1/apartments`);
       expect(req.request.method).toBe('GET');
-      req.flush(mockResponse);
+      req.flush(mockApartments);
     });
   });
 
   describe('addApartment', () => {
     it('should add an apartment to a building', () => {
-      const mockResponse: ResponseEntity<Building> = {
-        body: mockBuilding,
-        statusCode: 200,
-        statusCodeValue: 200
-      };
-
       service.addApartment(1, 1).subscribe(building => {
         expect(building).toEqual(mockBuilding);
       });
 
-      const req = httpMock.expectOne('http://localhost:8080/api/buildings/1/apartments/1');
+      const req = httpMock.expectOne(`${apiUrl}/1/apartments/1`);
       expect(req.request.method).toBe('POST');
-      req.flush(mockResponse);
+      req.flush(mockBuilding);
     });
   });
 
   describe('removeApartment', () => {
     it('should remove an apartment from a building', () => {
-      const mockResponse: ResponseEntity<Building> = {
-        body: mockBuilding,
-        statusCode: 200,
-        statusCodeValue: 200
-      };
-
       service.removeApartment(1, 1).subscribe(building => {
         expect(building).toEqual(mockBuilding);
       });
 
-      const req = httpMock.expectOne('http://localhost:8080/api/buildings/1/apartments/1');
+      const req = httpMock.expectOne(`${apiUrl}/1/apartments/1`);
       expect(req.request.method).toBe('DELETE');
-      req.flush(mockResponse);
+      req.flush(mockBuilding);
     });
   });
 });
