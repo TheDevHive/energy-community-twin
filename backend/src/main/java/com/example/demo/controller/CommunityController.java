@@ -35,8 +35,9 @@ public class CommunityController {
     public ResponseEntity<List<Community>> getAllCommunities(HttpServletRequest req) {
         Credentials creds = AuthUtility.getRequestCredential(req);
         if (creds == null || creds instanceof User) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        Admin admin= (Admin) creds;
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        List<Community> communities = dao.findAll();
+        List<Community> communities = dao.findAll().stream().filter(community -> community.getAdmin().getId() == admin.getId()).toList();
         if (communities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
