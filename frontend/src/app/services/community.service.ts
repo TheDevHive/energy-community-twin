@@ -18,24 +18,33 @@ export class CommunityService {
     private http: HttpClient,
     private apiResponseService: ApiResponseService,
     private auth: AuthService
-  ) {}
+  ) { }
 
   getCommunities(): Observable<Community[]> {
     return this.apiResponseService.extractBody(
-      this.http.get<ResponseEntity<Community[]>>(`${this.apiUrl}`, {headers : this.auth.getHeaders()})
+      this.http.get<ResponseEntity<Community[]>>(`${this.apiUrl}`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
   getCommunity(id: number): Observable<Community> {
     return this.apiResponseService.extractBody(
-      this.http.get<ResponseEntity<Community>>(`${this.apiUrl}/${id}`, {headers : this.auth.getHeaders()})
+      this.http.get<ResponseEntity<Community>>(`${this.apiUrl}/${id}`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
   createCommunity(community: Partial<Community>): Observable<Community> {
     community.admin = { id: 1, email: 'admin@ciao.com' };
     return this.apiResponseService.extractBody(
-      this.http.post<ResponseEntity<Community>>(`${this.apiUrl}`, community, {headers : this.auth.getHeaders()})
+      this.http.post<ResponseEntity<Community>>(`${this.apiUrl}`, community, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
@@ -43,14 +52,20 @@ export class CommunityService {
     return this.apiResponseService.extractBody(
       this.http.post<ResponseEntity<Community>>(
         `${this.apiUrl}/${communityId}/buildings/${buildingId}`,
-        { buildingId }, {headers : this.auth.getHeaders()}
+        { buildingId }, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      }
       )
     );
   }
-  
+
   removeCommunity(id: number): Observable<Community> {
     return this.apiResponseService.extractBody(
-      this.http.delete<ResponseEntity<Community>>(`${this.apiUrl}/${id}`, {headers : this.auth.getHeaders()})
+      this.http.delete<ResponseEntity<Community>>(`${this.apiUrl}/${id}`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 
@@ -58,15 +73,21 @@ export class CommunityService {
     return this.apiResponseService.extractBody(
       this.http.delete<ResponseEntity<Community>>(
         `${this.apiUrl}/${communityId}/buildings/${buildingId}`,
-        {headers : this.auth.getHeaders()}
+        {
+          headers: this.auth.getHeaders(),
+          observe: 'response'
+        }
       )
     );
   }
 
   getBuildings(communityId: number): Observable<Building[]> {
     return this.apiResponseService.extractBody(
-      this.http.get<ResponseEntity<Building[]>>(`${this.apiUrl}/${communityId}/buildings`,
-        {headers : this.auth.getHeaders()})
+      this.http.get<ResponseEntity<Building[]>>(`${this.apiUrl}/${communityId}/buildings`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
+
 }
