@@ -148,10 +148,6 @@ body {
     flex-grow: 1;
     padding: 24px;
     background-color: #f8fafc;
-    background-image: url('../../../assets/home-illustration.svg');
-    background-size: 90%;
-    background-repeat: no-repeat;
-    background-position: center bottom;
 }
 
 .custom-header {
@@ -174,8 +170,12 @@ body {
 }
 
 .custom-report {
+    background-image: url('../../../assets/home-illustration.svg');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-position: center bottom;
     background-color: #ffffff;
-    /* height: 90%; */
+    height: 90%; 
     padding: 24px;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

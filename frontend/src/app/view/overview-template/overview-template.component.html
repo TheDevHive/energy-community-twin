@@ -35,7 +35,13 @@
   <div class="custom-content">
     <div class="custom-header"><h2>{{ name }}</h2></div>
     <div class="custom-report">
-      {{ reportContent }}
+      <ng-container *ngIf="currentVisualization === 'Community'; else elseBlock">
+        <app-community-summary></app-community-summary>
+      </ng-container>
+      <ng-template #elseBlock>
+        <h3>Coming soon...</h3>
+      </ng-template>
+      
     </div>
   </div>
 </div>

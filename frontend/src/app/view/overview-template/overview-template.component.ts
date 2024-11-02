@@ -8,6 +8,7 @@ import { Community } from '../../models/community';
 import { BuildingService } from '../../services/building.service';
 import { Location } from '@angular/common';
 import { Apartment } from '../../models/apartment';
+import { CommunitySummaryComponent } from '../community-summary/community-summary.component';
 
 @Component({
   selector: 'app-overview-template',

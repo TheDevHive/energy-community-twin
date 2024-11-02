@@ -17,6 +17,7 @@ import { ErrorModalComponent } from './view/error-modal/error-modal.component';
 import { OverviewTemplateComponent } from './view/overview-template/overview-template.component';
 import { OverviewCardComponent } from './view/overview-card/overview-card.component';
 import { AddBuildingComponent } from './view/add-building/add-building.component';
+import { CommunitySummaryComponent } from './view/community-summary/community-summary.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { AddBuildingComponent } from './view/add-building/add-building.component
     ErrorModalComponent,
     OverviewTemplateComponent,
     OverviewCardComponent,
-    AddBuildingComponent
+    AddBuildingComponent,
+    CommunitySummaryComponent
   ],
   imports: [
     BrowserModule,
