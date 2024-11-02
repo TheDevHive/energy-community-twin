@@ -8,6 +8,7 @@ import { Community } from '../../models/community';
 import { BuildingService } from '../../services/building.service';
 import { Location } from '@angular/common';
 import { Apartment } from '../../models/apartment';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-overview-template',
@@ -34,7 +35,8 @@ export class OverviewTemplateComponent implements OnInit {
     private buildingService: BuildingService,
     private route: ActivatedRoute,
     private modalService: NgbModal,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   // since the html for this component is a template for 
@@ -47,10 +49,6 @@ export class OverviewTemplateComponent implements OnInit {
   // community, but then you have to ask again: does the origin URL also contain
   // `buildingId`? Then maybe you're visualizing the apartments of a building,
   // and so on...
-  // 
-  // when you want to load different data, in the appropriate switch-case branch
-  // you simply call some function that will call some service (e.g. loadBuildings
-  // loadApartments, loadDevices, ...)
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const communityID = params.get('id');
@@ -68,7 +66,7 @@ export class OverviewTemplateComponent implements OnInit {
   // on a building card in the community view, so now we need to visualize
   // the apartments of that building. Otherwise (Outer Wilds) we just need to 
   // visualize the buildings that belong to the community.
-  private loadCommunity(communityID: number, buildingID: string | null) {
+  public loadCommunity(communityID: number, buildingID: string | null) {
     this.commService.getCommunity(communityID).subscribe(
       (community: Community) => {
         this.currentCommunity = community;
@@ -88,7 +86,8 @@ export class OverviewTemplateComponent implements OnInit {
     );
   }
   
-  private loadAllBuildings(communityID: number) {
+  public loadAllBuildings(communityID: number) {
+    this.currentVisualization = 'Community';
 
     this.commService.getBuildings(communityID).subscribe(
       (buildings: Building[]) => {
@@ -102,13 +101,12 @@ export class OverviewTemplateComponent implements OnInit {
 
   }
   
-  private loadApartments(buildingID: number) {
-
+  public loadApartments(buildingID: number) {
     this.name = 'Building ID: ' + buildingID;
+    this.currentVisualization = 'Building';
     this.buildingService.getApartments(buildingID).subscribe(
       (apartments: Apartment[]) => {
         this.apartments = apartments;
-        this.currentVisualization = 'Building';
       },
       (error) => {
         console.error('Error fetching apartments:', error);
@@ -117,6 +115,10 @@ export class OverviewTemplateComponent implements OnInit {
 
   }
   
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   goBack(): void {
     this.location.back();
@@ -132,19 +134,11 @@ export class OverviewTemplateComponent implements OnInit {
 
           this.buildingService.createBuilding(pBuilding).subscribe(
             (newBuilding: Building) => {
-              console.log('Building created successfully:', JSON.stringify(newBuilding));
+              console.log('Building created successfully');
               this.buildings.push(newBuilding);
             },
             (error) => {
-              if (error.status === 400) {
-                console.error('Bad Request: ', error.message);
-              } else if (error.status === 401) {
-                console.error('Unauthorized: ', error.message);
-              } else if (error.status === 500) {
-                console.error('Internal Server Error: ', error.message);
-              } else {
-                console.error('Unknown error: ', error);
-              }
+              console.log("error creating the building");
             }
           );
         }

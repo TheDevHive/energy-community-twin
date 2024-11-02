@@ -105,7 +105,37 @@ body {
     margin-top: 4px;
 }
 
+.logout-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.logout-btn:active {
+    transform: translateY(0);
+}
+
+
 .custom-add-card-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
     height: 60px;
     background-color: #ffffff;
     padding: 10px;
@@ -113,36 +143,64 @@ body {
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
+/* Reuse the styles from .custom-action-button */
 .custom-action-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Full width of the container */
+    width: 70%; /* Adjust width as needed */
     height: 40px;
     background-color: #2563eb;
-    border-radius: 8px;
+    border-radius: 25px;
     cursor: pointer;
     font-size: 16px;
     font-weight: 500;
-    color: #ffffff !important; /* Set explicit white color for text and use !important to override Bootstrap */
+    color: #ffffff !important;
     user-select: none;
     transition: all 0.2s ease-in-out;
-    border: none; /* Remove any border that Bootstrap might add */
+    border: none;
 }
+
+/* Center the message horizontally and vertically in the sidebar */
+.no-buildings-message {
+    display: flex;
+    justify-content: center; /* Centers content horizontally */
+    align-items: center;     /* Centers content vertically */
+    height: 100%;            /* Takes full height of the parent container */
+    font-size: 18px;         /* Slightly larger font for emphasis */
+    font-weight: 500;        /* Medium font weight for better visibility */
+    color: #555;             /* A neutral grey color */
+    background-color: #f9f9f9; /* A subtle background to distinguish the message */
+    border: 1px dashed #ccc; /* Dashed border for a hint that it's an empty state */
+    border-radius: 8px;      /* Rounded corners for a softer look */
+    padding: 20px;           /* Space inside the message box */
+    text-align: center;      /* Center the text */
+    margin: 0;               /* Remove margin to take full height */
+  }
+  
+  
 
 .custom-action-button:hover {
     background-color: #1d4ed8;
     transform: translateY(-1px);
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    color: #ffffff !important; /* Ensure the hover state text color is still visible */
 }
 
 .custom-back-button {
-    margin: 0 auto;
-    width: 100%; /* Same width as the action button to occupy the container */
-    padding: 0;
-    height: 40px; /* Ensure height is consistent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Space between the icon and the text */
+    color: #ffffff !important;
 }
+
+/* Adjust SVG size if necessary */
+.custom-back-button svg {
+    width: 16px; /* Size of the arrow icon */
+    height: 16px;
+    fill: white; /* Match icon color with text */
+}
+
 
 .custom-content {
     flex-grow: 1;
