@@ -8,7 +8,6 @@ import { Community } from '../../models/community';
 import { BuildingService } from '../../services/building.service';
 import { Location } from '@angular/common';
 import { Apartment } from '../../models/apartment';
-import { CommunitySummaryComponent } from '../community-summary/community-summary.component';
 
 @Component({
   selector: 'app-overview-template',
@@ -23,7 +22,6 @@ export class OverviewTemplateComponent implements OnInit {
 
   currentCommunity?: Community;
   currentBuilding?: Building;
-  currentApartment?: Apartment;
 
   name: string = '';
   reportContent: string = 'Your Summary Goes Here';
@@ -39,84 +37,90 @@ export class OverviewTemplateComponent implements OnInit {
     private router: Router
   ) {}
 
+  // since the html for this component is a template for 
+  // visualizing different stuff, one must know what
+  // is asked to visualize (by looking at the URL)
+  //
+  // the idea is the following: you get to this component, and
+  // you look at the source that brought you there.
+  // does the origin URL contain the parameter `id`? Then maybe it's a
+  // community, but then you have to ask again: does the origin URL also contain
+  // `buildingId`? Then maybe you're visualizing the apartments of a building,
+  // and so on...
+  // 
+  // when you want to load different data, in the appropriate switch-case branch
+  // you simply call some function that will call some service (e.g. loadBuildings
+  // loadApartments, loadDevices, ...)
   ngOnInit() {
-    // since the html for this component is a template for 
-    // visualizing different stuff, one must know what
-    // is asked to visualize (by looking at the URL)
-    //
-    // the idea is the following: you get to this component, and
-    // you look at the source that brought you there.
-    // does the origin URL contain the parameter `id`? Then maybe it's a
-    // community, but then you have to ask again: does the origin URL also contain
-    // `buildingId`? Then maybe you're visualizing the apartments of a building,
-    // and so on...
-    // 
-    // when you want to load different data, in the appropriate switch-case branch
-    // you simply call some function that will call some service (e.g. loadBuildings
-    // loadApartments, loadDevices, ...)
     this.route.paramMap.subscribe(params => {
       const communityID = params.get('id');
       const buildingID = params.get('buildingId');
-    
-      if (communityID) this.currentVisualization = 'Community';
-      if (buildingID) this.currentVisualization = 'Building';
-    
-      switch (this.currentVisualization) {
-        case 'Community':
-          this.commService.getCommunity(+communityID!).subscribe(
-            (community) => {
-              this.currentCommunity = community;
-              this.name = this.currentCommunity.name;
-              this.loadBuildings(this.currentCommunity.id);
-            },
-            (error) => {
-              console.error('Error fetching community:', error);
-            }
-          );
-          break;
-    
-        case 'Building':
-          this.commService.getCommunity(+communityID!).subscribe(
-            (community) => {
-              this.currentCommunity = community;
-    
-              this.buildingService.getBuilding(+buildingID!).subscribe(
-                (building) => {
-                  this.currentBuilding = building;
-                },
-                (error) => {
-                  console.error('Error fetching building:', error);
-                }
-              );
-            },
-            (error) => {
-              console.error('Error fetching community:', error);
-            }
-          );
-          break;
-    
-        default:
-          console.warn('No valid visualization type found.');
-          break;
-      }
-    });   
+      // const apartmentID = params.get('apartmentId');
 
+      if (!communityID) return;
+  
+      this.loadCommunity(+communityID, buildingID);
+    });
   }
+  
+  // here we load the community and we check if in the origin URL we found
+  // the `buildingId` parameter: if so, this mean that the admin clicked
+  // on a building card in the community view, so now we need to visualize
+  // the apartments of that building. Otherwise (Outer Wilds) we just need to 
+  // visualize the buildings that belong to the community.
+  private loadCommunity(communityID: number, buildingID: string | null) {
+    this.commService.getCommunity(communityID).subscribe(
+      (community: Community) => {
+        this.currentCommunity = community;
+        this.name = "Community name: " + community.name;
+  
+        if (buildingID == null) {
+          this.loadAllBuildings(communityID);
+        } 
+        else {
+          this.loadApartments(+buildingID);
+        }
 
-  goBack(): void {
-    this.location.back();
-  }  
+      },
+      (error) => {
+        console.error('Error fetching community:', error);
+      }
+    );
+  }
+  
+  private loadAllBuildings(communityID: number) {
 
-  loadBuildings(communityId: number): void {
-    this.commService.getBuildings(communityId).subscribe(
+    this.commService.getBuildings(communityID).subscribe(
       (buildings: Building[]) => {
         this.buildings = buildings;
+        this.currentVisualization = 'Community';
       },
       (error) => {
         console.error('Error fetching buildings:', error);
       }
     );
+
   }
+  
+  private loadApartments(buildingID: number) {
+
+    this.name = 'Building ID: ' + buildingID;
+    this.buildingService.getApartments(buildingID).subscribe(
+      (apartments: Apartment[]) => {
+        this.apartments = apartments;
+        this.currentVisualization = 'Building';
+      },
+      (error) => {
+        console.error('Error fetching apartments:', error);
+      }
+    );
+
+  }
+  
+
+  goBack(): void {
+    this.location.back();
+  }  
 
   addCard(): void {
     const modalRef = this.modalService.open(AddBuildingComponent);
