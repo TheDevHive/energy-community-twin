@@ -14,6 +14,10 @@ import { LoginComponent } from './view/login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ChunkPipe } from './pipes/chunk.pipe';
 import { ErrorModalComponent } from './view/error-modal/error-modal.component';
+import { OverviewTemplateComponent } from './view/overview-template/overview-template.component';
+import { OverviewCardComponent } from './view/overview-card/overview-card.component';
+import { AddBuildingComponent } from './view/add-building/add-building.component';
+import { CommunitySummaryComponent } from './view/community-summary/community-summary.component';
 
 
 @NgModule({
@@ -23,7 +27,11 @@ import { ErrorModalComponent } from './view/error-modal/error-modal.component';
     CommunitiesComponent,
     AddCommunityComponent,
     ChunkPipe,
-    ErrorModalComponent
+    ErrorModalComponent,
+    OverviewTemplateComponent,
+    OverviewCardComponent,
+    AddBuildingComponent,
+    CommunitySummaryComponent
   ],
   imports: [
     BrowserModule,
