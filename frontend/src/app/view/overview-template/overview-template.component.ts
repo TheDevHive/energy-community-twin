@@ -70,7 +70,7 @@ export class OverviewTemplateComponent implements OnInit {
     this.commService.getCommunity(communityID).subscribe(
       (community: Community) => {
         this.currentCommunity = community;
-        this.name = "Community name: " + community.name;
+        this.name = community.name;
   
         if (buildingID == null) {
           this.loadAllBuildings(communityID);
@@ -102,7 +102,15 @@ export class OverviewTemplateComponent implements OnInit {
   }
   
   public loadApartments(buildingID: number) {
-    this.name = 'Building ID: ' + buildingID;
+    this.buildingService.getBuilding(buildingID).subscribe(
+      (building: Building) => {
+        this.currentBuilding = building;
+        this.name = this.currentBuilding.address;
+      },
+      (error) => {
+        console.error('Error fetching building:', error);
+      }
+    )
     this.currentVisualization = 'Building';
     this.buildingService.getApartments(buildingID).subscribe(
       (apartments: Apartment[]) => {

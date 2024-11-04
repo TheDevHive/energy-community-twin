@@ -10,7 +10,7 @@
         <span>Go Back</span>
       </div>
     </div>
-    
+
     <div class="custom-cards-container">
       <!-- Render buildings if currentVisualization is 'Community' -->
       <ng-container *ngIf="currentVisualization === 'Community'">
@@ -19,22 +19,15 @@
           No buildings registered to this community. Click the + button to add a building.
         </div>
         <!-- Display building cards if they exist -->
-        <app-overview-card 
-          *ngFor="let building of buildings" 
-          [title]="'Building ID: ' + building.id" 
-          [meta]="'Floors: ' + building.floors"
-          (click)="changeVisualization(building.id)"
-        ></app-overview-card>
+        <app-overview-card *ngFor="let building of buildings" [title]="building.address"
+          [meta]="'Floors: ' + building.floors" (click)="changeVisualization(building.id)"></app-overview-card>
       </ng-container>
 
       <!-- Render apartments if currentVisualization is 'Building' -->
       <ng-container *ngIf="currentVisualization === 'Building'">
-        <app-overview-card 
-          *ngFor="let apartment of apartments" 
-          [title]="apartment.energy_class" 
+        <app-overview-card *ngFor="let apartment of apartments" [title]="apartment.energy_class"
           [meta]="'Energy Class: ' + apartment.residents + ' sqm'"
-          (click)="changeVisualization(apartment.id)"
-        ></app-overview-card>
+          (click)="changeVisualization(apartment.id)"></app-overview-card>
       </ng-container>
     </div>
 
@@ -49,7 +42,9 @@
   </div>
 
   <div class="custom-content">
-    <div class="custom-header"><h2>{{ name }}</h2></div>
+    <div class="custom-header">
+      <h2>{{ name }}</h2>
+    </div>
     <div class="custom-report">
       <ng-container *ngIf="currentVisualization === 'Community'; else elseBlock">
         <app-community-summary></app-community-summary>
