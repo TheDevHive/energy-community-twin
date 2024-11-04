@@ -92,6 +92,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this.error = error;
+        console.log(this.error);
         this.loading = false;
       }
     });

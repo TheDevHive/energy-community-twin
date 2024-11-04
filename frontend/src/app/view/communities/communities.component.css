@@ -1,77 +1,19 @@
+/* Container and carousel sizing */
 .background-gradient {
     background: linear-gradient(to bottom, #f0f9ff 0%, rgba(240, 249, 255, 0) 100%);
     min-height: 100vh;
     position: relative;
     padding-bottom: 300px;
-}
-
-/* Empty state card styling */
-.empty-state-card {
-    max-width: 400px;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: white;
-}
-
-.empty-state-card .card-title {
-    color: #2c3e50;
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.empty-state-card .btn-primary {
-    background-color: #2563eb;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.empty-state-card .btn-primary:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
-}
-
-/* Rest of your existing styles */
-.carousel-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    position: relative;
-    overflow: visible;
-}
-
-.community-card {
-    height: 160px;
-    margin: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
-    flex-direction: row;
-    overflow: hidden;
-    background: white;
-    border: none;
-}
-
-.community-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-
-.background-gradient {
-    background: linear-gradient(to bottom, #f0f9ff 0%, rgba(240, 249, 255, 0) 100%);
-    min-height: 100vh;
-    position: relative;
-    padding-bottom: 300px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;  /* Added to help with vertical centering */
+    padding-top: 2rem;  /* Added padding to account for the logout button */
 }
 
 .carousel-container {
-    max-width: 1200px;
+    max-width: 900px;  /* Reduced from 1200px */
+    width: 90%;
     margin: 0 auto;
     padding: 2rem;
     position: relative;
@@ -80,8 +22,8 @@
 
 /* Card styling */
 .community-card {
-    height: 160px;
-    margin: 15px;
+    height: 140px;  /* Reduced from 160px */
+    margin: 12px;   /* Reduced from 15px */
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
@@ -100,13 +42,14 @@
 
 /* Left side - Image */
 .card-image-section {
-    width: 200px;
-    min-width: 200px;
+    width: 160px;  /* Reduced from 200px */
+    min-width: 160px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #f8f9fa;
+    border-radius: 100px;
 }
 
 .card-image-section img {
@@ -114,62 +57,49 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+    border-radius: 100px;
+    margin-left: 5px;
+
 }
 
-/* Right side - Content */
-.card-content-section {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    padding: 20px;
-}
-
-.card-title {
-    color: #2c3e50;
-    font-weight: 600;
-    font-size: 1.25rem;
-    margin: 0;
-    line-height: 1.3;
-    overflow-wrap: break-word;
-    text-align: left;
-}
-
-/* Carousel Controls */
+/* Carousel sizing and positioning */
 #communitiesCarousel {
     position: relative;
-    height: 390px !important; /* Fixed height: 2 rows of cards (160px each) + margins (15px each) + some padding */
+    height: 340px !important;  /* Reduced from 390px */
 }
 
 .carousel-inner {
-    height: 390px !important; /* Same as carousel */
+    height: 340px !important;  /* Reduced from 390px */
 }
 
 .carousel-item {
-    height: 390px !important; /* Same as carousel */
+    height: 340px !important;  /* Reduced from 390px */
 }
 
 .carousel-item .row {
-    height: 190px; /* Height for each row: card height (160px) + margins (30px) */
+    height: 165px;  /* Reduced from 190px */
 }
 
+/* Carousel Controls */
 .carousel-control-prev,
 .carousel-control-next {
-    width: 40px;
-    height: 40px;
+    width: 35px;  /* Reduced from 40px */
+    height: 35px;
     background-color: #3498db !important;
     border-radius: 50%;
-    top: 190px !important; /* Exactly half of carousel height */
+    top: 50% !important;
     transform: translateY(-50%);
     position: absolute;
     opacity: 1 !important;
+    z-index: 5;
 }
 
 .carousel-control-prev {
-    left: -50px;
+    left: -45px;  /* Slightly adjusted from -50px */
 }
 
 .carousel-control-next {
-    right: -50px;
+    right: -45px;  /* Slightly adjusted from -50px */
 }
 
 /* Titles */
@@ -179,6 +109,7 @@
     text-align: center;
     font-weight: bold;
     font-size: 2.5rem;
+    padding-top: 4rem;  /* Added padding to the top */
 }
 
 .sub-title {
@@ -195,28 +126,7 @@
     padding-top: 2rem;
 }
 
-.add-community-btn, .logout-btn {
-    padding: 15px 30px;
-    font-size: 1.1rem;
-    border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.add-community-btn:hover, .logout-btn:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Other elements */
-.logout-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
+/* Footer image */
 .footer-image {
     position: fixed;
     bottom: 0;
@@ -232,84 +142,13 @@
     z-index: -1;
 }
 
-
-.add-community-btn, .logout-btn {
-    background-color: #2563eb;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    border: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
-
-    &:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
-}
-
-::ng-deep .community-modal {
-    .modal-content {
-        border-radius: 15px;
-        border: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .modal-header {
-        border-bottom: 1px solid #f0f0f0;
-        background-color: #f8f9fa;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        padding: 1.5rem;
-
-        .modal-title {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-    }
-
-    .modal-body {
-        padding: 1.5rem;
-    }
-
-    .modal-footer {
-        border-top: 1px solid #f0f0f0;
-        padding: 1.5rem;
-    }
-
-    .form-control {
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        padding: 0.75rem;
-        
-        &:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-        }
-    }
-}
-
-.community-card {
-    cursor: pointer;  /* This shows a hand cursor when hovering over the card */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .community-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .empty-state-card {
+/* Empty state card styling */
+.empty-state-card {
     max-width: 400px;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: white;
+    margin: 2rem auto;
 }
 
 .empty-state-card .card-title {
@@ -328,69 +167,96 @@
 }
 
 .empty-state-card .btn-primary:hover {
-    background-color: #1d4ed8;
+    background-color: #2980b9;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
 }
 
-.carousel-control-prev,
-.carousel-control-next {
-    width: 40px;
-    height: 40px;
-    background-color: #2563eb !important;
-    border-radius: 50%;
-    top: 50% !important;
-    transform: translateY(-50%);
+/* Button Styles */
+.add-community-btn, .logout-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+.add-community-btn:hover, .logout-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.logout-btn {
     position: absolute;
-    opacity: 1 !important;
-    z-index: 5;  /* Ensure controls are above all content */
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
-
-.carousel-control-prev {
-    left: -50px;
-}
-
-.carousel-control-next {
-    right: -50px;
-}
-
-/* Ensure the carousel container allows for the controls to be visible */
-.carousel-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    position: relative;
-    height: calc(100vh - 4rem);
-    overflow: visible; /* Changed from hidden to visible */
-    z-index: 2;
-}
-
-#communitiesCarousel {
-    position: relative;
-    overflow: visible; /* Allow arrows to be visible outside container */
-    z-index: 2;
-}
-
-/* Rest of the styles remain the same */
-.background-gradient {
-    background: linear-gradient(to bottom, #f0f9ff 0%, rgba(240, 249, 255, 0) 100%);
-    height: 100vh;
+.community-card {
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease-in-out;
     position: relative;
     overflow: hidden;
+    animation: slideIn 0.3s ease-out forwards;
+    margin-bottom: 16px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    min-height: 80px;
 }
 
-.footer-image {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+.community-card {
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out forwards;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    min-height: 80px;
+    gap: 24px;
+}
+
+.card-image-section {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-image-section img {
     width: 100%;
-    height: 300px;
-    background-image: url('/assets/home.jpg');
-    background-position: bottom;
-    background-repeat: no-repeat;
-    background-size: cover;
-    mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
-    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
-    z-index: 1;
-    pointer-events: none;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-content-section {
+    flex: 1;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.custom-card-meta {
+    color: #6b7280;
+    font-size: 0.875rem;
 }
