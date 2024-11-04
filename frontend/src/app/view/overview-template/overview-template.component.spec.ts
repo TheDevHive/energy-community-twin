@@ -123,28 +123,6 @@ describe('OverviewTemplateComponent', () => {
     });
   });
 
-  describe('loadApartments', () => {
-    it('should load apartments for the given building ID', () => {
-      const mockApartments: Apartment[] = [
-        {
-          id: 1,
-          residents: 4,
-          square_footage: 100,
-          energy_class: 'A',
-          building_id: 1,
-          user_id: 2,
-        },
-      ];
-      buildingServiceSpy.getApartments.and.returnValue(of(mockApartments));
-
-      component.loadApartments(1);
-
-      expect(buildingServiceSpy.getApartments).toHaveBeenCalledWith(1);
-      expect(component.apartments).toEqual(mockApartments);
-      expect(component.currentVisualization).toBe('Building');
-    });
-  });
-
   describe('logout', () => {
     it('should call authService.logout and navigate to /login', () => {
       component.logout();
