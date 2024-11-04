@@ -103,6 +103,15 @@ export class OverviewTemplateComponent implements OnInit {
   
   public loadApartments(buildingID: number) {
     this.name = 'Building ID: ' + buildingID;
+    this.buildingService.getBuilding(buildingID).subscribe(
+      (building: Building) => {
+        this.currentBuilding = building;
+        this.name = this.currentBuilding.address;
+      },
+      (error) => {
+        console.error('Error fetching building:', error);
+      }
+    )
     this.currentVisualization = 'Building';
     this.buildingService.getApartments(buildingID).subscribe(
       (apartments: Apartment[]) => {
