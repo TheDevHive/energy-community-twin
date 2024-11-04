@@ -20,7 +20,8 @@
 
         <!-- Carousel items -->
         <div class="carousel-inner">
-          <div class="carousel-item" *ngFor="let chunk of chunk(communities, 4); let first = first" [class.active]="first">
+          <div class="carousel-item" *ngFor="let chunk of chunk(communities, 4); let first = first"
+            [class.active]="first">
             <div class="row">
               <div class="col-md-6" *ngFor="let community of chunk">
                 <div class="card community-card" (click)="navigateToCommunity(community.id)">
@@ -40,11 +41,13 @@
 
         <!-- Controls only if multiple pages -->
         <ng-container *ngIf="chunk(communities, 4).length > 1">
-          <button class="carousel-control-prev" type="button" data-bs-target="#communitiesCarousel" data-bs-slide="prev">
+          <button class="carousel-control-prev" type="button" data-bs-target="#communitiesCarousel"
+            data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#communitiesCarousel" data-bs-slide="next">
+          <button class="carousel-control-next" type="button" data-bs-target="#communitiesCarousel"
+            data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
@@ -63,9 +66,9 @@
       <div class="d-flex justify-content-center align-items-center mt-5">
         <div class="card empty-state-card py-5">
           <div class="card-body text-center">
-            <h5 class="card-title mb-3 text-center">Nessuna comunità presente</h5>
-            <p class="mb-4">Inizia creando la tua prima comunità energetica</p>
-            <button class="btn btn-primary" (click)="openAddCommunityDialog()">Crea Nuova Comunità</button>
+            <h5 class="card-title mb-3 text-center">No community present</h5>
+            <p class="mb-4">Start by creating your first energy community</p>
+            <button class="btn btn-primary" (click)="openAddCommunityDialog()">Create New Community</button>
           </div>
         </div>
       </div>
