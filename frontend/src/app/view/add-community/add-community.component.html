@@ -1,0 +1,40 @@
+<div class="modal-header">
+    <h4 class="modal-title">Crea Nuova Comunità</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+  </div>
+  
+  <form [formGroup]="communityForm" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nome Comunità</label>
+        <input type="text" 
+               class="form-control" 
+               id="name" 
+               formControlName="name"
+               placeholder="Inserisci il nome della comunità"
+               [class.is-invalid]="communityForm.get('name')?.invalid && communityForm.get('name')?.touched">
+        <div class="invalid-feedback" 
+             *ngIf="communityForm.get('name')?.invalid && communityForm.get('name')?.touched">
+          Il nome della comunità è obbligatorio
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-footer">
+      <button type="button" 
+              class="btn btn-outline-secondary" 
+              (click)="dismiss()"
+              [disabled]="loading">
+        Annulla
+      </button>
+      <button type="submit" 
+              class="btn btn-primary submit-btn"
+              [disabled]="communityForm.invalid || loading">
+        <span class="spinner-border spinner-border-sm me-2" 
+              *ngIf="loading" 
+              role="status"></span>
+        Crea Comunità
+      </button>
+    </div>
+  </form>
+  

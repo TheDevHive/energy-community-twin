@@ -30,7 +30,7 @@
                       [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
                     <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
                       class="invalid-feedback">
-                      Inserire una email valida.
+                      Enter a valid email.
                     </div>
                   </div>
                 </div>
@@ -41,23 +41,23 @@
                     [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
                   <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
                     class="invalid-feedback">
-                    Password obbligatoria.
+                    Password required.
                   </div>
                 </div>
 
                 <!-- Error message when credentials are wrong -->
-                <div *ngIf="!success" class="col-12">
+                <div *ngIf="credentialsWrong" class="col-12">
                   <div class="alert alert-danger" role="alert">
-                    <strong>Email o password errati.</strong>
-                    <p>Prova a modificare i dati e a rieseguire l'accesso</p>
+                    <strong>Incorrect email or password.</strong>
+                    <p>Try changing the details and logging in again.</p>
                   </div>
                 </div>
 
                 <!-- Error message when there is a server error -->
                 <div *ngIf="serverError" class="col-12">
                   <div class="alert alert-danger" role="alert">
-                    <strong>Errore nel login.</strong>
-                    <p>Si è verificato un errore interno al server.</p>
+                    <strong>Login error.</strong>
+                    <p>An internal server error has occurred.</p>
                   </div>
                 </div>
 

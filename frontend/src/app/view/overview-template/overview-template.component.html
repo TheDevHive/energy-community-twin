@@ -1,0 +1,57 @@
+<div class="custom-container">
+  <button class="btn btn-primary logout-btn" (click)="logout()">Logout</button>
+
+  <div class="custom-sidebar">
+    <div class="custom-add-card-container">
+      <div (click)="goBack()" class="custom-action-button custom-back-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M15 19L8 12L15 5V19Z"></path> <!-- Left arrow icon -->
+        </svg>
+        <span>Go Back</span>
+      </div>
+    </div>
+
+    <div class="custom-cards-container">
+      <!-- Render buildings if currentVisualization is 'Community' -->
+      <ng-container *ngIf="currentVisualization === 'Community'">
+        <!-- Check if there are no buildings -->
+        <div *ngIf="buildings.length === 0" class="no-buildings-message">
+          No buildings registered to this community. Click the + button to add a building.
+        </div>
+        <!-- Display building cards if they exist -->
+        <app-overview-card *ngFor="let building of buildings" [title]="building.address"
+          [meta]="'Floors: ' + building.floors" (click)="changeVisualization(building.id)"></app-overview-card>
+      </ng-container>
+
+      <!-- Render apartments if currentVisualization is 'Building' -->
+      <ng-container *ngIf="currentVisualization === 'Building'">
+        <app-overview-card *ngFor="let apartment of apartments" [title]="apartment.energy_class"
+          [meta]="'Energy Class: ' + apartment.residents + ' sqm'"
+          (click)="changeVisualization(apartment.id)"></app-overview-card>
+      </ng-container>
+    </div>
+
+    <!-- Show the + button only if currentVisualization is 'Community' -->
+    <div class="custom-add-card-container" *ngIf="currentVisualization === 'Community'">
+      <div class="custom-action-button" (click)="addCard()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="custom-content">
+    <div class="custom-header">
+      <h2>{{ name }}</h2>
+    </div>
+    <div class="custom-report">
+      <ng-container *ngIf="currentVisualization === 'Community'; else elseBlock">
+        <app-community-summary></app-community-summary>
+      </ng-container>
+      <ng-template #elseBlock>
+        <h3>Coming soon...</h3>
+      </ng-template>
+    </div>
+  </div>
+</div>

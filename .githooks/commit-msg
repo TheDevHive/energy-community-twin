@@ -1,0 +1,11 @@
+#!/bin/bash
+
+commit_msg=$(cat "$1")
+
+if ! [[ $commit_msg =~ ^BEE-[0-9]+.*$ ]]; then
+    echo "Error: Commit message must start with 'BEE-' followed by a number"
+    echo "Example: 'BEE-123: Add feature'"
+    exit 1
+fi
+
+exit 0
