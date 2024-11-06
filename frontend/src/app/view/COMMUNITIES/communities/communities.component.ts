@@ -1,17 +1,18 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CommunityService } from './../../services/community.service';
-import { Community } from '../../models/community';
+import { CommunityService } from '../../../services/community.service';
+import { Community } from '../../../models/community';
 import { AddCommunityComponent } from './../add-community/add-community.component';
 import { Router } from '@angular/router';
-import { ErrorType } from '../../models/api-error';
+import { ErrorType } from '../../../models/api-error';
 
-import { COMMUNITIES } from '../../MOCKS/COMMUNITIES';
+import { COMMUNITIES } from '../../../MOCKS/COMMUNITIES';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 
 import { ViewChild } from '@angular/core';
+import { AlertService } from '../../../services/alert.service';
 
 
 @Component({
@@ -34,6 +35,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     private communityService: CommunityService,
     private modalService: NgbModal,
     private router: Router,
+    private alert: AlertService
   ) {    
     this.dataSource = new MatTableDataSource();
   }
@@ -79,11 +81,13 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
       next: (newCommunity) => {
         this.communities = [...this.communities, newCommunity];
         this.loading = false;
+        this.alert.setAlertCommunities('success', `Community <strong>${newCommunity.name}</strong> created successfully`);
       },
       error: (error) => {
         this.error = error;
         console.log(this.error);
         this.loading = false;
+        //this.alert.setAlertCommunities('danger', `Failed to create community: <strong>${error.message}</strong>`);
       }
     });
   }

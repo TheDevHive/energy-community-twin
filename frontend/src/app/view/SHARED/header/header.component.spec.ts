@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms'; // Import FormsModule to use ngModel
 import { RouterTestingModule } from '@angular/router/testing'; // Import RouterTestingModule for route testing
 import { HeaderComponent } from './header.component';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router'; // Import Router for route navigation
 
 describe('HeaderComponent', () => {

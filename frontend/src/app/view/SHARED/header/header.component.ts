@@ -1,7 +1,10 @@
 // header.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
+
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +18,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit() {
@@ -42,7 +46,26 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    const modalRef = this.modalService.open(ConfirmationDialogComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.title = 'Confirm Logout';
+    modalRef.componentInstance.message = 'Are you sure you want to log out?';
+    modalRef.componentInstance.confirmText = 'Logout';
+    modalRef.componentInstance.cancelText = 'Cancel';
+    modalRef.componentInstance.color = 'red';
+
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed) {
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        }
+      },
+      () => {
+        // Handle dismissal (optional)
+      }
+    );
   }
 }

@@ -7,15 +7,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CommunitiesComponent } from './communities.component';
-import { CommunityService } from '../../services/community.service';
-import { Community } from '../../models/community';
+import { CommunityService } from '../../../services/community.service';
+import { Community } from '../../../models/community';
 import { AddCommunityComponent } from '../add-community/add-community.component';
-import { ChunkPipe } from '../../pipes/chunk.pipe';
-import { ErrorType } from '../../models/api-error';
+import { ChunkPipe } from '../../../pipes/chunk.pipe';
+import { ErrorType } from '../../../models/api-error';
 import { HttpClientModule } from '@angular/common/http';
-import { ApiResponseService } from '../../services/api-response.service';
-import { ErrorService } from '../../services/error.service';
-import { ErrorModalService } from '../../services/error-modal.service';
+import { ApiResponseService } from '../../../services/api-response.service';
+import { ErrorService } from '../../../services/error.service';
+import { ErrorModalService } from '../../../services/error-modal.service';
 
 describe('CommunitiesComponent', () => {
   let component: CommunitiesComponent;

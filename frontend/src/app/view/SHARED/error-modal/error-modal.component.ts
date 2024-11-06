@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ErrorType } from '../../models/api-error';
+import { ErrorType } from '../../../models/api-error';
 
 @Component({
   selector: 'app-error-modal',
