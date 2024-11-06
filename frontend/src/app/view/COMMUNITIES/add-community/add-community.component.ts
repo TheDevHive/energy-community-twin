@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl } from '@angular/forms';
@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./add-community.component.css']
 })
 export class AddCommunityComponent {
+  @Input() isEdit: boolean = false;  // Flag to check if it's an edit operation
   communityForm: FormGroup;
   loading = false;
 
@@ -30,11 +31,10 @@ export class AddCommunityComponent {
   onSubmit(): void {
     if (this.communityForm.valid && !this.loading) {  // Add loading check
       this.loading = true;
-      // Trim whitespace from name
       const formValue = {
         name: this.communityForm.get('name')?.value?.trim()
       };
-      if (formValue.name) {  // Only submit if name is not empty after trim
+      if (formValue.name) {
         this.activeModal.close(formValue);
       } else {
         this.loading = false;

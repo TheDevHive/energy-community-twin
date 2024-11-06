@@ -8,12 +8,22 @@ export class AlertService {
   constructor() { }
 
   timeout: number = 10000;
+  timeoutId: any; // Store the reference to the timeout
 
   // Alert Page Communities
   alertCommunities = { show: false, type: '', message: '' };
+
   setAlertCommunities(type: string, message: string) {
+    // Clear any existing timeout to reset the timer
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    // Set the new alert and start a new timeout
     this.alertCommunities = { show: true, type: type, message: message };
-    setTimeout(() => {
+
+    // Set the timeout to hide the alert after the specified timeout duration
+    this.timeoutId = setTimeout(() => {
       this.alertCommunities = { show: false, type: '', message: '' };
     }, this.timeout);
   }

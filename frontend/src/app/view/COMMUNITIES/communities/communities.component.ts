@@ -13,7 +13,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 
 import { ViewChild } from '@angular/core';
 import { AlertService } from '../../../services/alert.service';
-
+import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-communities',
@@ -44,6 +44,11 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     this.loadCommunities();
   }
 
+  private loadCommunities(): void {
+    this.communities = COMMUNITIES;
+    this.dataSource.data = COMMUNITIES;
+  }
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -68,10 +73,55 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private loadCommunities(): void {
-    this.communities = COMMUNITIES;
-    this.dataSource.data = COMMUNITIES;
+  openEditCommunityDialog(community: Community): void {
+    const modalRef = this.modalService.open(AddCommunityComponent, {
+      centered: true,
+      backdrop: 'static',
+      windowClass: 'community-modal'
+    });
+  
+    modalRef.componentInstance.isEdit = true;  // Pass the isEdit flag
+  
+    // Pre-fill the form with the community's current name
+    modalRef.componentInstance.communityForm.patchValue({
+      name: community.name
+    });
+  
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.editCommunity(community.id, result);
+        }
+      },
+      (reason) => {
+        // Modal dismissed
+      }
+    );
   }
+
+  openDeleteCommunityDialog(community : Community): void {
+    const modalRef = this.modalService.open(ConfirmationDialogComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.title = 'Confirm Delete';
+    modalRef.componentInstance.message = `Are you sure you want to delete community <strong>${community.name}</strong>?`;
+    modalRef.componentInstance.confirmText = 'Delete';
+    modalRef.componentInstance.cancelText = 'Cancel';
+    modalRef.componentInstance.color = 'red';
+
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed) {
+          this.deleteCommunity(community.id);
+        }
+      },
+      () => {
+        // Handle dismissal
+      }
+    );
+  }
+  
   
   private createCommunity(communityData: {name: string}): void {
     this.loading = true;
@@ -85,12 +135,35 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this.error = error;
-        console.log(this.error);
         this.loading = false;
         //this.alert.setAlertCommunities('danger', `Failed to create community: <strong>${error.message}</strong>`);
       }
     });
   }
+
+  private editCommunity(id: number, communityData: { name: string }): void {
+    this.loading = true;
+    this.error = undefined;
+  }
+
+  private deleteCommunity(id: number): void {
+    this.loading = true;
+    this.error = undefined;
+
+    this.communityService.removeCommunity(id).subscribe({
+      next: () => {
+        this.communities = this.communities.filter((community) => community.id !== id);
+        this.loading = false;
+        this.alert.setAlertCommunities('success', `Community deleted successfully`);
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+        this.alert.setAlertCommunities('danger', `Failed to delete community: <strong>${error.message}</strong>`);
+      }
+    });
+  }
+  
 
   navigateToCommunity(id: number): void {
     this.router.navigate(['/communities', id]);

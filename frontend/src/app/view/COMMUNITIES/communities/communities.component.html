@@ -167,8 +167,8 @@
                   <button class="btn btn-primary btn-sm" (click)="navigateToCommunity(community.id)">
                     Details
                   </button>
-                  <button class="btn btn-secondary btn-sm"> Edit </button>
-                  <button class="btn btn-danger btn-sm"> Delete </button>
+                  <button class="btn btn-secondary btn-sm" (click)="openEditCommunityDialog(community)"> Edit </button>
+                  <button class="btn btn-danger btn-sm" (click)="openDeleteCommunityDialog(community)"> Delete </button>
                 </div>
               </td>
             </ng-container>
