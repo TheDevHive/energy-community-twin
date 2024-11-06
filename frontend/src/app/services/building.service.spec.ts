@@ -23,7 +23,14 @@ describe('BuildingService', () => {
   const mockCommunity: Community = {
     id: 1,
     name: 'Test Community',
-    admin: mockAdmin
+    admin: mockAdmin,
+    stats: {
+      buildings: 5,
+      apartments: 25,
+      members: 100,
+      energyProduction: 5000,
+      energyConsumption: 4500
+    }
   };
 
   const mockBuilding: Building = {

@@ -29,12 +29,26 @@ describe('CommunitiesComponent', () => {
     {
       id: 1,
       name: 'Community 1',
-      admin: { id: 1, email: 'admin1@test.com' }
+      admin: { id: 1, email: 'admin1@test.com' },
+      stats: {
+        buildings: 5,
+        apartments: 25,
+        members: 100,
+        energyProduction: 5000,
+        energyConsumption: 4500
+      }
     },
     {
       id: 2,
       name: 'Community 2',
-      admin: { id: 2, email: 'admin2@test.com' }
+      admin: { id: 2, email: 'admin2@test.com' },
+      stats: {
+        buildings: 3,
+        apartments: 12,
+        members: 50,
+        energyProduction: 2000,
+        energyConsumption: 1500
+      }
     }
   ];
 
@@ -109,19 +123,6 @@ describe('CommunitiesComponent', () => {
     expect(component.communities).toEqual(mockCommunities);
   });
 
-  describe('chunk', () => {
-    it('should properly chunk array into groups', () => {
-      const array = [1, 2, 3, 4, 5, 6];
-      const result = component.chunk(array, 4);
-      expect(result).toEqual([[1, 2, 3, 4], [5, 6]]);
-    });
-
-    it('should handle empty array', () => {
-      const result = component.chunk([], 2);
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('navigateToCommunity', () => {
     it('should navigate to community detail page', () => {
       const communityId = 1;
@@ -147,7 +148,14 @@ describe('CommunitiesComponent', () => {
       const newCommunity: Community = {
         id: 3,
         name: 'New Community',
-        admin: { id: 1, email: 'admin@test.com' }
+        admin: { id: 1, email: 'admin@test.com' },
+        stats: {
+          buildings: 0,
+          apartments: 0,
+          members: 0,
+          energyProduction: 0,
+          energyConsumption: 0
+        }
       };
 
       communityService.createCommunity.and.returnValue(of(newCommunity));

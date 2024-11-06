@@ -18,6 +18,14 @@ import { OverviewTemplateComponent } from './view/overview-template/overview-tem
 import { OverviewCardComponent } from './view/overview-card/overview-card.component';
 import { AddBuildingComponent } from './view/add-building/add-building.component';
 import { CommunitySummaryComponent } from './view/community-summary/community-summary.component';
+import { HeaderComponent } from './view/header/header.component';
+
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+
 
 
 @NgModule({
@@ -31,7 +39,8 @@ import { CommunitySummaryComponent } from './view/community-summary/community-su
     OverviewTemplateComponent,
     OverviewCardComponent,
     AddBuildingComponent,
-    CommunitySummaryComponent
+    CommunitySummaryComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -40,8 +49,13 @@ import { CommunitySummaryComponent } from './view/community-summary/community-su
     ReactiveFormsModule,
     HttpClientModule,
     NgbModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
   ],
-  providers: [],
+  providers: [
+    provideAnimationsAsync()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

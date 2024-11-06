@@ -1,1 +1,208 @@
-/* You can add global styles to this file, and also import other style files */
+html,
+body {
+    height: 100%;
+}
+
+:host {
+    display: block;
+    height: 100vh;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.content-area {
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    margin-top: 56px;
+    /* Avoid overlapping with fixed navbar */
+}
+
+/* Card Styles */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Table Styles */
+.table-responsive {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+
+    /* Body and general background */
+    body {
+        background-color: #1a202c !important;
+        color: #e2e8f0;
+    }
+
+    .bg-light {
+        background-color: #1a202c !important;
+    }
+
+    /* Navbar Styling */
+    .navbar-light {
+        background-color: #2d3748 !important;
+    }
+
+    .navbar-brand {
+        color: #fff !important;
+    }
+
+    .bi-search {
+        color: #e2e8f0 !important;
+    }
+
+    .form-control {
+        color: #e2e8f0 !important;
+    }
+
+    span.input-group-text {
+        border-color: #4a5568;
+    }
+
+    input.form-control {
+        border-color: #4a5568;
+    }
+
+    /* Card Styling */
+    .card {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+
+    .card.border.shadow-sm {
+        border-color: #4a5568 !important;
+    }
+
+    .text-muted {
+        color: #a0aec0 !important;
+    }
+
+    /* Table Styling */
+    .table {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+
+    .table th {
+        background-color: #4a5568;
+        color: #a0aec0;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .table td {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+
+    .table thead th {
+        background-color: #4a5568;
+    }
+
+    .table tbody td {
+        border-bottom: 1px solid #4a5568;
+    }
+
+    /* Mat Table Styling */
+    .mat-mdc-header-row.mdc-data-table__header-row.cdk-header-row {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+
+    .mat-mdc-paginator {
+        background-color: #2d3748 !important;
+        color: #e2e8f0 !important;
+    }
+
+    .mat-mdc-paginator-range-actions {
+        background-color: #2d3748 !important;
+        color: #e2e8f0 !important;
+    }
+
+    .mat-mdc-select {
+        background-color: #2d3748 !important;
+        color: #e2e8f0 !important;
+    }
+
+    .mat-mdc-paginator-range-actions{
+        color: #e2e8f0 !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: #fff;
+    }
+
+    .text-primary {
+        color: #63b3ed !important;
+    }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+    .container-fluid {
+        height: -webkit-fill-available;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        margin: 0 -1rem;
+        overflow-y: hidden;
+        /* Prevent vertical scroll */
+    }
+
+    .content-area {
+        padding: 1rem !important;
+    }
+}
+
+
+@media (max-width: 576px) {
+    .actions-column .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Cursor */
+.cursor-pointer {
+    cursor: pointer;
+}

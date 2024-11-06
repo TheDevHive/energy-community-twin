@@ -5,9 +5,14 @@ import { Community } from '../../models/community';
 import { AddCommunityComponent } from './../add-community/add-community.component';
 import { Router } from '@angular/router';
 import { ErrorType } from '../../models/api-error';
-import { AuthService } from '../../services/auth.service';
 
-declare var bootstrap: any;
+import { COMMUNITIES } from '../../MOCKS/COMMUNITIES';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+
+import { ViewChild } from '@angular/core';
+
 
 @Component({
   selector: 'app-communities',
@@ -19,34 +24,29 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   loading = false;
   error?: { type: ErrorType; message: string };
 
+  displayedColumns: string[] = ['name', 'buildings', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'actions'];
+  dataSource: MatTableDataSource<Community>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private communityService: CommunityService,
     private modalService: NgbModal,
     private router: Router,
-    private authService: AuthService
-  ) {}
+  ) {    
+    this.dataSource = new MatTableDataSource();
+  }
 
   ngOnInit(): void {
     this.loadCommunities();
   }
 
   ngAfterViewInit() {
-    // Initialize Bootstrap carousel
-    const carousel = document.querySelector('#communitiesCarousel');
-    if (carousel) {
-      new bootstrap.Carousel(carousel, {
-        interval: 5000,
-        wrap: true
-      });
-    }
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
+  
   openAddCommunityDialog(): void {
     const modalRef = this.modalService.open(AddCommunityComponent, {
       centered: true,
@@ -67,20 +67,10 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   private loadCommunities(): void {
-    this.loading = true;
-    this.error = undefined;
-    this.communityService.getCommunities().subscribe({
-      next: (communities) => {
-        this.communities = communities;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = error;
-        this.loading = false;
-      }
-    });
+    this.communities = COMMUNITIES;
+    this.dataSource.data = COMMUNITIES;
   }
-
+  
   private createCommunity(communityData: {name: string}): void {
     this.loading = true;
     this.error = undefined;
@@ -98,15 +88,44 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     });
   }
 
-
   navigateToCommunity(id: number): void {
     this.router.navigate(['/communities', id]);
   }
 
-  // Helper method to chunk array for carousel
-  chunk(arr: any[], size: number): any[] {
-    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
-      arr.slice(i * size, i * size + size)
-    );
+  totalEnergyProduction(): number {
+    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyProduction, 0);
   }
+
+  totalEnergyConsumption(): number {
+    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyConsumption, 0);
+  }  
+  
+  totalMembers(): number {
+    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.members, 0);
+  }
+
+  onSortChange(sort: Sort): void {
+    if (!sort.active || sort.direction === '') {
+      this.dataSource.data = this.communities;
+    } else {
+      this.dataSource.data = this.communities.slice().sort((a, b) => {
+        const isAsc = sort.direction === 'asc';
+        switch (sort.active) {
+          case 'name': return this.compare(a.name, b.name, isAsc);
+          case 'buildings': return this.compare(a.stats.buildings, b.stats.buildings, isAsc);
+          case 'apartments': return this.compare(a.stats.apartments, b.stats.apartments, isAsc);
+          case 'members': return this.compare(a.stats.members, b.stats.members, isAsc);
+          case 'energyProduction': return this.compare(a.stats.energyProduction, b.stats.energyProduction, isAsc);
+          case 'energyConsumption': return this.compare(a.stats.energyConsumption, b.stats.energyConsumption, isAsc);
+          default: return 0;
+        }
+      });
+    }
+    this.dataSource.paginator = this.paginator;
+  }
+
+  private compare(a: number | string, b: number | string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+  
 }

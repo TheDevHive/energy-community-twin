@@ -1,0 +1,62 @@
+/* header.component.css */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.avatar {
+    transition: background-color 0.3s ease;
+}
+
+.avatar:hover {
+    box-shadow: inset 0em 0em 0em 10em rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-item {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:active {
+    background-color: var(--bs-primary);
+}
+
+.navbar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Make the search bar visible only on large screens and above */
+.d-none.d-lg-flex {
+    display: none;
+}
+
+/* Show the search bar only on large screens (lg and up) */
+@media (min-width: 992px) {
+    .d-none.d-lg-flex {
+        display: flex !important;
+    }
+}
+
+/* Hide any navbar-toggler (hamburger) icon */
+.navbar-toggler {
+    display: none;
+}
+
+/* Ensure the avatar is visible on both small and large screens */
+.dropdown {
+    display: flex;
+    align-items: center;
+}
+
+/* If needed, adjust the navbar styles for mobile screens */
+@media (max-width: 767px) {
+    .navbar {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* Remove the focus effect on the search bar */
+.input-group .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
