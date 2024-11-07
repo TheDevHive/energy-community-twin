@@ -1,0 +1,5 @@
+<!-- Alert Page Communities -->
+<div *ngIf="alert.alertCommunities.show && page == 'Communities'" [ngClass]="['alert', 'alert-' + alert.alertCommunities.type, 'alert-dismissible', 'fade', 'show']" role="alert">
+    <div [innerHTML]="alert.alertCommunities.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertCommunities.show=false" aria-label="Close"></button>
+</div>

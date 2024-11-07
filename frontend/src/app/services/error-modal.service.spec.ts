@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ErrorModalService } from './error-modal.service';
-import { ErrorModalComponent } from '../view/error-modal/error-modal.component';
+import { ErrorModalComponent } from '../view/SHARED/error-modal/error-modal.component';
 import { ErrorType } from '../models/api-error';
 
 describe('ErrorModalService', () => {
