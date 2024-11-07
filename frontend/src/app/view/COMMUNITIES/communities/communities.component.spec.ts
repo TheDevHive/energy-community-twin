@@ -7,15 +7,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CommunitiesComponent } from './communities.component';
-import { CommunityService } from '../../services/community.service';
-import { Community } from '../../models/community';
+import { CommunityService } from '../../../services/community.service';
+import { Community } from '../../../models/community';
 import { AddCommunityComponent } from '../add-community/add-community.component';
-import { ChunkPipe } from '../../pipes/chunk.pipe';
-import { ErrorType } from '../../models/api-error';
+import { ChunkPipe } from '../../../pipes/chunk.pipe';
+import { ErrorType } from '../../../models/api-error';
 import { HttpClientModule } from '@angular/common/http';
-import { ApiResponseService } from '../../services/api-response.service';
-import { ErrorService } from '../../services/error.service';
-import { ErrorModalService } from '../../services/error-modal.service';
+import { ApiResponseService } from '../../../services/api-response.service';
+import { ErrorService } from '../../../services/error.service';
+import { ErrorModalService } from '../../../services/error-modal.service';
+import { AlertComponent } from '../../SHARED/alert/alert.component';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 describe('CommunitiesComponent', () => {
   let component: CommunitiesComponent;
@@ -29,12 +34,28 @@ describe('CommunitiesComponent', () => {
     {
       id: 1,
       name: 'Community 1',
-      admin: { id: 1, email: 'admin1@test.com' }
+      admin: { id: 1, email: 'admin1@test.com' },
+      stats: {
+        communityId: 1,
+        buildings: 5,
+        apartments: 25,
+        members: 100,
+        energyProduction: 5000,
+        energyConsumption: 4500
+      }
     },
     {
       id: 2,
       name: 'Community 2',
-      admin: { id: 2, email: 'admin2@test.com' }
+      admin: { id: 2, email: 'admin2@test.com' },
+      stats: {
+        communityId: 2,
+        buildings: 3,
+        apartments: 12,
+        members: 50,
+        energyProduction: 2000,
+        energyConsumption: 1500
+      }
     }
   ];
 
@@ -42,9 +63,28 @@ describe('CommunitiesComponent', () => {
     // Create spies for services
     const communityServiceSpy = jasmine.createSpyObj('CommunityService', [
       'getCommunities',
-      'createCommunity'
+      'createCommunity',
+      'getStats'
     ]);
     communityServiceSpy.getCommunities.and.returnValue(of(mockCommunities));
+    communityServiceSpy.getStats.and.returnValue(of([
+      {
+        communityId: 1,
+        buildings: 5,
+        apartments: 25,
+        members: 100,
+        energyProduction: 5000,
+        energyConsumption: 4500
+      },
+      {
+        communityId: 2,
+        buildings: 3,
+        apartments: 12,
+        members: 50,
+        energyProduction: 2000,
+        energyConsumption: 1500
+      }
+    ]));
 
     mockModalRef = {
       componentInstance: {},
@@ -63,7 +103,8 @@ describe('CommunitiesComponent', () => {
       declarations: [
         CommunitiesComponent,
         ChunkPipe,
-        AddCommunityComponent
+        AddCommunityComponent,
+        AlertComponent
       ],
       imports: [
         BrowserModule,
@@ -71,7 +112,10 @@ describe('CommunitiesComponent', () => {
         NgbModule,
         HttpClientModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule
       ],
       providers: [
         { provide: CommunityService, useValue: communityServiceSpy },
@@ -85,6 +129,10 @@ describe('CommunitiesComponent', () => {
 
     router = TestBed.inject(Router);
     spyOn(router, 'navigate');
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   beforeEach(() => {
@@ -109,19 +157,6 @@ describe('CommunitiesComponent', () => {
     expect(component.communities).toEqual(mockCommunities);
   });
 
-  describe('chunk', () => {
-    it('should properly chunk array into groups', () => {
-      const array = [1, 2, 3, 4, 5, 6];
-      const result = component.chunk(array, 4);
-      expect(result).toEqual([[1, 2, 3, 4], [5, 6]]);
-    });
-
-    it('should handle empty array', () => {
-      const result = component.chunk([], 2);
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('navigateToCommunity', () => {
     it('should navigate to community detail page', () => {
       const communityId = 1;
@@ -143,20 +178,30 @@ describe('CommunitiesComponent', () => {
       );
     }));
 
-    it('should handle successful community creation', fakeAsync(() => {
+    it('should handle successful community creation', (done) => {
       const newCommunity: Community = {
         id: 3,
         name: 'New Community',
-        admin: { id: 1, email: 'admin@test.com' }
+        admin: { id: 1, email: 'admin@test.com' },
+        stats: {
+          communityId: 3,
+          buildings: 0,
+          apartments: 0,
+          members: 0,
+          energyProduction: 0,
+          energyConsumption: 0
+        }
       };
-
+    
       communityService.createCommunity.and.returnValue(of(newCommunity));
       mockModalRef.result = Promise.resolve({ name: 'New Community' });
-
+    
       component.openAddCommunityDialog();
-      tick();
-
-      expect(component.communities).toContain(newCommunity);
-    }));
+      mockModalRef.result.then(() => {
+        expect(component.communities).toContain(newCommunity);
+        done();  // Signal completion
+      });
+    });
+    
   });
 });

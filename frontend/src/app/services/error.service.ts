@@ -9,43 +9,43 @@ import { ErrorModalService } from './error-modal.service';
 })
 export class ErrorService {
   constructor(private errorModalService: ErrorModalService) {}
-  
+
   handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Si è verificato un errore sconosciuto';
+    let errorMessage = 'An unknown error occurred';
     let errorType = ErrorType.INTERNAL_SERVER_ERROR;
 
     if (error.error instanceof ErrorEvent) {
-      errorMessage = 'Si è verificato un errore: ' + error.error.message;
+      errorMessage = 'An error occurred: ' + error.error.message;
     } else {
       const apiError = error.error as ApiError;
-      
+
       switch (error.status) {
         case 400:
           errorType = ErrorType.VALIDATION_ERROR;
-          errorMessage = apiError.message || 'Dati non validi';
+          errorMessage = apiError.message || 'Invalid data';
           break;
         case 404:
           errorType = ErrorType.RESOURCE_NOT_FOUND;
-          errorMessage = apiError.message || 'Risorsa non trovata';
+          errorMessage = apiError.message || 'Resource not found';
           break;
         case 409:
           errorType = ErrorType.DUPLICATE_RESOURCE;
-          errorMessage = apiError.message || 'Risorsa già esistente';
+          errorMessage = apiError.message || 'Resource already exists';
           break;
         case 401:
           errorType = ErrorType.UNAUTHORIZED;
-          errorMessage = 'Non autorizzato';
+          errorMessage = 'Unauthorized';
           break;
         case 403:
           errorType = ErrorType.FORBIDDEN;
-          errorMessage = 'Accesso negato';
+          errorMessage = 'Access denied';
           break;
         case 500:
           errorType = ErrorType.INTERNAL_SERVER_ERROR;
-          errorMessage = 'Errore interno del server';
+          errorMessage = 'Internal server error';
           break;
         default:
-          errorMessage = apiError.message || 'Si è verificato un errore sconosciuto';
+          errorMessage = apiError.message || 'An unknown error occurred';
       }
     }
 

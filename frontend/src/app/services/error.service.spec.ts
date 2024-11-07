@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ErrorModalComponent } from './../view/error-modal/error-modal.component';
+import { ErrorModalComponent } from '../view/SHARED/error-modal/error-modal.component';
 import { ErrorType } from './../models/api-error';
 import { ErrorService } from './error.service';
 
@@ -52,47 +52,48 @@ describe('ErrorModalComponent', () => {
 
   describe('Error Titles', () => {
     it('should display correct title for validation error', () => {
-      component.type = ErrorType.VALIDATION_ERROR;
-      fixture.detectChanges();
-      expect(component.title).toBe('Errore di Validazione');
+        component.type = ErrorType.VALIDATION_ERROR;
+        fixture.detectChanges();
+        expect(component.title).toBe('Validation Error');
     });
 
     it('should display correct title for resource not found', () => {
-      component.type = ErrorType.RESOURCE_NOT_FOUND;
-      fixture.detectChanges();
-      expect(component.title).toBe('Risorsa Non Trovata');
+        component.type = ErrorType.RESOURCE_NOT_FOUND;
+        fixture.detectChanges();
+        expect(component.title).toBe('Resource Not Found');
     });
 
     it('should display correct title for duplicate resource', () => {
-      component.type = ErrorType.DUPLICATE_RESOURCE;
-      fixture.detectChanges();
-      expect(component.title).toBe('Risorsa Duplicata');
+        component.type = ErrorType.DUPLICATE_RESOURCE;
+        fixture.detectChanges();
+        expect(component.title).toBe('Duplicate Resource');
     });
 
     it('should display correct title for unauthorized', () => {
-      component.type = ErrorType.UNAUTHORIZED;
-      fixture.detectChanges();
-      expect(component.title).toBe('Non Autorizzato');
+        component.type = ErrorType.UNAUTHORIZED;
+        fixture.detectChanges();
+        expect(component.title).toBe('Unauthorized');
     });
 
     it('should display correct title for forbidden', () => {
-      component.type = ErrorType.FORBIDDEN;
-      fixture.detectChanges();
-      expect(component.title).toBe('Accesso Negato');
+        component.type = ErrorType.FORBIDDEN;
+        fixture.detectChanges();
+        expect(component.title).toBe('Access Denied');
     });
 
     it('should display correct title for internal server error', () => {
-      component.type = ErrorType.INTERNAL_SERVER_ERROR;
-      fixture.detectChanges();
-      expect(component.title).toBe('Errore del Server');
+        component.type = ErrorType.INTERNAL_SERVER_ERROR;
+        fixture.detectChanges();
+        expect(component.title).toBe('Server Error');
     });
 
     it('should display default title for unknown error type', () => {
-      component.type = 'UNKNOWN' as ErrorType;
-      fixture.detectChanges();
-      expect(component.title).toBe('Errore');
+        component.type = 'UNKNOWN' as ErrorType;
+        fixture.detectChanges();
+        expect(component.title).toBe('Error');
     });
-  });
+});
+
 
   describe('Icon Classes', () => {
     it('should return warning icon for validation error', () => {
