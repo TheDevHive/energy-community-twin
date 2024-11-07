@@ -8,6 +8,8 @@ import { ApiResponseService } from './api-response.service';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
+import { CommunityStats } from '../models/community';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,9 +31,36 @@ export class CommunityService {
     );
   }
 
+  getStats(): Observable<CommunityStats[]> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<CommunityStats[]>>(`${this.apiUrl}/stats`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
   getCommunity(id: number): Observable<Community> {
     return this.apiResponseService.extractBody(
       this.http.get<ResponseEntity<Community>>(`${this.apiUrl}/${id}`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
+  updateCommunity(community: Community): Observable<Community> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<Community>>(`${this.apiUrl}/${community.id}`, community, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
+  getCommunityStats(id: number): Observable<CommunityStats> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<CommunityStats>>(`${this.apiUrl}/stats/${id}`, {
         headers: this.auth.getHeaders(),
         observe: 'response'
       })

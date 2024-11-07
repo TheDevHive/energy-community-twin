@@ -145,6 +145,10 @@ body {
         color: #e2e8f0 !important;
     }
 
+    .mat-mdc-paginator-container {
+        background-color: #2d3748 !important;
+    }
+
     h1,
     h2,
     h3,

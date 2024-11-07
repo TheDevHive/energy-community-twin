@@ -60,6 +60,24 @@ public class CommunityController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Community> updateCommunity(HttpServletRequest req, @PathVariable int id, @RequestBody Community community) {
+        if(AuthUtility.isAuthorized(req)) {
+            CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
+            Community oldCommunity = dao.findByPrimaryKey(id);
+            if (oldCommunity == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            oldCommunity.setName(community.getName());
+            if(dao.saveOrUpdate(oldCommunity)) {
+                return new ResponseEntity<>(oldCommunity, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+
     @PostMapping("/{commId}/buildings/{buildingId}")
     public ResponseEntity<Community> addBuilding(HttpServletRequest req, @PathVariable int commId, @PathVariable int buildingId, @RequestBody int id) {
         if(AuthUtility.isAuthorized(req)) {

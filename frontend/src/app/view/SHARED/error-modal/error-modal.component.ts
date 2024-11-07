@@ -76,21 +76,21 @@ export class ErrorModalComponent {
   get title(): string {
     switch (this.type) {
       case ErrorType.VALIDATION_ERROR:
-        return 'Errore di Validazione';
+        return 'Validation Error';
       case ErrorType.RESOURCE_NOT_FOUND:
-        return 'Risorsa Non Trovata';
+        return 'Resource Not Found';
       case ErrorType.DUPLICATE_RESOURCE:
-        return 'Risorsa Duplicata';
+        return 'Duplicate Resource';
       case ErrorType.UNAUTHORIZED:
-        return 'Non Autorizzato';
+        return 'Unauthorized';
       case ErrorType.FORBIDDEN:
-        return 'Accesso Negato';
+        return 'Access Denied';
       case ErrorType.INTERNAL_SERVER_ERROR:
-        return 'Errore del Server';
+        return 'Server Error';
       default:
-        return 'Errore';
+        return 'Error';
     }
-  }
+  }  
 
   get iconClass(): string {
     switch (this.type) {

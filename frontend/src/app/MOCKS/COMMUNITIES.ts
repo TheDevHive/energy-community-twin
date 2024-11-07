@@ -9,6 +9,7 @@ export const COMMUNITIES: Community[] = [
       email: 'alice.johnson@example.com'
     },
     stats: {
+      communityId: 1,
       buildings: 5,
       apartments: 25,
       members: 100,
@@ -24,6 +25,7 @@ export const COMMUNITIES: Community[] = [
       email: 'bob.smith@example.com'
     },
     stats: {
+      communityId: 2,
       buildings: 3,
       apartments: 12,
       members: 50,
@@ -39,6 +41,7 @@ export const COMMUNITIES: Community[] = [
       email: 'charlie.brown@example.com'
     },
     stats: {
+      communityId: 3,
       buildings: 7,
       apartments: 35,
       members: 150,
@@ -54,6 +57,7 @@ export const COMMUNITIES: Community[] = [
       email: 'david.lee@example.com'
     },
     stats: {
+      communityId: 4,
       buildings: 4,
       apartments: 18,
       members: 80,
@@ -69,6 +73,7 @@ export const COMMUNITIES: Community[] = [
       email: 'eve.white@example.com'
     },
     stats: {
+      communityId: 5,
       buildings: 6,
       apartments: 30,
       members: 120,
@@ -84,6 +89,7 @@ export const COMMUNITIES: Community[] = [
       email: 'h@h.com'
     },
     stats: {
+      communityId: 6,
       buildings: 2,
       apartments: 10,
       members: 40,

@@ -9,8 +9,9 @@ export interface Community
     stats: CommunityStats;
 }
 
-interface CommunityStats
+export interface CommunityStats
 {
+    communityId: number;
     buildings: number;
     apartments: number;
     members: number;

@@ -14,6 +14,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { ViewChild } from '@angular/core';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
+import { id } from '@swimlane/ngx-datatable';
 
 @Component({
   selector: 'app-communities',
@@ -45,8 +46,31 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   private loadCommunities(): void {
-    this.communities = COMMUNITIES;
-    this.dataSource.data = COMMUNITIES;
+    this.loading = true;
+    this.error = undefined;
+    this.communityService.getCommunities().subscribe({
+      next: (communities) => {
+        this.communities = communities;
+        this.communityService.getStats().subscribe({
+          next: (stats) => {
+            console.log(stats);
+            this.communities.forEach((community) => {
+              community.stats = stats.find((stat) => stat.communityId === community.id)!;
+            });
+            this.dataSource.data = this.communities;
+            this.loading = false;
+          },
+          error: (error) => {
+            this.error = error;
+            this.loading = false;
+          }
+        });
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -84,13 +108,22 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   
     // Pre-fill the form with the community's current name
     modalRef.componentInstance.communityForm.patchValue({
-      name: community.name
+      name: community.name,
+      id: community.id,
+      stats: {
+        communityId: community.stats.communityId,
+        buildings: community.stats.buildings,
+        apartments: community.stats.apartments,
+        members: community.stats.members,
+        energyProduction: community.stats.energyProduction,
+        energyConsumption: community.stats.energyConsumption
+      }
     });
   
     modalRef.result.then(
       (result) => {
         if (result) {
-          this.editCommunity(community.id, result);
+          this.editCommunity(result);
         }
       },
       (reason) => {
@@ -129,7 +162,17 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
 
     this.communityService.createCommunity(communityData).subscribe({
       next: (newCommunity) => {
+        // create an empty stats object
+        newCommunity.stats = {
+          communityId: newCommunity.id,
+          buildings: 0,
+          apartments: 0,
+          members: 0,
+          energyProduction: 0,
+          energyConsumption: 0
+        };
         this.communities = [...this.communities, newCommunity];
+        this.dataSource.data = this.communities; // Update dataSource
         this.loading = false;
         this.alert.setAlertCommunities('success', `Community <strong>${newCommunity.name}</strong> created successfully`);
       },
@@ -141,9 +184,31 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private editCommunity(id: number, communityData: { name: string }): void {
+  private editCommunity(communityData: Community): void {
     this.loading = true;
     this.error = undefined;
+
+    console.log(communityData);
+
+    this.communityService.updateCommunity(communityData).subscribe({
+      next: (updatedCommunity) => {
+        updatedCommunity.stats = this.communities.find((community) => community.id === updatedCommunity.id)!.stats;
+        this.communities = this.communities.map((community) => {
+          if (community.id === updatedCommunity.id) {
+            return updatedCommunity;
+          }
+          return community;
+        });
+        this.dataSource.data = this.communities; // Update dataSource
+        this.loading = false;
+        this.alert.setAlertCommunities('success', `Community updated successfully`);
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+        this.alert.setAlertCommunities('danger', `Failed to update community: <strong>${error.message}</strong>`);
+      }
+    });
   }
 
   private deleteCommunity(id: number): void {
@@ -153,6 +218,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     this.communityService.removeCommunity(id).subscribe({
       next: () => {
         this.communities = this.communities.filter((community) => community.id !== id);
+        this.dataSource.data = this.communities; // Update dataSource
         this.loading = false;
         this.alert.setAlertCommunities('success', `Community deleted successfully`);
       },
