@@ -73,6 +73,7 @@ describe('OverviewTemplateComponent', () => {
         name: 'Test Community',
         admin: mockAdmin,
         stats: {
+          communityId: 1,
           buildings: 1,
           apartments: 0,
           members: 0,
@@ -119,7 +120,7 @@ describe('OverviewTemplateComponent', () => {
       component.buildings = [
         {
           id: 1,
-          community: { id: 1, name: 'Test Community', admin: { id: 1, email: 'admin@example.com' }, stats: { buildings: 1, apartments: 0, members: 0, energyProduction: 0, energyConsumption: 0 } },
+          community: { id: 1, name: 'Test Community', admin: { id: 1, email: 'admin@example.com' }, stats: { communityId:1, buildings: 1, apartments: 0, members: 0, energyProduction: 0, energyConsumption: 0 } },
           address: '123 Main St',
           floors: 3,
         },
@@ -152,6 +153,7 @@ describe('OverviewTemplateComponent', () => {
         name: 'Test Community',
         admin: { id: 1, email: 'admin@example.com' },
         stats: {
+          communityId: 1,
           buildings: 1,
           apartments: 0,
           members: 0,
@@ -198,7 +200,7 @@ describe('OverviewTemplateComponent', () => {
   describe('changeVisualization', () => {
     it('should navigate to building view if currentVisualization is "Community"', () => {
       component.currentVisualization = 'Community';
-      component.currentCommunity = { id: 1, name: 'Test Community', admin: { id: 1, email: 'admin@example.com' }, stats: { buildings: 1, apartments: 0, members: 0, energyProduction: 0, energyConsumption: 0 } };
+      component.currentCommunity = { id: 1, name: 'Test Community', admin: { id: 1, email: 'admin@example.com' }, stats: { communityId:1, buildings: 1, apartments: 0, members: 0, energyProduction: 0, energyConsumption: 0 } };
 
       component.changeVisualization(2);
 

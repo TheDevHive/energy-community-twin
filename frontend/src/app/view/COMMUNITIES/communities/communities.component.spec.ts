@@ -31,6 +31,7 @@ describe('CommunitiesComponent', () => {
       name: 'Community 1',
       admin: { id: 1, email: 'admin1@test.com' },
       stats: {
+        communityId: 1,
         buildings: 5,
         apartments: 25,
         members: 100,
@@ -43,6 +44,7 @@ describe('CommunitiesComponent', () => {
       name: 'Community 2',
       admin: { id: 2, email: 'admin2@test.com' },
       stats: {
+        communityId: 2,
         buildings: 3,
         apartments: 12,
         members: 50,
@@ -150,6 +152,7 @@ describe('CommunitiesComponent', () => {
         name: 'New Community',
         admin: { id: 1, email: 'admin@test.com' },
         stats: {
+          communityId: 3,
           buildings: 0,
           apartments: 0,
           members: 0,

@@ -23,6 +23,7 @@ describe('CommunityService', () => {
     name: 'Test Community',
     admin: mockAdmin,
     stats: {
+      communityId: 1,
       buildings: 5,
       apartments: 25,
       members: 100,
