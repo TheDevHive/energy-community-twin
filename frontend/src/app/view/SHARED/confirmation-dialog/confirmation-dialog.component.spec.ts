@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ConfirmationDialogComponent } from './confirmation-dialog.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { AlertComponent } from '../alert/alert.component';
 
 describe('ConfirmationDialogComponent', () => {
   let component: ConfirmationDialogComponent;
@@ -8,7 +10,8 @@ describe('ConfirmationDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ConfirmationDialogComponent]
+      declarations: [ConfirmationDialogComponent],
+      providers: [NgbActiveModal]  // Add NgbActiveModal here
     })
     .compileComponents();
 

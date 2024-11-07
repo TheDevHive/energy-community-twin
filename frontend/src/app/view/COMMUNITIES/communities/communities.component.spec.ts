@@ -16,6 +16,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiResponseService } from '../../../services/api-response.service';
 import { ErrorService } from '../../../services/error.service';
 import { ErrorModalService } from '../../../services/error-modal.service';
+import { AlertComponent } from '../../SHARED/alert/alert.component';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 describe('CommunitiesComponent', () => {
   let component: CommunitiesComponent;
@@ -58,9 +63,28 @@ describe('CommunitiesComponent', () => {
     // Create spies for services
     const communityServiceSpy = jasmine.createSpyObj('CommunityService', [
       'getCommunities',
-      'createCommunity'
+      'createCommunity',
+      'getStats'
     ]);
     communityServiceSpy.getCommunities.and.returnValue(of(mockCommunities));
+    communityServiceSpy.getStats.and.returnValue(of([
+      {
+        communityId: 1,
+        buildings: 5,
+        apartments: 25,
+        members: 100,
+        energyProduction: 5000,
+        energyConsumption: 4500
+      },
+      {
+        communityId: 2,
+        buildings: 3,
+        apartments: 12,
+        members: 50,
+        energyProduction: 2000,
+        energyConsumption: 1500
+      }
+    ]));
 
     mockModalRef = {
       componentInstance: {},
@@ -79,7 +103,8 @@ describe('CommunitiesComponent', () => {
       declarations: [
         CommunitiesComponent,
         ChunkPipe,
-        AddCommunityComponent
+        AddCommunityComponent,
+        AlertComponent
       ],
       imports: [
         BrowserModule,
@@ -87,7 +112,10 @@ describe('CommunitiesComponent', () => {
         NgbModule,
         HttpClientModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule
       ],
       providers: [
         { provide: CommunityService, useValue: communityServiceSpy },
@@ -101,6 +129,10 @@ describe('CommunitiesComponent', () => {
 
     router = TestBed.inject(Router);
     spyOn(router, 'navigate');
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   beforeEach(() => {
@@ -146,7 +178,7 @@ describe('CommunitiesComponent', () => {
       );
     }));
 
-    it('should handle successful community creation', fakeAsync(() => {
+    it('should handle successful community creation', (done) => {
       const newCommunity: Community = {
         id: 3,
         name: 'New Community',
@@ -160,14 +192,16 @@ describe('CommunitiesComponent', () => {
           energyConsumption: 0
         }
       };
-
+    
       communityService.createCommunity.and.returnValue(of(newCommunity));
       mockModalRef.result = Promise.resolve({ name: 'New Community' });
-
+    
       component.openAddCommunityDialog();
-      tick();
-
-      expect(component.communities).toContain(newCommunity);
-    }));
+      mockModalRef.result.then(() => {
+        expect(component.communities).toContain(newCommunity);
+        done();  // Signal completion
+      });
+    });
+    
   });
 });
