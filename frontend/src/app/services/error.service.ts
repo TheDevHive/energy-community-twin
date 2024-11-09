@@ -9,7 +9,7 @@ import { ErrorModalService } from './error-modal.service';
 })
 export class ErrorService {
   constructor(private errorModalService: ErrorModalService) {}
-  
+
   handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred';
     let errorType = ErrorType.INTERNAL_SERVER_ERROR;
@@ -18,7 +18,7 @@ export class ErrorService {
       errorMessage = 'An error occurred: ' + error.error.message;
     } else {
       const apiError = error.error as ApiError;
-      
+
       switch (error.status) {
         case 400:
           errorType = ErrorType.VALIDATION_ERROR;

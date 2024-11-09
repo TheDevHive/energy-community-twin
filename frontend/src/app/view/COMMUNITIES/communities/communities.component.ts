@@ -15,6 +15,7 @@ import { ViewChild } from '@angular/core';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
 import { id } from '@swimlane/ngx-datatable';
+import { AlertComponent } from '../../SHARED/alert/alert.component';
 
 @Component({
   selector: 'app-communities',
