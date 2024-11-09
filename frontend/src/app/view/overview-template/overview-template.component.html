@@ -1,57 +1,91 @@
-<div class="custom-container">
-  <button class="btn btn-primary logout-btn" (click)="logout()">Logout</button>
-
-  <div class="custom-sidebar">
-    <div class="custom-add-card-container">
-      <div (click)="goBack()" class="custom-action-button custom-back-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M15 19L8 12L15 5V19Z"></path> <!-- Left arrow icon -->
-        </svg>
-        <span>Go Back</span>
-      </div>
+<!-- overview-template.component.html -->
+<div class="container-fluid p-0 vh-100 d-flex flex-column">
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
+    <div class="d-flex align-items-center">
+      <button class="btn btn-link text-decoration-none me-3" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h4 class="navbar-brand mb-0">Energy Community Overview</h4>
     </div>
+    <div class="ms-auto">
+      <button class="btn btn-primary" (click)="logout()">Logout</button>
+    </div>
+  </nav>
 
-    <div class="custom-cards-container">
-      <!-- Render buildings if currentVisualization is 'Community' -->
-      <ng-container *ngIf="currentVisualization === 'Community'">
-        <!-- Check if there are no buildings -->
-        <div *ngIf="buildings.length === 0" class="no-buildings-message">
-          No buildings registered to this community. Click the + button to add a building.
+  <!-- Main Content -->
+  <div class="content-area p-4">
+    <!-- Community Information -->
+    <div *ngIf="currentVisualization === 'Community'">
+      <app-community-summary [communityName]="name"></app-community-summary>
+
+      <!-- Buildings Table Section -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="card-title mb-0">Buildings</h5>
+            <button class="btn btn-primary" (click)="addCard()">
+              <i class="bi bi-plus-lg me-2"></i>
+              Add New Building
+            </button>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" *ngIf="buildings.length > 0">
+              <thead>
+                <tr>
+                  <th>Building ID</th>
+                  <th>Address</th>
+                  <th>Floors</th>
+                  <th>Total Apartments</th>
+                  <th>Energy Class</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let building of buildings">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="building-icon me-3">
+                        <i class="bi bi-building text-primary"></i>
+                      </div>
+                      <span>{{building.id}}</span>
+                    </div>
+                  </td>
+                  <td>{{building.address}}</td>
+                  <td>{{building.floors}}</td>
+                  <td>5</td> <!-- Placeholder value -->
+                  <td>
+                    <span class="badge bg-success">A</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary btn-sm" (click)="changeVisualization(building.id)">
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Empty state -->
+            <div *ngIf="buildings.length === 0" class="text-center py-5">
+              <i class="bi bi-building fs-1 text-muted mb-3 d-block"></i>
+              <h5 class="text-muted">No Buildings Yet</h5>
+              <p class="text-muted mb-3">Add your first building to this community</p>
+              <button class="btn btn-primary" (click)="addCard()">
+                <i class="bi bi-plus-lg me-2"></i>
+                Add New Building
+              </button>
+            </div>
+          </div>
         </div>
-        <!-- Display building cards if they exist -->
-        <app-overview-card *ngFor="let building of buildings" [title]="building.address"
-          [meta]="'Floors: ' + building.floors" (click)="changeVisualization(building.id)"></app-overview-card>
-      </ng-container>
-
-      <!-- Render apartments if currentVisualization is 'Building' -->
-      <ng-container *ngIf="currentVisualization === 'Building'">
-        <app-overview-card *ngFor="let apartment of apartments" [title]="apartment.energy_class"
-          [meta]="'Energy Class: ' + apartment.residents + ' sqm'"
-          (click)="changeVisualization(apartment.id)"></app-overview-card>
-      </ng-container>
-    </div>
-
-    <!-- Show the + button only if currentVisualization is 'Community' -->
-    <div class="custom-add-card-container" *ngIf="currentVisualization === 'Community'">
-      <div class="custom-action-button" (click)="addCard()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"></path>
-        </svg>
       </div>
     </div>
-  </div>
 
-  <div class="custom-content">
-    <div class="custom-header">
-      <h2>{{ name }}</h2>
-    </div>
-    <div class="custom-report">
-      <ng-container *ngIf="currentVisualization === 'Community'; else elseBlock">
-        <app-community-summary></app-community-summary>
-      </ng-container>
-      <ng-template #elseBlock>
-        <h3>Coming soon...</h3>
-      </ng-template>
+    <!-- Building Information -->
+    <div *ngIf="currentVisualization !== 'Community'">
+      <h3>Coming soon...</h3>
     </div>
   </div>
 </div>

@@ -45,6 +45,10 @@ public class Apartment {
         this.id = id;
     }
 
+    public void getBuilding(Building building) {
+        this.building = building;
+    }
+
     public void setBuilding(Building building) {
         this.building = building;
     }
@@ -64,6 +68,7 @@ public class Apartment {
     public void setUser(User user) {
         this.user = user;
     }
+
 
     public String toString() {
         return "Apartment{" +

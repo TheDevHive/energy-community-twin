@@ -1,5 +1,9 @@
 package com.example.demo.model;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Device {
     private int id;
     private String name;
@@ -10,7 +14,7 @@ public class Device {
     public Device(int id, String name, String logPath, boolean consumesEnergy, String energyClass) {
         this.id = id;
         this.name = name;
-        this.logPath = logPath;
+        this.logPath=logPath;
         this.consumesEnergy = consumesEnergy;
         this.energyClass = energyClass;
     }

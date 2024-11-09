@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ErrorModalComponent } from './../view/error-modal/error-modal.component';
+import { ErrorModalComponent } from '../view/SHARED/error-modal/error-modal.component';
 import { ErrorType } from './../models/api-error';
 import { ErrorService } from './error.service';
 

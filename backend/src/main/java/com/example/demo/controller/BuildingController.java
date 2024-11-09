@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.Apartment;
 import com.example.demo.model.Building;
+import com.example.demo.model.BuildingDevice;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DBManager;
@@ -55,8 +56,9 @@ public class BuildingController {
         // Delete all the apartments of the building
         ApartmentDAO apartmentDAO=DBManager.getInstance().getApartmentDAO();
         List<Apartment> apartments=apartmentDAO.findAll().stream().filter(apartment -> apartment.getBuilding().getId() == building.getId()).toList();
+        ApartmentController apartmentController=new ApartmentController();
         for (Apartment apartment : apartments) {
-            if(!apartmentDAO.delete(apartment))
+            if((apartmentController.deleteApartment(req, apartment.getId()).getStatusCode()!=HttpStatus.OK))
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(building, HttpStatus.OK);
@@ -104,5 +106,28 @@ public class BuildingController {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{buildingId}/devices")
+    public ResponseEntity<BuildingDevice> addDevice(HttpServletRequest req, @PathVariable int buildingId, @RequestBody BuildingDevice device) {
+        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(buildingId);
+        if(device == null || building == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        device.setBuilding(building);
+        if(DBManager.getInstance().getBuildingDeviceDAO().saveOrUpdate(device))
+            return new ResponseEntity<>(device, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("/{buildingId}/devices")
+    public ResponseEntity<List<BuildingDevice>> getAllDevices(HttpServletRequest req, @PathVariable int buildingId) {
+        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        List<BuildingDevice> devices=DBManager.getInstance().getBuildingDeviceDAO().findAll().stream().filter(device -> device.getBuilding().getId() == buildingId).toList();
+        if (devices.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 }
