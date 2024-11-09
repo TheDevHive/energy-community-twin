@@ -30,6 +30,9 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   loading = false;
   error?: { type: ErrorType; message: string };
 
+  communityId = 0;
+  communityName = 'Community Name';
+
   displayedColumns: string[] = ['id', 'address', 'floors', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
   dataSource: MatTableDataSource<Building>;
 
@@ -51,9 +54,22 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     this.route.paramMap.subscribe(params => {
       const communityID = params.get('id');
       if (communityID !== null) {
+        this.communityId = +communityID;
+        this.setCommunityName(+communityID);
         this.loadBuildings(+communityID);
       } else {
         // Handle error
+      }
+    });
+  }
+
+  setCommunityName(communityId: number): void {
+    this.communityService.getCommunity(communityId).subscribe({
+      next: (community) => {
+        this.communityName = community.name;
+      },
+      error: (error) => {
+        this.error = error;
       }
     });
   }
@@ -62,9 +78,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = undefined;
 
-    this.buildings = BUILDINGS;
-    this.dataSource.data = this.buildings;
-    /*
+    
     this.communityService.getBuildings(communityId).subscribe({
       next: (buildings) => {
         this.buildings = buildings;
@@ -87,7 +101,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
-    */
+    
   }
 
   ngAfterViewInit() {
@@ -174,6 +188,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = undefined;
 
+    buildingData.community = { id: this.communityId };
+    console.log(buildingData);
     this.buildingService.createBuilding(buildingData).subscribe({
       next: (newBuilding) => {
         newBuilding.stats = {

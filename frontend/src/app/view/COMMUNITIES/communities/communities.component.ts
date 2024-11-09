@@ -232,8 +232,8 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
   
 
-  navigateToCommunity(id: number): void {
-    this.router.navigate(['/communities', id]);
+  navigateToCommunity(community: Community): void {
+    this.router.navigate(['/communities', community.id]);
   }
 
   totalEnergyProduction(): number {
