@@ -14,7 +14,7 @@ import { LoginComponent } from './view/login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ChunkPipe } from './pipes/chunk.pipe';
 import { ErrorModalComponent } from './view/SHARED/error-modal/error-modal.component';
-import { BuildingsComponent } from './view/BUILDINGS/buildings/buildings.component.ts';
+import { BuildingsComponent } from './view/BUILDINGS/buildings/buildings.component';
 import { AddBuildingComponent } from './view/BUILDINGS/add-building/add-building.component';
 import { HeaderComponent } from './view/SHARED/header/header.component';
 

@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './view/login/login.component';
 import { CommunitiesComponent } from './view/COMMUNITIES/communities/communities.component';
 import { AddCommunityComponent } from './view/COMMUNITIES/add-community/add-community.component';
-import { BuildingsComponent } from './view/BUILDINGS/buildings/buildings.component.ts';
+import { BuildingsComponent } from './view/BUILDINGS/buildings/buildings.component';
 import { AddBuildingComponent } from './view/BUILDINGS/add-building/add-building.component';
 
 import { AuthGuard } from './guards/auth.guard';
