@@ -7,6 +7,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.example.demo.persistence.DAO.TS_DeviceDAO;
+import com.example.demo.persistence.DAO.TS_MeasurementDAO;
+
 public class TS_DBManager {
     private final String dbPath = "src/main/resources/";
     private final String dbName = "timeseries.db";

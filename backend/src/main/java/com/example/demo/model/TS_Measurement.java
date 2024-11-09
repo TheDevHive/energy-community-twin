@@ -1,16 +1,6 @@
 package com.example.demo.model;
 
 public class TS_Measurement {
-    """
-                        CREATE TABLE IF NOT EXISTS measurement (
-                            measurement_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            device_id INTEGER NOT NULL,
-                            timestamp TIMESTAMP NOT NULL,
-                            value REAL NOT NULL,
-                            FOREIGN KEY (device_id) REFERENCES device(device_id)
-                        )
-                    """
-
     private int id;
     private int deviceId;
     private String timestamp;
