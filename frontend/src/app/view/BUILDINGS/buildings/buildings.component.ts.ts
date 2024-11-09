@@ -189,7 +189,6 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     this.error = undefined;
 
     buildingData.community = { id: this.communityId };
-    console.log(buildingData);
     this.buildingService.createBuilding(buildingData).subscribe({
       next: (newBuilding) => {
         newBuilding.stats = {
@@ -211,11 +210,12 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private editBuilding(buildingData: Building): void {
+  private editBuilding(buildingData: any): void {
     this.loading = true;
     this.error = undefined;
 
-    /*
+    buildingData.id = buildingData.id;
+    buildingData.community = { id: this.communityId };
     this.buildingService.updateBuilding(buildingData).subscribe({
       next: (updatedBuilding) => {
         updatedBuilding.stats = this.buildings.find((building) => building.id === updatedBuilding.id)!.stats;
@@ -235,7 +235,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
         this.alert.setAlertBuildings('danger', `Failed to update building: <strong>${error.message}</strong>`);
       }
     });
-    */
+    
   }
 
   private deleteBuilding(id: number): void {

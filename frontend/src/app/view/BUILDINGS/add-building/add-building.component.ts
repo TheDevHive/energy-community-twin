@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Building } from '../../../models/building';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { id } from '@swimlane/ngx-datatable';
 
 @Component({
   selector: 'app-add-building',
@@ -19,6 +20,7 @@ export class AddBuildingComponent implements OnInit {
     public activeModal: NgbActiveModal
   ) {
     this.buildingForm = this.fb.group({
+      id: [''],
       address: ['', [Validators.required, this.noWhitespaceValidator]],
       floors: [0, [Validators.required, Validators.min(1)]]
     });
@@ -28,6 +30,7 @@ export class AddBuildingComponent implements OnInit {
     // Initialize form with existing data if in edit mode
     if (this.isEdit && this.buildingData) {
       this.buildingForm.patchValue({
+        id: this.buildingData.id,
         address: this.buildingData.address,
         floors: this.buildingData.floors
       });
