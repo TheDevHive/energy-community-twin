@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Building } from '../../models/building';
+import { Building } from '../../../models/building';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -9,6 +9,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./add-building.component.css']
 })
 export class AddBuildingComponent implements OnInit {
+  @Input() isEdit: boolean = false;  // Add this line
+  @Input() buildingData?: Building;  // Add this line to handle existing building data
   buildingForm: FormGroup;
   loading = false;
 
@@ -22,7 +24,15 @@ export class AddBuildingComponent implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    // Initialize form with existing data if in edit mode
+    if (this.isEdit && this.buildingData) {
+      this.buildingForm.patchValue({
+        address: this.buildingData.address,
+        floors: this.buildingData.floors
+      });
+    }
+  }
 
   noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
@@ -34,12 +44,13 @@ export class AddBuildingComponent implements OnInit {
     if (this.buildingForm.valid && !this.loading) {
       this.loading = true;
 
-      const newBuilding: Building = {
+      const buildingData: Building = {
+        ...this.buildingData, // Preserve existing data in edit mode
         ...this.buildingForm.value,
         address: this.buildingForm.get('address')?.value?.trim()
       };
 
-      this.activeModal.close(newBuilding);
+      this.activeModal.close(buildingData);
       this.loading = false;
     } else {
       this.markAllControlsAsTouched();

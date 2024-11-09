@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OverviewTemplateComponent } from './buildings.component.ts';
-import { CommunityService } from '../../services/community.service';
-import { BuildingService } from '../../services/building.service';
-import { AuthService } from '../../services/auth.service';
+import { OverviewTemplateComponent } from './buildings.component.ts.js';
+import { CommunityService } from '../../../services/community.service.js';
+import { BuildingService } from '../../../services/building.service.js';
+import { AuthService } from '../../../services/auth.service.js';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
-import { Community } from '../../models/community';
-import { Building } from '../../models/building';
-import { Apartment } from '../../models/apartment';
-import { AddBuildingComponent } from '../add-building/add-building.component';
-import { CommunitySummaryComponent } from '../community-summary/community-summary.component';
+import { Community } from '../../../models/community.js';
+import { Building } from '../../../models/building.js';
+import { Apartment } from '../../../models/apartment.js';
+import { AddBuildingComponent } from '../add-building/add-building.component.js';
+import { CommunitySummaryComponent } from '../../community-summary/community-summary.component.js';
 
 
 describe('OverviewTemplateComponent', () => {

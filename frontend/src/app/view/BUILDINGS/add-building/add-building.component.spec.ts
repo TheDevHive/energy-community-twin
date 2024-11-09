@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddBuildingComponent } from './add-building.component';
-import { Building } from '../../models/building';
+import { Building } from '../../../models/building';
 
 describe('AddBuildingComponent', () => {
   let component: AddBuildingComponent;

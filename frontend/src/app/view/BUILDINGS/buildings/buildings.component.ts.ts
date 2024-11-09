@@ -1,24 +1,24 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BuildingService } from '../../services/building.service';
-import { Building } from '../../models/building';
-import { AddBuildingComponent } from './../add-building/add-building.component';
+import { BuildingService } from '../../../services/building.service';
+import { Building } from '../../../models/building';
+import { AddBuildingComponent } from '../add-building/add-building.component';
 import { Router } from '@angular/router';
-import { ErrorType } from '../../models/api-error';
+import { ErrorType } from '../../../models/api-error';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 
-import { CommunityService } from '../../services/community.service';
+import { CommunityService } from '../../../services/community.service';
 
 import { ViewChild } from '@angular/core';
-import { AlertService } from '../../services/alert.service';
-import { ConfirmationDialogComponent } from '../SHARED/confirmation-dialog/confirmation-dialog.component';
-import { AlertComponent } from '../SHARED/alert/alert.component';
+import { AlertService } from '../../../services/alert.service';
+import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
+import { AlertComponent } from '../../SHARED/alert/alert.component';
 import { ActivatedRoute } from '@angular/router';
 
-import { BUILDINGS } from '../../MOCKS/BUILDINGS';
+import { BUILDINGS } from '../../../MOCKS/BUILDINGS';
 
 @Component({
   selector: 'app-buildings',
