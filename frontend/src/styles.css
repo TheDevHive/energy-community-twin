@@ -34,6 +34,9 @@
     height: calc(100vh - 56px);
     overflow-y: auto;
     margin-top: 56px;
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+    padding-bottom: 4% !important;
   }
   
   /* Card Styles */

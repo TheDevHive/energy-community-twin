@@ -2,8 +2,18 @@ export interface Apartment
 {
     id: number;
     residents: number;
-    square_footage: number;
-    energy_class: string;
-    building_id: number;
-    user_id: number;
+    squareFootage: number;
+    energyClass: string;
+    buildingId: number;
+    userId: number;
+
+    stats: ApartmentStats;
+}
+
+export interface ApartmentStats
+{
+    apartmentId: number;
+    energyProduction: number;
+    energyConsumption: number;
+    energyClass: string;
 }
