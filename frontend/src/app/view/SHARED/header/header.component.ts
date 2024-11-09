@@ -19,13 +19,23 @@ export class HeaderComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {}
 
   ngOnInit() {
-    // Assuming your AuthService has a method to get the current user's email
-    this.userEmail = "a@a.com"; // this.authService.getCurrentUserEmail();
-    this.userInitials = this.getInitials(this.userEmail);
+    this.loadEmail();
+  }
+
+  loadEmail(): void {
+    this.authService.getCredentials().subscribe(
+      (creds) => {
+        this.userEmail = creds.email;
+        this.userInitials = this.getInitials(this.userEmail);
+      },
+      (error) => {
+        console.error('Failed to load user email:', error);
+      }
+    );
   }
 
   getInitials(email: string): string {

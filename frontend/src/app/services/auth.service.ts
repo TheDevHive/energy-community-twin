@@ -8,6 +8,8 @@ import { Credentials } from '../models/credentials';
 import { AuthToken } from '../models/auth_token';
 
 import { HttpHeaders } from '@angular/common/http';
+import { ApiResponseService } from './api-response.service';
+import { ResponseEntity } from '../models/response-entity';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +18,10 @@ export class AuthService {
   private token?: string;
   private role?: string;
 
-  constructor(private http: HttpClient) {
+  private apiUrl = `${environment.API_ENDPOINT}`;
+
+
+  constructor(private http: HttpClient, private apiResponseService: ApiResponseService) {
     // Restore token and logged-in status from localStorage
     const savedToken = localStorage.getItem('authToken');
     const savedRole = localStorage.getItem('authRole');
@@ -46,6 +51,15 @@ export class AuthService {
           return throwError(error);
         })
       );
+  }
+
+  getCredentials(): Observable<Credentials> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<Credentials>>(`${this.apiUrl}/credentials`, {
+        headers: this.getHeaders(),
+        observe: 'response'
+      })
+    );
   }
 
   logout() {

@@ -39,4 +39,8 @@ public class Credentials {
     }
 
     public ResponseEntity<String> addCommunity(Community community){return null;}
+
+    public Credentials getCredentials(){
+        return null;
+    }
 }
