@@ -160,7 +160,7 @@ describe('CommunitiesComponent', () => {
   describe('navigateToCommunity', () => {
     it('should navigate to community detail page', () => {
       const communityId = 1;
-      component.navigateToCommunity(communityId);
+      component.navigateToCommunity(mockCommunities[0]);
       expect(router.navigate).toHaveBeenCalledWith(['/communities', communityId]);
     });
   });

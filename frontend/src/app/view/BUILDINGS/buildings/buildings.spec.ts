@@ -1,213 +1,113 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OverviewTemplateComponent } from './buildings.component.ts.js';
-import { CommunityService } from '../../../services/community.service.js';
-import { BuildingService } from '../../../services/building.service.js';
-import { AuthService } from '../../../services/auth.service.js';
-import { HttpClientModule } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { BuildingsComponent } from './buildings.component';
+import { BuildingService } from '../../../services/building.service';
+import { CommunityService } from '../../../services/community.service';
+import { AlertService } from '../../../services/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Location } from '@angular/common';
-import { of } from 'rxjs';
-import { Community } from '../../../models/community.js';
-import { Building } from '../../../models/building.js';
-import { Apartment } from '../../../models/apartment.js';
-import { AddBuildingComponent } from '../add-building/add-building.component.js';
-import { CommunitySummaryComponent } from '../../community-summary/community-summary.component.js';
+import { Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { BUILDINGS } from '../../../MOCKS/BUILDINGS';
+import { COMMUNITIES } from '../../../MOCKS/COMMUNITIES';
 
 
-describe('OverviewTemplateComponent', () => {
-  let component: OverviewTemplateComponent;
-  let fixture: ComponentFixture<OverviewTemplateComponent>;
-  let communityServiceSpy: jasmine.SpyObj<CommunityService>;
-  let buildingServiceSpy: jasmine.SpyObj<BuildingService>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
-  let routerSpy: jasmine.SpyObj<Router>;
-  let locationSpy: jasmine.SpyObj<Location>;
+// Mock services
+class MockBuildingService {
+  getStats() {
+    return of(BUILDINGS.map(building => building.stats));
+  }
+  createBuilding(buildingData: any) {
+    return of(buildingData);
+  }
+  updateBuilding(buildingData: any) {
+    return of(buildingData);
+  }
+  removeBuilding(id: number) {
+    return of({});
+  }
+}
+
+class MockCommunityService {
+  getCommunity(id: number) {
+    return of(COMMUNITIES.find(community => community.id === id));
+  }
+  getBuildings(communityId: number) {
+    return of(BUILDINGS.filter(building => building.community.id === communityId));
+  }
+}
+
+class MockAlertService {
+  setAlertBuildings(type: string, message: string) {}
+}
+
+class MockNgbModal {
+  open() {
+    return {
+      result: Promise.resolve(true),
+      componentInstance: {},
+    };
+  }
+}
+
+class MockRouter {
+  navigate(commands: any[]) {}
+}
+
+class MockActivatedRoute {
+  paramMap = of({
+    get: (key: string) => '1',
+  });
+}
+
+describe('BuildingsComponent', () => {
+  let component: BuildingsComponent;
+  let fixture: ComponentFixture<BuildingsComponent>;
 
   beforeEach(async () => {
-    communityServiceSpy = jasmine.createSpyObj('CommunityService', ['getCommunity', 'getBuildings']);
-    buildingServiceSpy = jasmine.createSpyObj('BuildingService', ['getApartments', 'createBuilding']);
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
-    modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    locationSpy = jasmine.createSpyObj('Location', ['back']);
-
-    const activatedRouteStub = {
-      paramMap: of({
-        get: (param: string) => (param === 'id' ? '1' : null),
-      }),
-    };
-
     await TestBed.configureTestingModule({
-      declarations: [
-        OverviewTemplateComponent,
-        CommunitySummaryComponent, // Add the component to declarations
+      declarations: [BuildingsComponent],
+      imports: [
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        BrowserAnimationsModule,
       ],
-      imports: [HttpClientModule],
       providers: [
-        { provide: CommunityService, useValue: communityServiceSpy },
-        { provide: BuildingService, useValue: buildingServiceSpy },
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: NgbModal, useValue: modalServiceSpy },
-        { provide: Router, useValue: routerSpy },
-        { provide: Location, useValue: locationSpy },
-        { provide: ActivatedRoute, useValue: activatedRouteStub },
+        { provide: BuildingService, useClass: MockBuildingService },
+        { provide: CommunityService, useClass: MockCommunityService },
+        { provide: AlertService, useClass: MockAlertService },
+        { provide: NgbModal, useClass: MockNgbModal },
+        { provide: Router, useClass: MockRouter },
+        { provide: ActivatedRoute, useClass: MockActivatedRoute },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
+  });
 
-    fixture = TestBed.createComponent(OverviewTemplateComponent);
+  beforeEach(() => {
+    fixture = TestBed.createComponent(BuildingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit', () => {
-    it('should load community and buildings if no building ID is provided', () => {
-      const mockAdmin = { id: 1, email: 'admin@example.com' };
-      const mockCommunity: Community = {
-        id: 1,
-        name: 'Test Community',
-        admin: mockAdmin,
-        stats: {
-          communityId: 1,
-          buildings: 1,
-          apartments: 0,
-          members: 0,
-          energyProduction: 0,
-          energyConsumption: 0,
-        },
-      };
-      const mockBuildings: Building[] = [
-        {
-          id: 1,
-          community: mockCommunity,
-          address: '123 Main St',
-          floors: 3,
-        },
-      ];
-
-      communityServiceSpy.getCommunity.and.returnValue(of(mockCommunity));
-      communityServiceSpy.getBuildings.and.returnValue(of(mockBuildings));
-
-      component.ngOnInit();
-
-      expect(communityServiceSpy.getCommunity).toHaveBeenCalledWith(1);
-      expect(communityServiceSpy.getBuildings).toHaveBeenCalledWith(1);
-      expect(component.currentCommunity).toEqual(mockCommunity);
-      expect(component.buildings).toEqual(mockBuildings);
-      expect(component.currentVisualization).toBe('Community');
-    });
+  it('should initialize with community ID from route params', () => {
+    expect(component.communityId).toBe(1);
+    expect(component.communityName).toBe('Green Energy Community');
   });
 
-  describe('no buildings message', () => {
-    /*
-    it('should show message when there are no buildings', () => {
-      // Ensure the component's state reflects no buildings
-      component.buildings = [];
-      component.currentVisualization = 'Community'; // Make sure the visualization is set to 'Community'
-      fixture.detectChanges(); // Trigger change detection to update the template
-  
-      // Now query for the message element
-      const messageElement = fixture.nativeElement.querySelector('.no-buildings-message');
-      expect(messageElement).toBeTruthy(); // Check that the element exists
-      expect(messageElement.textContent).toContain('No buildings registered to this community');
-    });
-    */
-
-    it('should not show message when there is at least one building', () => {
-      component.buildings = [
-        {
-          id: 1,
-          community: { id: 1, name: 'Test Community', admin: { id: 1, email: 'admin@example.com' }, stats: { communityId:1, buildings: 1, apartments: 0, members: 0, energyProduction: 0, energyConsumption: 0 } },
-          address: '123 Main St',
-          floors: 3,
-        },
-      ];
-      fixture.detectChanges(); // Update the template
-      const messageElement = fixture.nativeElement.querySelector('.no-buildings-message');
-      expect(messageElement).toBeNull();
-    });
+  it('should load buildings on initialization', () => {
+    expect(component.buildings.length).toBeGreaterThan(0);
+    expect(component.dataSource.data).toEqual(BUILDINGS.filter(building => building.community.id === 1));
   });
 
-  describe('logout', () => {
-    it('should call authService.logout and navigate to /login', () => {
-      component.logout();
-      expect(authServiceSpy.logout).toHaveBeenCalled();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
-    });
-  });
-
-  describe('goBack', () => {
-    it('should call location.back', () => {
-      component.goBack();
-      expect(locationSpy.back).toHaveBeenCalled();
-    });
-  });
-
-  describe('addCard', () => {
-    it('should open modal and create a building on success', async () => {
-      const mockCommunity: Community = {
-        id: 1,
-        name: 'Test Community',
-        admin: { id: 1, email: 'admin@example.com' },
-        stats: {
-          communityId: 1,
-          buildings: 1,
-          apartments: 0,
-          members: 0,
-          energyProduction: 0,
-          energyConsumption: 0,
-        },
-      };
-      component.currentCommunity = mockCommunity;
-
-      const mockBuilding: Partial<Building> = {
-        address: '456 Elm St',
-        floors: 2,
-      };
-      const newBuilding: Building = {
-        ...mockBuilding,
-        id: 2,
-        community: mockCommunity,
-      } as Building;
-
-      modalServiceSpy.open.and.returnValue({
-        result: Promise.resolve(mockBuilding),
-      } as any);
-
-      buildingServiceSpy.createBuilding.and.returnValue(of(newBuilding));
-
-      await component.addCard();
-
-      expect(modalServiceSpy.open).toHaveBeenCalledWith(AddBuildingComponent);
-      expect(buildingServiceSpy.createBuilding).toHaveBeenCalledWith(mockBuilding);
-      expect(component.buildings).toContain(newBuilding);
-    });
-
-    it('should handle modal dismissal gracefully', async () => {
-      modalServiceSpy.open.and.returnValue({
-        result: Promise.reject('dismissed'),
-      } as any);
-
-      await component.addCard();
-
-      expect(modalServiceSpy.open).toHaveBeenCalledWith(AddBuildingComponent);
-    });
-  });
-
-  describe('changeVisualization', () => {
-    it('should navigate to building view if currentVisualization is "Community"', () => {
-      component.currentVisualization = 'Community';
-      component.currentCommunity = { id: 1, name: 'Test Community', admin: { id: 1, email: 'admin@example.com' }, stats: { communityId:1, buildings: 1, apartments: 0, members: 0, energyProduction: 0, energyConsumption: 0 } };
-
-      component.changeVisualization(2);
-
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/communities', 1, 'buildings', 2]);
-    });
-  });
+  // Additional tests using BUILDINGS and COMMUNITIES mocks...
 });
-
