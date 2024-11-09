@@ -1,12 +1,17 @@
 package com.example.demo.controller;
 
 import com.example.demo.controller.Auth.AuthUtility;
-import com.example.demo.model.BuildingDevice;
+import com.example.demo.model.*;
+import com.example.demo.persistence.DAO.ApartmentDAO;
+import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")

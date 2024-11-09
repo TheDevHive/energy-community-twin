@@ -1,10 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.controller.Auth.AuthUtility;
-import com.example.demo.model.Apartment;
-import com.example.demo.model.Building;
-import com.example.demo.model.BuildingDevice;
+import com.example.demo.model.*;
 import com.example.demo.persistence.DAO.ApartmentDAO;
+import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -129,5 +129,41 @@ public class BuildingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(devices, HttpStatus.OK);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<List<BuildingStats>> getAllStats(HttpServletRequest req) {
+        if (AuthUtility.isAuthorized(req)) {
+            BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+            List<Building> buildings = buildingDAO.findAll();
+            List<BuildingStats> allStats = buildings.stream()
+                    .map(this::extractStats)
+                    .toList();
+            if (allStats.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(allStats, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    public BuildingStats extractStats(Building building) {
+        ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
+        List<Apartment> apartments = apartmentDAO.findAll().stream()
+                .filter(apartment -> apartment.getBuilding().getId() == building.getId()).toList();
+
+        int totApartments = apartments.size();
+        int totMembers = apartments.stream().mapToInt(Apartment::getResidents).sum();
+
+        int energyProduction = 0;
+        int energyConsumption = 0;
+
+        return new BuildingStats(
+                building.getId(),
+                totApartments,
+                totMembers,
+                energyProduction,
+                energyConsumption
+        );
     }
 }
