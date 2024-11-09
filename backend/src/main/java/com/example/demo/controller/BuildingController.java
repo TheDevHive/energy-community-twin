@@ -5,6 +5,7 @@ import com.example.demo.model.*;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
+import com.example.demo.persistence.DAO.CommunityDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,18 @@ public class BuildingController {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(building, HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity<Building> updateBuilding(HttpServletRequest req, @RequestBody Building building) {
+        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (building == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        BuildingDAO dao = DBManager.getInstance().getBuildingDAO();
+        if(dao.saveOrUpdate(building))
+            return new ResponseEntity<>(building, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/{building_id}/apartments")

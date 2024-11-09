@@ -78,4 +78,13 @@ export class ApartmentServiceService {
       )
     );
   }
+
+  updateApartment(apartment: Apartment): Observable<Apartment> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<Apartment>>(`${this.apiUrl}`, apartment, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
 }

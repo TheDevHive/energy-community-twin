@@ -4,6 +4,9 @@ package com.example.demo.controller;
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
+import com.example.demo.model.Building;
+import com.example.demo.persistence.DAO.ApartmentDAO;
+import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -53,6 +56,18 @@ public class ApartmentController {
             return new ResponseEntity<>(apartment, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping
+    public ResponseEntity<Apartment> updateApartment(HttpServletRequest req, @RequestBody Apartment apartment) {
+        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (apartment == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        ApartmentDAO dao = DBManager.getInstance().getApartmentDAO();
+        if(dao.saveOrUpdate(apartment))
+            return new ResponseEntity<>(apartment, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/{apartmentId}/devices")

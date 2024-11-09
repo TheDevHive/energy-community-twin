@@ -46,4 +46,15 @@ public class ApartmentDeviceController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PutMapping
+    public ResponseEntity<ApartmentDevice> updateDevice(HttpServletRequest req, @RequestBody ApartmentDevice device) {
+        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if(device == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if(DBManager.getInstance().getApartmentDeviceDAO().saveOrUpdate(device))
+            return new ResponseEntity<>(device, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

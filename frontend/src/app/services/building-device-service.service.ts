@@ -45,4 +45,13 @@ export class BuildingDeviceServiceService {
       })
     );
   }
+
+  updateBuildingDevice(device: BuildingDevice): Observable<BuildingDevice> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<BuildingDevice>>(`${this.apiUrl}`, device, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
 }

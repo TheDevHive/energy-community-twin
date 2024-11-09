@@ -78,4 +78,13 @@ export class BuildingService {
       )
     );
   }
+
+  updateBuilding(building: Building): Observable<Building> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<Building>>(`${this.apiUrl}`, building, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
 }

@@ -50,4 +50,15 @@ public class BuildingDeviceController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PutMapping
+    public ResponseEntity<BuildingDevice> updateDevice(HttpServletRequest req, @RequestBody BuildingDevice device) {
+        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if(device == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if(DBManager.getInstance().getBuildingDeviceDAO().saveOrUpdate(device))
+            return new ResponseEntity<>(device, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

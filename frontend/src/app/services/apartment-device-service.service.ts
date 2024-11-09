@@ -45,4 +45,13 @@ export class ApartmentDeviceServiceService {
       })
     );
   }
+
+  updateApartmentDevice(device: ApartmentDevice): Observable<ApartmentDevice> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<ApartmentDevice>>(`${this.apiUrl}`, device, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
 }
