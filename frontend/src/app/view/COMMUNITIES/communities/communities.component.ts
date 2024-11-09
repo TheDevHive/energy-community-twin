@@ -27,7 +27,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   loading = false;
   error?: { type: ErrorType; message: string };
 
-  displayedColumns: string[] = ['name', 'buildings', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'actions'];
+  displayedColumns: string[] = ['name', 'buildings', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
   dataSource: MatTableDataSource<Community>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -248,6 +248,21 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
     return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.members, 0);
   }
 
+  energyDifference(community: Community): number {
+    return community.stats.energyProduction - community.stats.energyConsumption;
+  }
+
+  energyDifferenceIcon(community: Community): string {
+    const difference = this.energyDifference(community);
+    if (difference > 0) {
+      return 'bi-arrow-up-right text-success'; // Green up arrow for positive
+    } else if (difference < 0) {
+      return 'bi-arrow-down-right text-danger'; // Red down arrow for negative
+    } else {
+      return 'bi-arrow-right text-info'; // Horizontal arrow for zero
+    }
+  }
+
   onSortChange(sort: Sort): void {
     if (!sort.active || sort.direction === '') {
       this.dataSource.data = this.communities;
@@ -261,6 +276,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
           case 'members': return this.compare(a.stats.members, b.stats.members, isAsc);
           case 'energyProduction': return this.compare(a.stats.energyProduction, b.stats.energyProduction, isAsc);
           case 'energyConsumption': return this.compare(a.stats.energyConsumption, b.stats.energyConsumption, isAsc);
+          case 'energyDifference': return this.compare(a.stats.energyProduction - a.stats.energyConsumption, b.stats.energyProduction - b.stats.energyConsumption, isAsc);
           default: return 0;
         }
       });

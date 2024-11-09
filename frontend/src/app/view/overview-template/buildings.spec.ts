@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OverviewTemplateComponent } from './overview-template.component';
+import { OverviewTemplateComponent } from './buildings.component.ts';
 import { CommunityService } from '../../services/community.service';
 import { BuildingService } from '../../services/building.service';
 import { AuthService } from '../../services/auth.service';

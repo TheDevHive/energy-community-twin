@@ -27,4 +27,22 @@ export class AlertService {
       this.alertCommunities = { show: false, type: '', message: '' };
     }, this.timeout);
   }
+
+  // Alert Page Buildings
+  alertBuildings = { show: false, type: '', message: '' };
+
+  setAlertBuildings(type: string, message: string) {
+    // Clear any existing timeout to reset the timer
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    // Set the new alert and start a new timeout
+    this.alertBuildings = { show: true, type: type, message: message };
+
+    // Set the timeout to hide the alert after the specified timeout duration
+    this.timeoutId = setTimeout(() => {
+      this.alertBuildings = { show: false, type: '', message: '' };
+    }, this.timeout);
+  }
 }

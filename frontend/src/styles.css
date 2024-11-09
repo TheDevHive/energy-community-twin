@@ -358,6 +358,7 @@
   .modal-body {
     padding: 1.5rem;
     background-color: white;
+    color: black;
   
     .form-label {
       color: var(--color-secondary);
