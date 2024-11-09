@@ -1,5 +1,4 @@
 <div class="container-fluid p-0 vh-100 d-flex flex-column">
-
   <!-- Main Content -->
   <div class="content-area p-4">
     <!-- Welcome Section -->
@@ -7,27 +6,43 @@
       <div class="col-12">
         <div class="card border shadow-sm">
           <div class="card-body p-4">
-            <h3 class="text-primary mb-3">Welcome</h3>
+            <h3 class="text-primary mb-3">{{ communityName }}</h3>
             <p class="text-muted mb-0">
-              Manage your energy communities and monitor their performance from this dashboard.
+              Manage your buildings and monitor their energy performance from this dashboard.
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Quick Stats (All Cards in a Single Row) -->
+    <!-- Quick Stats -->
     <div class="row g-4 mb-4">
       <div class="col-md-3 col-sm-6">
         <div class="card border shadow-sm h-100">
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="stats-icon bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                <i class="bi bi-buildings text-primary fs-4"></i>
+                <i class="bi bi-building text-primary fs-4"></i>
               </div>
               <div>
-                <h6 class="text-muted mb-1">Total Communities</h6>
-                <h4 class="mb-0">{{communities.length}}</h4>
+                <h6 class="text-muted mb-1">Total Buildings</h6>
+                <h4 class="mb-0">{{buildings.length}}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="card border shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-info bg-opacity-10 p-3 rounded-circle me-3">
+                <i class="bi bi-house-door text-info fs-4"></i>
+              </div>
+              <div>
+                <h6 class="text-muted mb-1">Total Apartments</h6>
+                <h4 class="mb-0">{{totalApartments()}}</h4>
               </div>
             </div>
           </div>
@@ -65,136 +80,139 @@
           </div>
         </div>
       </div>
-
-      <div class="col-md-3 col-sm-6">
-        <div class="card border shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="stats-icon bg-info bg-opacity-10 p-3 rounded-circle me-3">
-                <i class="bi bi-people text-info fs-4"></i>
-              </div>
-              <div>
-                <h6 class="text-muted mb-1">Total Members</h6>
-                <h4 class="mb-0">{{totalMembers()}}</h4>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Communities Section Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-      <h5 class="card-title mb-2 mb-md-0">Your Communities</h5>
-      <button class="btn btn-primary mt-2 mt-md-0" (click)="openAddCommunityDialog()">
+    <!-- Buildings Section Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+            <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+          </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          <h5 class="card-title mb-0 d-inline">Buildings List</h5>
+        </li>
+      </ol>
+      <button class="btn btn-primary mt-2 mt-md-0" (click)="openAddBuildingDialog()">
         <i class="bi bi-plus-lg me-2"></i>
-        Create New Community
+        Add New Building
       </button>
     </div>
 
-    <app-alert [page]="'Communities'"></app-alert>
+    <app-alert [page]="'Buildings'"></app-alert>
 
-    <!-- Communities Table Section -->
+    <!-- Buildings Table Section -->
     <div class="card">
       <div class="card-body">
         <!-- Empty State -->
-        <div *ngIf="!communities || communities.length === 0" class="text-center py-5">
+        <div *ngIf="!buildings || buildings.length === 0" class="text-center py-5">
           <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" 
                style="width: 80px; height: 80px;">
-            <i class="bi bi-buildings text-primary fs-1"></i>
+            <i class="bi bi-building text-primary fs-1"></i>
           </div>
-          <h5 class="text-muted mb-3">No Communities Yet</h5>
+          <h5 class="text-muted mb-3">No Buildings Added Yet</h5>
           <p class="text-muted mb-4">
-            Get started by creating your first energy community.<br>
-            You can manage and monitor its performance from this dashboard.
+            Get started by adding your first building to {{ communityName }}.<br>
+            You can manage and monitor its energy performance from this dashboard.
           </p>
-          <button class="btn btn-primary" (click)="openAddCommunityDialog()">
+          <button class="btn btn-primary" (click)="openAddBuildingDialog()">
             <i class="bi bi-plus-lg me-2"></i>
-            Create Your First Community
+            Add Your First Building
           </button>
         </div>
 
-        <!-- Table (shown when there are communities) -->
-        <div class="table-responsive" *ngIf="communities && communities.length > 0">
+        <!-- Table (shown when there are buildings) -->
+        <div class="table-responsive" *ngIf="buildings && buildings.length > 0">
           <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)"
             class="table align-middle mb-0 bg-white">
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-              <td mat-cell *matCellDef="let community">
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <td mat-cell *matCellDef="let building"> {{building.id}} </td>
+            </ng-container>
+
+            <!-- Address Column -->
+            <ng-container matColumnDef="address">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
+              <td mat-cell *matCellDef="let building">
                 <div class="d-flex align-items-center">
-                  <div class="community-icon me-3">
-                    <i class="bi bi-buildings text-primary"></i>
+                  <div class="building-icon me-3">
+                    <i class="bi bi-building text-primary"></i>
                   </div>
-                  <span>{{community.name}}</span>
+                  <span>{{building.address}}</span>
                 </div>
               </td>
             </ng-container>
 
-            <!-- Buildings Column -->
-            <ng-container matColumnDef="buildings">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Buildings </th>
-              <td mat-cell *matCellDef="let community">
-                {{ community.stats.buildings }}
+            <!-- Floors Column -->
+            <ng-container matColumnDef="floors">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Floors </th>
+              <td mat-cell *matCellDef="let building">
+                {{building.floors}}
               </td>
             </ng-container>
 
             <!-- Apartments Column -->
             <ng-container matColumnDef="apartments">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Apartments </th>
-              <td mat-cell *matCellDef="let community">
-                {{ community.stats.apartments }}
+              <td mat-cell *matCellDef="let building">
+                {{building.stats.apartments}}
               </td>
             </ng-container>
 
             <!-- Members Column -->
             <ng-container matColumnDef="members">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Members </th>
-              <td mat-cell *matCellDef="let community">
-                {{ community.stats.members }}
+              <td mat-cell *matCellDef="let building">
+                {{building.stats.members}}
               </td>
             </ng-container>
 
             <!-- Energy Production Column -->
             <ng-container matColumnDef="energyProduction">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Energy Production </th>
-              <td mat-cell *matCellDef="let community">
+              <td mat-cell *matCellDef="let building">
                 <span class="text-success me-2">
                   <i class="bi bi-arrow-up-right"></i>
-                </span>{{ community.stats.energyProduction }} kWh
+                </span>{{building.stats.energyProduction}} kWh
               </td>
             </ng-container>
 
             <!-- Energy Consumption Column -->
             <ng-container matColumnDef="energyConsumption">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Energy Consumption </th>
-              <td mat-cell *matCellDef="let community">
+              <td mat-cell *matCellDef="let building">
                 <span class="text-danger me-2">
                   <i class="bi bi-arrow-down-right"></i>
-                </span>{{ community.stats.energyConsumption }} kWh
+                </span>{{building.stats.energyConsumption}} kWh
               </td>
             </ng-container>
 
             <!-- Energy Difference Column -->
             <ng-container matColumnDef="energyDifference">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Energy Difference </th>
-              <td mat-cell *matCellDef="let community">
+              <td mat-cell *matCellDef="let building">
                 <span class="me-2">
-                  <i class="bi" [ngClass]="energyDifferenceIcon(community)"></i>
-                </span>{{ energyDifference(community) }} kWh
+                  <i class="bi" [ngClass]="energyDifferenceIcon(building)"></i>
+                </span>{{energyDifference(building)}} kWh
               </td>
             </ng-container>
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef> Actions </th>
-              <td mat-cell *matCellDef="let community">
+              <td mat-cell *matCellDef="let building">
                 <div class="d-flex gap-2 actions-buttons">
-                  <button class="btn btn-primary btn-sm" (click)="navigateToCommunity(community)">
+                  <button class="btn btn-primary btn-sm" (click)="navigateToBuilding(building.id)">
                     Details
                   </button>
-                  <button class="btn btn-secondary btn-sm" (click)="openEditCommunityDialog(community)"> Edit </button>
-                  <button class="btn btn-danger btn-sm" (click)="openDeleteCommunityDialog(community)"> Delete </button>
+                  <button class="btn btn-secondary btn-sm" (click)="openEditBuildingDialog(building)">
+                    Edit
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="openDeleteBuildingDialog(building)">
+                    Delete
+                  </button>
                 </div>
               </td>
             </ng-container>
@@ -208,6 +226,5 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>

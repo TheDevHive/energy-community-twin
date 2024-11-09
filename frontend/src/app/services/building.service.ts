@@ -7,6 +7,7 @@ import { ResponseEntity } from '../models/response-entity';
 import { ApiResponseService } from './api-response.service';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { BuildingStats } from '../models/building';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,15 @@ export class BuildingService {
   getBuilding(buildingId: number): Observable<Building> {
     return this.apiResponseService.extractBody(
       this.http.get<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
+  getStats(): Observable<BuildingStats[]> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<BuildingStats[]>>(`${this.apiUrl}/stats`, {
         headers : this.auth.getHeaders(),
         observe: 'response'
       })
@@ -76,6 +86,15 @@ export class BuildingService {
           observe: 'response'
         }
       )
+    );
+  }
+
+  updateBuilding(building: Building): Observable<Building> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<Building>>(`${this.apiUrl}`, building, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 }
