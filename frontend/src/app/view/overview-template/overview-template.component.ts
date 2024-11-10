@@ -9,6 +9,8 @@ import { BuildingService } from '../../services/building.service';
 import { Location } from '@angular/common';
 import { Apartment } from '../../models/apartment';
 import { AuthService } from '../../services/auth.service';
+import { AddDeviceComponent } from '../add-device/add-device.component';
+import { BuildingDevice } from '../../models/building_device';
 
 @Component({
   selector: 'app-overview-template',
@@ -168,6 +170,28 @@ export class OverviewTemplateComponent implements OnInit {
         }
         break;
     }
+  }
+
+  openAddDeviceDialog(id: number, isBuildingDevice: boolean): void {
+    const modalRef = this.modalService.open(AddDeviceComponent, {
+      centered: true,
+      backdrop: 'static',
+      windowClass: 'device-modal'
+    });
+  
+    modalRef.componentInstance.id = id;
+    modalRef.componentInstance.isBuildingDevice = isBuildingDevice;
+
+    modalRef.result.then(
+      (deviceData: Partial<BuildingDevice>) => {
+        console.log(deviceData);
+      },
+      (reason) => {
+        console.log('Add device modal dismissed:', reason);
+      }
+    ).catch((error) => {
+      console.error('Error opening device modal:', error);
+    });
   }
   
 

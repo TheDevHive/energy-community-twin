@@ -60,9 +60,14 @@
                     <span class="badge bg-success">A</span>
                   </td>
                   <td>
-                    <button class="btn btn-primary btn-sm" (click)="changeVisualization(building.id)">
-                      View Details
-                    </button>
+                    <div class="d-flex gap-2 actions-buttons">
+                      <button class="btn btn-primary btn-sm" (click)="changeVisualization(building.id)">
+                        View Details
+                      </button>
+                      <button class="btn btn-secondary btn-sm" (click)="openAddDeviceDialog(building.id, true)">
+                        Add Device
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
