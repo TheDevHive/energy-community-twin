@@ -88,7 +88,7 @@ public class AdminDAO {
             while (rs.next()) {
                 Credentials credentials = DBManager.getInstance().getCredentialsDAO().findByPrimaryKey(rs.getString("email"));
                 if(credentials == null) {
-                    return null;
+                    continue;
                 }
                 Admin admin = new Admin(rs.getInt("id"), credentials);
                 admins.add(admin);

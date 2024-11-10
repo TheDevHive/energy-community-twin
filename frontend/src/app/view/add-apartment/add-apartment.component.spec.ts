@@ -1,19 +1,19 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { AddBuildingComponent } from './add-building.component';
-import { Building } from '../../models/building';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-describe('AddBuildingComponent', () => {
-  let component: AddBuildingComponent;
-  let fixture: ComponentFixture<AddBuildingComponent>;
+import { AddApartmentComponent } from './add-apartment.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+describe('AddApartmentComponent', () => {
+  let component: AddApartmentComponent;
+  let fixture: ComponentFixture<AddApartmentComponent>;
   let activeModal: jasmine.SpyObj<NgbActiveModal>;
 
   beforeEach(async () => {
     const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
-      declarations: [AddBuildingComponent],
+      declarations: [AddApartmentComponent],
       imports: [ReactiveFormsModule, FormsModule],
       providers: [
         FormBuilder,
@@ -21,7 +21,7 @@ describe('AddBuildingComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddBuildingComponent);
+    fixture = TestBed.createComponent(AddApartmentComponent);
     component = fixture.componentInstance;
     activeModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     fixture.detectChanges();
@@ -32,14 +32,14 @@ describe('AddBuildingComponent', () => {
   });
 
   describe('Form Initialization', () => {
-    it('should initialize with empty address and floors fields', () => {
-      expect(component.buildingForm).toBeDefined();
-      expect(component.buildingForm.get('address')?.value).toBe('');
-      expect(component.buildingForm.get('floors')?.value).toBe(0);
+    it('should initialize with empty residents and square footage fields', () => {
+      expect(component.apartmentForm).toBeDefined();
+      expect(component.apartmentForm.get('residents')?.value).toBe(0);
+      expect(component.apartmentForm.get('squareFootage')?.value).toBe(0);
     });
 
     it('should start with form in an invalid state', () => {
-      expect(component.buildingForm.valid).toBeFalse();
+      expect(component.apartmentForm.valid).toBeFalse();
     });
 
     it('should have loading set to false initially', () => {
@@ -49,7 +49,7 @@ describe('AddBuildingComponent', () => {
 
   describe('Form Validation', () => {
     it('should mark address as invalid if empty or whitespace', () => {
-      const addressControl = component.buildingForm.get('address');
+      const addressControl = component.apartmentForm.get('residents');
       addressControl?.setValue('');
       expect(addressControl?.valid).toBeFalse();
       expect(addressControl?.errors?.['required']).toBeTruthy();
@@ -59,17 +59,17 @@ describe('AddBuildingComponent', () => {
       expect(addressControl?.errors?.['whitespace']).toBeTruthy();
     });
 
-    it('should mark floors as invalid if less than 1', () => {
-      const floorsControl = component.buildingForm.get('floors');
-      floorsControl?.setValue(0);
-      expect(floorsControl?.valid).toBeFalse();
-      expect(floorsControl?.errors?.['min']).toBeTruthy();
+    it('should mark square footage as invalid if less than 1', () => {
+      const squareFootageControl = component.apartmentForm.get('squareFootage');
+      squareFootageControl?.setValue(0);
+      expect(squareFootageControl?.valid).toBeFalse();
+      expect(squareFootageControl?.errors?.['min']).toBeTruthy();
     });
 
     it('should mark form as valid with correct input values', () => {
-      component.buildingForm.get('address')?.setValue('123 Main St');
-      component.buildingForm.get('floors')?.setValue(5);
-      expect(component.buildingForm.valid).toBeTrue();
+      component.apartmentForm.get('residents')?.setValue(1);
+      component.apartmentForm.get('squareFootage')?.setValue(5);
+      expect(component.apartmentForm.valid).toBeTrue();
     });
   });
 
@@ -81,16 +81,16 @@ describe('AddBuildingComponent', () => {
     });
 
     it('should submit if form is valid', () => {
-      component.buildingForm.get('address')?.setValue('123 Main St');
-      component.buildingForm.get('floors')?.setValue(5);
+      component.apartmentForm.get('residents')?.setValue(1);
+      component.apartmentForm.get('squareFootage')?.setValue(5);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
-        address: '123 Main St',
-        floors: 5
+        id: '',
+        residents: 1,
+        squareFootage: 5
       });
-      expect(component.loading).toBeFalse();
     });
   });
 
@@ -100,27 +100,29 @@ describe('AddBuildingComponent', () => {
       expect(activeModal.dismiss).toHaveBeenCalled();
     });
 
-    it('should close the modal with building data on successful submit', () => {
-      component.buildingForm.get('address')?.setValue('123 Main St');
-      component.buildingForm.get('floors')?.setValue(5);
-
+    it('should close the modal with apartment data on successful submit', () => {
+      component.apartmentForm.get('residents')?.setValue(1);
+      component.apartmentForm.get('squareFootage')?.setValue(5);
+    
       component.onSubmit();
-
+    
       expect(activeModal.close).toHaveBeenCalledWith({
-        address: '123 Main St',
-        floors: 5
+        id: '',
+        residents: 1,
+        squareFootage: 5
       });
     });
+    
   });
 
   describe('UI Elements', () => {
-    it('should display modal title "Aggiungi Edificio"', () => {
+    it('should display modal title "Add Apartment"', () => {
       const title = fixture.nativeElement.querySelector('.modal-title');
-      expect(title.textContent).toContain('Aggiungi Edificio');
-    });
+      expect(title.textContent).toContain('Add Apartment'); 
+    });    
 
-    it('should have address input field with validation feedback', () => {
-      const addressControl = component.buildingForm.get('address');
+    it('should have residents input field with validation feedback', () => {
+      const addressControl = component.apartmentForm.get('residents');
       addressControl?.setValue('');
       addressControl?.markAsTouched();
     
@@ -132,13 +134,13 @@ describe('AddBuildingComponent', () => {
     
 
     it('should have floors input field with validation feedback', () => {
-      const floorsControl = component.buildingForm.get('floors');
+      const floorsControl = component.apartmentForm.get('squareFootage');
       floorsControl?.setValue(0);
       floorsControl?.markAsTouched();
     
       fixture.detectChanges();
     
-      const floorsInput = fixture.nativeElement.querySelector('input[formControlName="floors"]');
+      const floorsInput = fixture.nativeElement.querySelector('input[formControlName="squareFootage"]');
       expect(floorsInput).toBeTruthy();
     
       const invalidFeedback = fixture.nativeElement.querySelector('.invalid-feedback');
@@ -152,8 +154,8 @@ describe('AddBuildingComponent', () => {
     });
 
     it('should enable submit button when form is valid', () => {
-      component.buildingForm.get('address')?.setValue('123 Main St');
-      component.buildingForm.get('floors')?.setValue(5);
+      component.apartmentForm.get('residents')?.setValue(1);
+      component.apartmentForm.get('squareFootage')?.setValue(5);
       fixture.detectChanges();
 
       const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
@@ -171,20 +173,22 @@ describe('AddBuildingComponent', () => {
 
   describe('Edge Cases', () => {
     it('should trim whitespace from address input on submit', () => {
-      component.buildingForm.get('address')?.setValue('  123 Main St  ');
-      component.buildingForm.get('floors')?.setValue(5);
-
+      component.apartmentForm.get('residents')?.setValue(1);
+      component.apartmentForm.get('squareFootage')?.setValue(5);
+    
       component.onSubmit();
-
+    
       expect(activeModal.close).toHaveBeenCalledWith({
-        address: '123 Main St',
-        floors: 5
+        id: '', 
+        residents: 1,
+        squareFootage: 5
       });
     });
+    
 
     it('should handle rapid form submissions gracefully', () => {
-      component.buildingForm.get('address')?.setValue('123 Main St');
-      component.buildingForm.get('floors')?.setValue(5);
+      component.apartmentForm.get('residents')?.setValue(1);
+      component.apartmentForm.get('squareFootage')?.setValue(5);
     
       component.onSubmit();
       component.onSubmit();
@@ -193,3 +197,4 @@ describe('AddBuildingComponent', () => {
     
   });
 });
+

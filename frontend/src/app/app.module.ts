@@ -14,10 +14,8 @@ import { LoginComponent } from './view/login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ChunkPipe } from './pipes/chunk.pipe';
 import { ErrorModalComponent } from './view/SHARED/error-modal/error-modal.component';
-import { OverviewTemplateComponent } from './view/overview-template/overview-template.component';
-import { OverviewCardComponent } from './view/overview-card/overview-card.component';
-import { AddBuildingComponent } from './view/add-building/add-building.component';
-import { CommunitySummaryComponent } from './view/community-summary/community-summary.component';
+import { BuildingsComponent } from './view/BUILDINGS/buildings/buildings.component';
+import { AddBuildingComponent } from './view/BUILDINGS/add-building/add-building.component';
 import { HeaderComponent } from './view/SHARED/header/header.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -28,6 +26,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './view/SHARED/confirmation-dialog/confirmation-dialog.component';
 import { AlertComponent } from './view/SHARED/alert/alert.component';
+import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/building-details.component';
+import { AddApartmentComponent } from './view/add-apartment/add-apartment.component';
 
 
 
@@ -40,13 +40,13 @@ import { AlertComponent } from './view/SHARED/alert/alert.component';
     AddCommunityComponent,
     ChunkPipe,
     ErrorModalComponent,
-    OverviewTemplateComponent,
-    OverviewCardComponent,
+    BuildingsComponent,
     AddBuildingComponent,
-    CommunitySummaryComponent,
     HeaderComponent,
     ConfirmationDialogComponent,
     AlertComponent,
+    BuildingDetailsComponent,
+    AddApartmentComponent,
   ],
   imports: [
     BrowserModule,

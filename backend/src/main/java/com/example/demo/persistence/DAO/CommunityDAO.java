@@ -89,7 +89,7 @@ public class CommunityDAO {
             while (rs.next()) {
                 Admin admin = DBManager.getInstance().getAdminDAO().findByPrimaryKey(rs.getInt("admin_id"));
                 if (admin == null) {
-                    return null;
+                    continue;
                 }
                 communities.add(new Community(rs.getInt("id"), rs.getString("name"), admin));
             }
