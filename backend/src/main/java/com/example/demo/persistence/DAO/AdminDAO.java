@@ -86,12 +86,10 @@ public class AdminDAO {
             ResultSet rs = pstmt.executeQuery();
             List<Admin> admins =new ArrayList<>();
             while (rs.next()) {
-                System.out.println(rs.getString("email"));
                 Credentials credentials = DBManager.getInstance().getCredentialsDAO().findByPrimaryKey(rs.getString("email"));
                 if(credentials == null) {
                     continue;
                 }
-                System.out.println("Nj");
                 Admin admin = new Admin(rs.getInt("id"), credentials);
                 admins.add(admin);
             }

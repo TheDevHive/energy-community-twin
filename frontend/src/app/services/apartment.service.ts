@@ -48,7 +48,7 @@ export class ApartmentService {
     );
   }
 
-  removeApartment(apartmentId: number): Observable<Apartment> {
+  deleteApartment(apartmentId: number): Observable<Apartment> {
     return this.apiResponseService.extractBody(
       this.http.delete<ResponseEntity<Apartment>>(`${this.apiUrl}/${apartmentId}`, {
         headers: this.auth.getHeaders(),
