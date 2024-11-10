@@ -78,7 +78,6 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = undefined;
 
-    
     this.communityService.getBuildings(communityId).subscribe({
       next: (buildings) => {
         this.buildings = buildings;
@@ -87,7 +86,15 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
             this.buildings.forEach((building) => {
               building.stats = stats.find((stat) => stat.buildingId === building.id)!;
             });
+            
+            // Update the data source
             this.dataSource.data = this.buildings;
+            
+            // Reassign paginator after data is loaded
+            setTimeout(() => {
+              this.dataSource.paginator = this.paginator;
+            });
+            
             this.loading = false;
           },
           error: (error) => {
@@ -101,11 +108,11 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
-    
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    console.log("paginator, ", this.paginator);
     this.dataSource.sort = this.sort;
   }
   

@@ -4,9 +4,8 @@ package com.example.demo.controller;
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
-import com.example.demo.model.Building;
+import com.example.demo.model.ApartmentStats;
 import com.example.demo.persistence.DAO.ApartmentDAO;
-import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -104,5 +103,43 @@ public class ApartmentController {
         if(!DBManager.getInstance().getApartmentDeviceDAO().delete(device))
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<List<ApartmentStats>> getAllStats(HttpServletRequest req) {
+        if (AuthUtility.isAuthorized(req)) {
+            ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
+            List<Apartment> apartments = apartmentDAO.findAll();
+            List<ApartmentStats> allStats = apartments.stream()
+                    .map(this::extractStats)
+                    .toList();
+            if (allStats.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(allStats, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    public ApartmentStats extractStats(Apartment apartment) {
+        int energyProduction = 0;
+        int energyConsumption = 0;
+
+        return new ApartmentStats(
+                apartment.getId(),
+                energyProduction,
+                energyConsumption,
+                getEnergyClass(energyProduction, energyConsumption)
+        );
+    }
+
+    private char getEnergyClass(int energyProduction, int energyConsumption) {
+        if (energyProduction > energyConsumption) {
+            return 'A';
+        } else if (energyProduction == energyConsumption) {
+            return 'B';
+        } else {
+            return 'C';
+        }
     }
 }

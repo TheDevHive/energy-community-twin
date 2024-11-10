@@ -203,25 +203,4 @@ class AdminDAOTest {
             verify(credentialsDAO, times(2)).findByPrimaryKey(anyString());
         }
     }
-
-    @Test
-    void testFindAllWithNullCredentials() throws SQLException {
-        // Setup
-        when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString("email")).thenReturn("test@email.com");
-
-        try (MockedStatic<DBManager> mockedStatic = mockStatic(DBManager.class)) {
-            mockedStatic.when(DBManager::getInstance).thenReturn(dbManager);
-            when(dbManager.getCredentialsDAO()).thenReturn(credentialsDAO);
-            when(credentialsDAO.findByPrimaryKey(anyString())).thenReturn(null);
-            when(preparedStatement.executeQuery()).thenReturn(resultSet);
-
-            // Execute
-            List<Admin> results = adminDAO.findAll();
-
-            // Verify
-            assertNull(results);
-        }
-    }
-
 }

@@ -58,7 +58,14 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
             this.communities.forEach((community) => {
               community.stats = stats.find((stat) => stat.communityId === community.id)!;
             });
+
             this.dataSource.data = this.communities;
+            
+            // Reassign paginator after data is loaded
+            setTimeout(() => {
+              this.dataSource.paginator = this.paginator;
+            });
+
             this.loading = false;
           },
           error: (error) => {
