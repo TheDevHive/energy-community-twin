@@ -4,9 +4,9 @@ public class ApartmentStats {
     private int apartmentId;
     private int energyProduction;
     private int energyConsumption;
-    private char energyClass;
+    private String energyClass;
 
-    public ApartmentStats(int apartmentId, int energyProduction, int energyConsumption, char energyClass) {
+    public ApartmentStats(int apartmentId, int energyProduction, int energyConsumption, String energyClass) {
         this.apartmentId = apartmentId;
         this.energyProduction = energyProduction;
         this.energyConsumption = energyConsumption;
@@ -25,7 +25,7 @@ public class ApartmentStats {
         return energyConsumption;
     }
 
-    public char getEnergyClass() {
+    public String getEnergyClass() {
         return energyClass;
     }
 
@@ -41,7 +41,7 @@ public class ApartmentStats {
         this.energyConsumption = energyConsumption;
     }
 
-    public void setEnergyClass(char energyClass) {
+    public void setEnergyClass(String energyClass) {
         this.energyClass = energyClass;
     }
 
