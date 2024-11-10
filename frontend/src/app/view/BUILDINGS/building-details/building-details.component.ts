@@ -7,8 +7,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BuildingService } from '../../../services/building.service';
-//import { DeviceService } from '../../../services/device.service';
-//import { ApartmentService } from '../../../services/apartment.service';
+import { BuildingDeviceService } from '../../../services/building-device.service';
+import { ApartmentService } from '../../../services/apartment.service';
 import { Building } from '../../../models/building';
 //import { Device } from '../../../models/device';
 import { BuildingDevice } from '../../../models/building_device';
@@ -53,8 +53,8 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private buildingService: BuildingService,
-    //private deviceService: DeviceService,
-    //private apartmentService: ApartmentService,
+    private buildingDeviceService: BuildingDeviceService,
+    private apartmentService: ApartmentService,
     private modalService: NgbModal,
     private alert: AlertService,
     private communityService: CommunityService
@@ -135,7 +135,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   private loadDevices(buildingId: number): void {
     this.loading = true;
     this.error = undefined;
-    
+
     this.devices = B_DEVICES;
     this.deviceDataSource.data = this.devices;
 
@@ -145,9 +145,15 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     });
 
     /*
-    this.deviceService.getBuildingDevices(buildingId).subscribe({
+    this.buildingService.getDevices(buildingId).subscribe({
       next: (devices) => {
         this.deviceDataSource.data = devices;
+
+        // Reassign paginator after data is loaded
+        setTimeout(() => {
+        this.deviceDataSource.paginator = this.devicePaginator;
+        });
+    
         this.loading = false;
       },
       error: (error) => {
@@ -156,12 +162,13 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       }
     });
     */
+
   }
 
   private loadApartments(buildingId: number): void {
     this.loading = true;
     this.error = undefined;
-    
+
     this.apartments = APARTMENTS;
     this.apartmentDataSource.data = this.apartments;
 
@@ -170,18 +177,37 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       this.apartmentDataSource.paginator = this.apartmentPaginator;
     });
 
-    /*
-    this.apartmentService.getBuildingApartments(buildingId).subscribe({
+
+    this.buildingService.getApartments(buildingId).subscribe({
       next: (apartments) => {
-        this.apartmentDataSource.data = apartments;
-        this.loading = false;
+        this.apartments = apartments;
+        this.apartmentService.getStats().subscribe({
+          next: (stats) => {
+            this.apartments.forEach(apartment => {
+              apartment.stats = stats.find(stat => stat.apartmentId === apartment.id) || { apartmentId: apartment.id, energyClass: '', energyProduction: 0, energyConsumption: 0 };
+            });
+            this.apartmentDataSource.data = this.apartments;
+
+            // Reassign paginator after data is loaded
+            setTimeout(() => {
+              this.apartmentDataSource.paginator = this.apartmentPaginator;
+            });
+
+            this.loading = false;
+          },
+          error: (error) => {
+            this.error = error;
+            this.loading = false;
+          }
+        });
       },
       error: (error) => {
         this.error = error;
         this.loading = false;
       }
     });
-    */
+
+
   }
 
   // Device related methods
