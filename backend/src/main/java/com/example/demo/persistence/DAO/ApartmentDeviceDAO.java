@@ -93,7 +93,7 @@ public class ApartmentDeviceDAO {
             while (rs.next()) {
                 Apartment apartment = DBManager.getInstance().getApartmentDAO().findByPrimaryKey(rs.getInt("apartment_id"));
                 if(apartment == null) {
-                    return null;
+                    continue;
                 }
                 apartmentDevices.add(new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getString("log_path"), rs.getBoolean("consumes_energy"), rs.getString("energy_class"), apartment));
             }

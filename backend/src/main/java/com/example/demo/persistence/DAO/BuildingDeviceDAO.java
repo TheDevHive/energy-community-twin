@@ -93,7 +93,7 @@ public class BuildingDeviceDAO {
             while (rs.next()) {
                 Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(rs.getInt("building_id"));
                 if(building == null) {
-                    return null;
+                    continue;
                 }
                 buldingDevices.add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getString("log_path"), rs.getBoolean("consumes_energy"), rs.getString("energy_class"), building));
             }

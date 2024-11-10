@@ -84,7 +84,7 @@ public class ApartmentDAO {
                 Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(rs.getInt("building_id"));
                 User user = DBManager.getInstance().getUserDAO().findByPrimaryKey(rs.getInt("user_id"));
                 if(building == null || user == null) {
-                    return null;
+                    continue;
                 }
                 apartments.add(new Apartment(rs.getInt("id"), building, rs.getInt("residents"), rs.getInt("square_footage"), rs.getString("energy_class"), user));
             }
