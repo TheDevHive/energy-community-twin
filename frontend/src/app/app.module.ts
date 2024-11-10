@@ -26,6 +26,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './view/SHARED/confirmation-dialog/confirmation-dialog.component';
 import { AlertComponent } from './view/SHARED/alert/alert.component';
+import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/building-details.component';
 
 
 
@@ -43,6 +44,7 @@ import { AlertComponent } from './view/SHARED/alert/alert.component';
     HeaderComponent,
     ConfirmationDialogComponent,
     AlertComponent,
+    BuildingDetailsComponent,
   ],
   imports: [
     BrowserModule,

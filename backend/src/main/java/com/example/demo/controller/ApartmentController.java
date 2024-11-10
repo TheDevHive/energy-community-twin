@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 
 import com.example.demo.controller.Auth.AuthUtility;
-import com.example.demo.model.*;
+import com.example.demo.model.Apartment;
+import com.example.demo.model.ApartmentDevice;
+import com.example.demo.model.ApartmentStats;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -127,7 +129,17 @@ public class ApartmentController {
                 apartment.getId(),
                 energyProduction,
                 energyConsumption,
-                apartment.getEnergyClass()
+                getEnergyClass(energyProduction, energyConsumption)
         );
+    }
+
+    private char getEnergyClass(int energyProduction, int energyConsumption) {
+        if (energyProduction > energyConsumption) {
+            return 'A';
+        } else if (energyProduction == energyConsumption) {
+            return 'B';
+        } else {
+            return 'C';
+        }
     }
 }

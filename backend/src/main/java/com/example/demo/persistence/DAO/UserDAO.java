@@ -94,7 +94,7 @@ public class UserDAO {
             while (rs.next()) {
                 Credentials credentials = DBManager.getInstance().getCredentialsDAO().findByPrimaryKey(rs.getString("email"));
                 if(credentials == null) {
-                    return null;
+                    continue;
                 }
                 users.add(new User(rs.getInt("id"), rs.getString("name"), rs.getString("surname"), credentials, rs.getDate("birth_date"), rs.getString("phone")));
             }

@@ -1,21 +1,20 @@
 package com.example.demo.model;
 
 public class ApartmentStats {
-
     private int apartmentId;
-    private String energyClass;
     private int energyProduction;
     private int energyConsumption;
+    private char energyClass;
 
-    public ApartmentStats(int apartmentId, int energyProduction, int energyConsumption, String energyClass) {
+    public ApartmentStats(int apartmentId, int energyProduction, int energyConsumption, char energyClass) {
         this.apartmentId = apartmentId;
         this.energyProduction = energyProduction;
         this.energyConsumption = energyConsumption;
         this.energyClass = energyClass;
     }
 
-    public String getEnergyClass() {
-        return energyClass;
+    public int getApartmentId() {
+        return apartmentId;
     }
 
     public int getEnergyProduction() {
@@ -26,8 +25,12 @@ public class ApartmentStats {
         return energyConsumption;
     }
 
-    public void setEnergyClass(String energyClass) {
-        this.energyClass = energyClass;
+    public char getEnergyClass() {
+        return energyClass;
+    }
+
+    public void setApartmentId(int apartmentId) {
+        this.apartmentId = apartmentId;
     }
 
     public void setEnergyProduction(int energyProduction) {
@@ -38,20 +41,16 @@ public class ApartmentStats {
         this.energyConsumption = energyConsumption;
     }
 
-    public int getApartmentId() {
-        return apartmentId;
-    }
-
-    public void setApartmentId(int apartmentId) {
-        this.apartmentId = apartmentId;
+    public void setEnergyClass(char energyClass) {
+        this.energyClass = energyClass;
     }
 
     public String toString() {
         return "ApartmentStats{" +
                 "apartmentId=" + apartmentId +
-                ", energyClass=" + energyClass +
                 ", energyProduction=" + energyProduction +
                 ", energyConsumption=" + energyConsumption +
+                ", energyClass=" + energyClass +
                 '}';
     }
 }

@@ -79,6 +79,7 @@ public class BuildingController {
         if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         ApartmentDAO dao = DBManager.getInstance().getApartmentDAO();
         List<Apartment> apartments = dao.findAll().stream().filter(apartment -> apartment.getBuilding().getId() == building_id).toList();
+        DBManager.getInstance().getApartmentDAO().findAll().forEach(System.out::println);
         if (apartments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

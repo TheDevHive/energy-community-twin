@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 import { BUILDINGS } from '../MOCKS/BUILDINGS';
 import { COMMUNITIES } from '../MOCKS/COMMUNITIES';
+import { Apartment } from '../models/apartment';
 
 describe('BuildingService', () => {
   let service: BuildingService;
@@ -92,9 +93,9 @@ describe('BuildingService', () => {
       const buildingId = BUILDINGS[0].id;
   
       // Define mock apartments
-      const mockApartments = [
-        { id: 1, building_id: buildingId, residents: 2, square_footage: 100, energy_class: 'A', user_id: 1 },
-        { id: 2, building_id: buildingId, residents: 3, square_footage: 150, energy_class: 'B', user_id: 2 }
+      const mockApartments: Apartment[] = [
+        { id: 1, buildingId: buildingId, residents: 2, squareFootage: 100, userId: 1, stats: { apartmentId: 1, energyProduction: 10, energyConsumption: 5, energyClass: 'A' } },
+        { id: 2, buildingId: buildingId, residents: 3, squareFootage: 150, userId: 2, stats: { apartmentId: 2, energyProduction: 15, energyConsumption: 7, energyClass: 'B' } }
       ];
   
       service.getApartments(buildingId).subscribe(apartments => {

@@ -83,22 +83,23 @@
     </div>
 
     <!-- Buildings Section Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-      <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item">
-          <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
-            <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
-          </a>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">
-          <h5 class="card-title mb-0 d-inline">Buildings List</h5>
-        </li>
-      </ol>
-      <button class="btn btn-primary mt-2 mt-md-0" (click)="openAddBuildingDialog()">
-        <i class="bi bi-plus-lg me-2"></i>
-        Add New Building
-      </button>
-    </div>
+<div class="d-flex flex-column align-items-start align-items-md-center flex-md-row justify-content-between mb-4">
+  <ol class="breadcrumb mb-2 mb-md-0">
+    <li class="breadcrumb-item">
+      <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+        <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      <h5 class="card-title mb-0 d-inline">Buildings List</h5>
+    </li>
+  </ol>
+  <button class="btn btn-primary mt-2 mt-md-0 align-self-start align-self-md-center" (click)="openAddBuildingDialog()">
+    <i class="bi bi-plus-lg me-2"></i>
+    Add New Building
+  </button>
+</div>
+
 
     <app-alert [page]="'Buildings'"></app-alert>
 

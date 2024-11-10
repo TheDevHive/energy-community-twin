@@ -17,6 +17,7 @@ public class DemoApplication {
         }
         else {
             System.out.println("Database already exists");
+            DBManager.getInstance().getAdminDAO().findAll().forEach(admin -> System.out.println(admin));
         }
     }
 

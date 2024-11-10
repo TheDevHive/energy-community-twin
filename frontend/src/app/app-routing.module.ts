@@ -6,6 +6,7 @@ import { CommunitiesComponent } from './view/COMMUNITIES/communities/communities
 import { AddCommunityComponent } from './view/COMMUNITIES/add-community/add-community.component';
 import { BuildingsComponent } from './view/BUILDINGS/buildings/buildings.component';
 import { AddBuildingComponent } from './view/BUILDINGS/add-building/add-building.component';
+import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/building-details.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { LogoutGuard } from './guards/logout.guard';
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: 'communities/add', component: AddCommunityComponent, canActivate: [AuthGuard] },
   { path: 'communities/:id', component: BuildingsComponent, canActivate: [AuthGuard] },
   { path: 'communities/:id/add', component: AddBuildingComponent, canActivate: [AuthGuard] },
-  { path: 'communities/:id/buildings/:buildingId', component: BuildingsComponent, canActivate: [AuthGuard] }
+  { path: 'communities/:id/buildings/:buildingId', component: BuildingsComponent, canActivate: [AuthGuard] },
+  { path: 'buildings/:buildingId', component: BuildingDetailsComponent, canActivate: [AuthGuard] }
 ];
 
 
