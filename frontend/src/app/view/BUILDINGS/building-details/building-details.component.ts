@@ -136,14 +136,9 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = undefined;
 
-    // Reassign paginator after data is loaded
-    setTimeout(() => {
-      this.deviceDataSource.paginator = this.devicePaginator;
-    });
-
     this.buildingService.getDevices(buildingId).subscribe({
       next: (devices) => {
-        console.log(devices);
+        this.devices = devices;
         this.deviceDataSource.data = devices;
 
         // Reassign paginator after data is loaded
@@ -164,12 +159,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = undefined;
 
-
-
-    // Reassign paginator after data is loaded
-    setTimeout(() => {
-      this.apartmentDataSource.paginator = this.apartmentPaginator;
-    });
 
     this.buildingService.getApartments(buildingId).subscribe({
       next: (apartments) => {
@@ -460,7 +449,14 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       switch (sort.active) {
         case 'energy': return this.compare(a.energy, b.energy, isAsc);
         case 'energyClass': return this.compare(a.energyClass, b.energyClass, isAsc);
-        default: return this.compare(a[sort.active as keyof BuildingDevice], b[sort.active as keyof BuildingDevice], isAsc);
+        default: {
+          const aValue = a[sort.active as keyof BuildingDevice];
+          const bValue = b[sort.active as keyof BuildingDevice];
+          if (typeof aValue === 'string' || typeof aValue === 'number') {
+            return this.compare(aValue, bValue as string | number, isAsc);
+          }
+          return 0;
+        };
       }
     });
   }
