@@ -41,7 +41,7 @@ public class BuildingDeviceDAOTest{
         MockitoAnnotations.openMocks(this);
         buildingDeviceDAO = new BuildingDeviceDAO(mockConnection);
         spyBuildingDeviceDAO = Mockito.spy(buildingDeviceDAO);
-        buildingDevice = new BuildingDevice(1, "Device", "path", true, "A", mockBuilding);
+        buildingDevice = new BuildingDevice(1, "Device", 1, true, "A", mockBuilding);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class BuildingDeviceDAOTest{
 
         // Assert
         verify(mockPreparedStatement).setString(1, buildingDevice.getName());
-        verify(mockPreparedStatement).setString(2, buildingDevice.getLogPath());
+        verify(mockPreparedStatement).setInt(2, buildingDevice.getEnergy());
         verify(mockPreparedStatement).setBoolean(3, buildingDevice.consumesEnergy());
         verify(mockPreparedStatement).setString(4, buildingDevice.getEnergyClass());
         verify(mockPreparedStatement).executeUpdate();
@@ -85,7 +85,7 @@ public class BuildingDeviceDAOTest{
         // Assert
         verify(mockPreparedStatement).setInt(1, buildingDevice.getBuilding().getId());
         verify(mockPreparedStatement).setString(2, buildingDevice.getName());
-        verify(mockPreparedStatement).setString(3, buildingDevice.getLogPath());
+        verify(mockPreparedStatement).setInt(3, buildingDevice.getEnergy());
         verify(mockPreparedStatement).setBoolean(4, buildingDevice.consumesEnergy());
         verify(mockPreparedStatement).setString(5, buildingDevice.getEnergyClass());
         verify(mockPreparedStatement).executeUpdate();
@@ -99,7 +99,7 @@ public class BuildingDeviceDAOTest{
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt("id")).thenReturn(1);
         when(mockResultSet.getString("name")).thenReturn("Device");
-        when(mockResultSet.getString("log_path")).thenReturn("path");
+        when(mockResultSet.getInt("energy")).thenReturn(1);
         when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true);
         when(mockResultSet.getString("energy_class")).thenReturn("A");
         when(mockResultSet.getInt("building_id")).thenReturn(1);
@@ -120,7 +120,7 @@ public class BuildingDeviceDAOTest{
             assertNotNull(resultBuildingDevice);
             assertEquals(1, resultBuildingDevice.getId());
             assertEquals("Device", resultBuildingDevice.getName());
-            assertEquals("path", resultBuildingDevice.getLogPath());
+            assertEquals(1, resultBuildingDevice.getEnergy());
             assertTrue(resultBuildingDevice.consumesEnergy());
             assertEquals("A", resultBuildingDevice.getEnergyClass());
             assertEquals(mockBuilding, resultBuildingDevice.getBuilding());
@@ -149,7 +149,7 @@ public class BuildingDeviceDAOTest{
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("id")).thenReturn(1, 2);
         when(mockResultSet.getString("name")).thenReturn("Device1", "Device2");
-        when(mockResultSet.getString("log_path")).thenReturn("path1", "path2");
+        when(mockResultSet.getInt("energy")).thenReturn(1, 2);
         when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true, false);
         when(mockResultSet.getString("energy_class")).thenReturn("A", "B");
         when(mockResultSet.getInt("building_id")).thenReturn(1, 2);

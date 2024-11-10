@@ -3,14 +3,14 @@ package com.example.demo.model;
 public class Device {
     private int id;
     private String name;
-    private String logPath;
+    private int energy;
     private boolean consumesEnergy;
     private String energyClass;
 
-    public Device(int id, String name, String logPath, boolean consumesEnergy, String energyClass) {
+    public Device(int id, String name, int energy, boolean consumesEnergy, String energyClass) {
         this.id = id;
         this.name = name;
-        this.logPath = logPath;
+        this.energy = energy;
         this.consumesEnergy = consumesEnergy;
         this.energyClass = energyClass;
     }
@@ -23,8 +23,8 @@ public class Device {
         return name;
     }
 
-    public String getLogPath() {
-        return logPath;
+    public int getEnergy() {
+        return energy;
     }
 
     public boolean consumesEnergy() {
@@ -43,10 +43,9 @@ public class Device {
         this.name = name;
     }
 
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
+    public void setEnergy(int energy) {
+        this.energy = energy;
     }
-
     public void setConsumesEnergy(boolean consumesEnergy) {
         this.consumesEnergy = consumesEnergy;
     }
@@ -59,7 +58,7 @@ public class Device {
         return "Device{" +
                 "id=" + id +
                 ", name=" + name +
-                ", logPath=" + logPath +
+                ", energy=" + energy +
                 ", consumesEnergy=" + consumesEnergy +
                 ", energyClass=" + energyClass +
                 '}';

@@ -29,7 +29,7 @@ public class BuildingDeviceDAO {
                 if(building == null) {
                     return null;
                 }
-                buldingDevice = new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getString("log_path"), rs.getBoolean("consumes_energy"), rs.getString("energy_class"),building);
+                buldingDevice = new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getInt("energy"), rs.getBoolean("consumes_energy"), rs.getString("energy_class"),building);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,10 +39,10 @@ public class BuildingDeviceDAO {
 
     public boolean saveOrUpdate(BuildingDevice buldingDevice) {
         if(findByPrimaryKey(buldingDevice.getId()) == null) {
-            String sql = "INSERT INTO building_device (name, log_path, consumes_energy, energy_class, building_id) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO building_device (name, energy, consumes_energy, energy_class, building_id) VALUES (?, ?, ?, ?, ?)";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, buldingDevice.getName());
-                pstmt.setString(2, buldingDevice.getLogPath());
+                pstmt.setInt(2, buldingDevice.getEnergy());
                 pstmt.setBoolean(3, buldingDevice.consumesEnergy());
                 pstmt.setString(4, buldingDevice.getEnergyClass());
                 pstmt.setInt(5, buldingDevice.getBuilding().getId());
@@ -56,11 +56,11 @@ public class BuildingDeviceDAO {
                 return false;
             }
         } else {
-            String sql = "UPDATE building_device SET building_id = ?, name = ?, log_path = ?, consumes_energy = ?, energy_class = ? WHERE id = ?";
+            String sql = "UPDATE building_device SET building_id = ?, name = ?, energy = ?, consumes_energy = ?, energy_class = ? WHERE id = ?";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, buldingDevice.getBuilding().getId());
                 pstmt.setString(2, buldingDevice.getName());
-                pstmt.setString(3, buldingDevice.getLogPath());
+                pstmt.setInt(3, buldingDevice.getEnergy());
                 pstmt.setBoolean(4, buldingDevice.consumesEnergy());
                 pstmt.setString(5, buldingDevice.getEnergyClass());
                 pstmt.setInt(6, buldingDevice.getId());
@@ -95,7 +95,7 @@ public class BuildingDeviceDAO {
                 if(building == null) {
                     continue;
                 }
-                buldingDevices.add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getString("log_path"), rs.getBoolean("consumes_energy"), rs.getString("energy_class"), building));
+                buldingDevices.add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getInt("energy"), rs.getBoolean("consumes_energy"), rs.getString("energy_class"), building));
             }
             return buldingDevices;
         } catch (SQLException e) {
