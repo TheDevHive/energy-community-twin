@@ -2,8 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.*;
-import com.example.demo.persistence.DAO.ApartmentDAO;
-import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
