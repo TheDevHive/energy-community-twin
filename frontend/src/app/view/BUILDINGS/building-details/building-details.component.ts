@@ -136,17 +136,14 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = undefined;
 
-    this.devices = B_DEVICES;
-    this.deviceDataSource.data = this.devices;
-
     // Reassign paginator after data is loaded
     setTimeout(() => {
       this.deviceDataSource.paginator = this.devicePaginator;
     });
 
-    /*
     this.buildingService.getDevices(buildingId).subscribe({
       next: (devices) => {
+        console.log(devices);
         this.deviceDataSource.data = devices;
 
         // Reassign paginator after data is loaded
@@ -161,22 +158,18 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
-    */
-
   }
 
   private loadApartments(buildingId: number): void {
     this.loading = true;
     this.error = undefined;
 
-    this.apartments = APARTMENTS;
-    this.apartmentDataSource.data = this.apartments;
+
 
     // Reassign paginator after data is loaded
     setTimeout(() => {
       this.apartmentDataSource.paginator = this.apartmentPaginator;
     });
-
 
     this.buildingService.getApartments(buildingId).subscribe({
       next: (apartments) => {
@@ -206,8 +199,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
-
-
   }
 
   // Device related methods

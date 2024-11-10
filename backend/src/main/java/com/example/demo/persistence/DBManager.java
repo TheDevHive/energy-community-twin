@@ -91,7 +91,7 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS building_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
-                    "log_path VARCHAR NOT NULL, "+
+                    "log_path VARCHAR, "+
                     "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
                     "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+

@@ -129,7 +129,17 @@ public class ApartmentController {
                 apartment.getId(),
                 energyProduction,
                 energyConsumption,
-                apartment.getEnergyClass()
+                getEnergyClass(energyProduction, energyConsumption)
         );
+    }
+
+    private char getEnergyClass(int energyProduction, int energyConsumption) {
+        if (energyProduction > energyConsumption) {
+            return 'A';
+        } else if (energyProduction == energyConsumption) {
+            return 'B';
+        } else {
+            return 'C';
+        }
     }
 }

@@ -3,7 +3,6 @@ export interface Apartment
     id: number;
     residents: number;
     squareFootage: number;
-    energyClass: string;
     buildingId: number;
     userId: number;
 
