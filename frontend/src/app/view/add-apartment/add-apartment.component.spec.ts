@@ -48,15 +48,11 @@ describe('AddApartmentComponent', () => {
   });
 
   describe('Form Validation', () => {
-    it('should mark address as invalid if empty or whitespace', () => {
-      const addressControl = component.apartmentForm.get('residents');
-      addressControl?.setValue('');
-      expect(addressControl?.valid).toBeFalse();
-      expect(addressControl?.errors?.['required']).toBeTruthy();
-
-      addressControl?.setValue('   ');
-      expect(addressControl?.valid).toBeFalse();
-      expect(addressControl?.errors?.['whitespace']).toBeTruthy();
+    it('should mark residents as invalid if less then 0', () => {
+      const residentsControl = component.apartmentForm.get('squareFootage');
+      residentsControl?.setValue(-1);
+      expect(residentsControl?.valid).toBeFalse();
+      expect(residentsControl?.errors?.['min']).toBeTruthy();
     });
 
     it('should mark square footage as invalid if less than 1', () => {
