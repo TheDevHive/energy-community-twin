@@ -100,8 +100,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         default: return item[property];
       }
     };
-
-    console.log(this.devicePaginator);
   }
 
   private loadBuildingDetails(buildingId: number): void {
@@ -382,7 +380,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         this.apartments = [...this.apartments, newApartment];
         this.apartmentDataSource.data = this.apartments;
         this.loading = false;
-        this.alert.setAlertApartments('success', `Apartment #${newApartment.id} created successfully`);
+        this.alert.setAlertApartments('success', `Apartment <strong>${newApartment.id}</strong> created successfully`);
       },
       error: (error) => {
         this.error = error;
@@ -407,7 +405,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         });
         this.apartmentDataSource.data = this.apartments;
         this.loading = false;
-        this.alert.setAlertApartments('success', `Apartment #${updatedApartment.id} updated successfully`);
+        this.alert.setAlertApartments('success', `Apartment <strong>${updatedApartment.id}</strong> updated successfully`);
       },
       error: (error) => {
         this.error = error;

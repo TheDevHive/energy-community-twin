@@ -9,3 +9,9 @@
     <div [innerHTML]="alert.alertBuildings.message"></div>
     <button type="button" class="btn-close" (click)="alert.alertBuildings.show=false" aria-label="Close"></button>
 </div>
+
+<!-- Alert Page Apartments -->
+<div *ngIf="alert.alertApartments.show && page == 'Apartments'" [ngClass]="['alert', 'alert-' + alert.alertApartments.type, 'alert-dismissible', 'fade', 'show']" role="alert">
+    <div [innerHTML]="alert.alertApartments.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertApartments.show=false" aria-label="Close"></button>
+</div>
