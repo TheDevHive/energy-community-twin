@@ -43,8 +43,8 @@ public class ApartmentDeviceDAO {
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
                 pstmt.setInt(2, apartmentDevice.getEnergy());
-                pstmt.setString(4, apartmentDevice.getEnergyClass());
-                pstmt.setInt(5, apartmentDevice.getApartment().getId());
+                pstmt.setString(3, apartmentDevice.getEnergyClass());
+                pstmt.setInt(4, apartmentDevice.getApartment().getId());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if(rs.next()) {
@@ -60,8 +60,8 @@ public class ApartmentDeviceDAO {
                 pstmt.setInt(1, apartmentDevice.getApartment().getId());
                 pstmt.setString(2, apartmentDevice.getName());
                 pstmt.setInt(3, apartmentDevice.getEnergy());
-                pstmt.setString(5, apartmentDevice.getEnergyClass());
-                pstmt.setInt(6, apartmentDevice.getId());
+                pstmt.setString(4, apartmentDevice.getEnergyClass());
+                pstmt.setInt(5, apartmentDevice.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
