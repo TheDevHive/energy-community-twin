@@ -41,7 +41,7 @@ public class BuildingDeviceDAOTest{
         MockitoAnnotations.openMocks(this);
         buildingDeviceDAO = new BuildingDeviceDAO(mockConnection);
         spyBuildingDeviceDAO = Mockito.spy(buildingDeviceDAO);
-        buildingDevice = new BuildingDevice(1, "Device", 1, true, "A", mockBuilding);
+        buildingDevice = new BuildingDevice(1, "Device", 1, "A", mockBuilding);
     }
 
     @Test
