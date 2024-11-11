@@ -1,6 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Building } from '../../models/building';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { id } from '@swimlane/ngx-datatable';
 import { BuildingDevice } from '../../models/building_device';
 
 @Component({
@@ -9,65 +11,72 @@ import { BuildingDevice } from '../../models/building_device';
   styleUrls: ['./add-device.component.css']
 })
 export class AddDeviceComponent implements OnInit {
+  @Input() isEdit: boolean = false;  // Add this line
+  @Input() buildingDevice!: BuildingDevice;  // Add this line to handle existing building data
+  @Input() building!: Building;
+  @Input() isBuildingDevice!: boolean;
   deviceForm: FormGroup;
   loading = false;
-
-  @Input() id!: number; // This will be the building_id
-  @Input() isBuildingDevice!: boolean;
 
   constructor(
     private fb: FormBuilder,
     public activeModal: NgbActiveModal
   ) {
-    // Initialize the form with validators
     this.deviceForm = this.fb.group({
+      id: [''],
       name: ['', [Validators.required, this.noWhitespaceValidator]],
-      consumesEnergy: [false, Validators.required],
-      energyClass: ['', Validators.required]
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    // Initialize form with existing data if in edit mode
+    if (this.isEdit && this.buildingDevice) {
+      this.deviceForm.patchValue({
+        id: this.buildingDevice.id,
+        name: this.buildingDevice.name,
+        building: this.building
+      });
+    }
+  }
 
-  // Custom validator to prevent only whitespace in the name field
   noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
-    return !isWhitespace ? null : { whitespace: true };
+    const isValid = !isWhitespace;
+    return isValid ? null : { whitespace: true };
   }
 
-  // Dismiss the modal without any data
-  dismiss(): void {
-    this.activeModal.dismiss('Modal dismissed');
-  }
-
-  // Submit the form data if valid
   onSubmit(): void {
-    if (this.deviceForm.invalid) {
+    if (this.deviceForm.valid && !this.loading) {
+      this.loading = true;
+  
+      if (this.isBuildingDevice) {
+        const buildingData: BuildingDevice = {
+          ...this.buildingDevice,
+          id: this.isEdit && this.buildingDevice ? this.buildingDevice.id : 0,
+          name: this.deviceForm.get('name')?.value?.trim(),
+          energy: this.buildingDevice?.energy ?? 0,
+          energyClass: this.buildingDevice?.energyClass ?? 'A',
+          building: this.building
+        };
+    
+        this.activeModal.close(buildingData);
+      }
+      else {
+        // handle apartment device here...
+      }
+      this.loading = false;
+    } else {
       this.markAllControlsAsTouched();
-      return;
     }
-
-    this.loading = true;
-
-    // Create a BuildingDevice object using form data and this.id as building_id
-    const newBuildingDevice: BuildingDevice = {
-      id: 0, // id will be set on the server or database side
-      name: this.deviceForm.get('name')?.value?.trim(),
-      log_path: '', // log_path can be set later or on the server side
-      consumes_energy: this.deviceForm.get('consumesEnergy')?.value,
-      energy_class: this.deviceForm.get('energyClass')?.value,
-      building_id: this.id // Use the passed building_id from the parent component
-    };
-
-    // Close the modal and pass the new device data
-    this.activeModal.close(newBuildingDevice);
-    this.loading = false;
   }
 
-  // Mark all form controls as touched to trigger validation messages
   private markAllControlsAsTouched(): void {
     Object.keys(this.deviceForm.controls).forEach(controlName => {
       this.deviceForm.get(controlName)?.markAsTouched();
     });
+  }
+
+  dismiss(): void {
+    this.activeModal.dismiss();
   }
 }

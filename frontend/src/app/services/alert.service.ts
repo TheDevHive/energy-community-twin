@@ -46,6 +46,24 @@ export class AlertService {
     }, this.timeout);
   }
 
+  alertBuildingDevices = { show: false, type: '', message: '' };
+
+  setAlertBuildingDevices(type: string, message: string) {
+    // Clear any existing timeout to reset the timer
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+  
+    // Set the new alert and start a new timeout
+    this.alertBuildingDevices = { show: true, type: type, message: message };
+  
+    // Set the timeout to hide the alert after the specified timeout duration
+    this.timeoutId = setTimeout(() => {
+      this.alertBuildingDevices = { show: false, type: '', message: '' };
+    }, this.timeout);
+  }
+  
+
   // Alert Page Apartments
   alertApartments = { show: false, type: '', message: '' };
 

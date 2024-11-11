@@ -28,7 +28,7 @@ import { ConfirmationDialogComponent } from './view/SHARED/confirmation-dialog/c
 import { AlertComponent } from './view/SHARED/alert/alert.component';
 import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/building-details.component';
 import { AddApartmentComponent } from './view/add-apartment/add-apartment.component';
-
+import { AddDeviceComponent } from './view/add-device/add-device.component';
 
 
 
@@ -47,6 +47,7 @@ import { AddApartmentComponent } from './view/add-apartment/add-apartment.compon
     AlertComponent,
     BuildingDetailsComponent,
     AddApartmentComponent,
+    AddDeviceComponent
   ],
   imports: [
     BrowserModule,

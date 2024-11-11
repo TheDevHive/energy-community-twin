@@ -23,6 +23,7 @@ import { CommunityService } from '../../../services/community.service';
 import { B_DEVICES } from '../../../MOCKS/B_DEVICES';
 import { APARTMENTS } from '../../../MOCKS/APARTMENTS';
 import { AddApartmentComponent } from '../../add-apartment/add-apartment.component';
+import { AddDeviceComponent } from '../../add-device/add-device.component';
 
 @Component({
   selector: 'app-building-details',
@@ -189,33 +190,45 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Device related methods
   openAddDeviceDialog(): void {
-    /*
     const modalRef = this.modalService.open(AddDeviceComponent, {
       centered: true,
       backdrop: 'static'
     });
 
+    modalRef.componentInstance.isBuildingDevice = true;
+    modalRef.componentInstance.building = this.building;
+
     modalRef.result.then(
-      (result) => {
-        if (result && this.building) {
-          this.createDevice(result);
-        }
+      (deviceData: Partial<BuildingDevice>) => {
+        deviceData.building = this.building;
+        this.buildingDeviceService.createDevice(deviceData).subscribe({
+          next: (newDevice: BuildingDevice) => {
+            this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
+            this.alert.setAlertBuildingDevices('success', `Device <strong>${newDevice.id}</strong> created successfully`);
+          },
+          error: (error) => {
+            this.error = error;
+            this.alert.setAlertBuildingDevices('danger', `Failed to create device: ${error.message}`);
+          }
+        });
+      },
+      (reason) => {
+        console.log('Add device modal dismissed:', reason);
       }
     );
-    */
   }
 
   openEditDeviceDialog(device: BuildingDevice): void {
-    /*
     const modalRef = this.modalService.open(AddDeviceComponent, {
       centered: true,
       backdrop: 'static'
     });
     
     modalRef.componentInstance.isEdit = true;
-    modalRef.componentInstance.device = device;
+    modalRef.componentInstance.isBuildingDevice = true;
+    modalRef.componentInstance.buildingDevice = device;
+    modalRef.componentInstance.building = this.building;
 
     modalRef.result.then(
       (result) => {
@@ -224,7 +237,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         }
       }
     );
-    */
   }
 
   openDeleteDeviceDialog(device: BuildingDevice): void {
@@ -241,6 +253,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
+          console.log(device.id);
           this.deleteDevice(device.id);
         }
       }
@@ -333,35 +346,31 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private editDevice(deviceData: any): void {
-    /*
-    this.deviceService.updateDevice(deviceData).subscribe({
+    this.buildingDeviceService.updateDevice(deviceData).subscribe({
       next: (updatedDevice) => {
         this.deviceDataSource.data = this.deviceDataSource.data.map(
           device => device.id === updatedDevice.id ? updatedDevice : device
         );
-        this.alert.setAlert('success', `Device "${updatedDevice.name}" updated successfully`);
+        this.alert.setAlertBuildingDevices('success', `Device <strong>${updatedDevice.id}</strong> updated successfully`);
       },
       error: (error) => {
         this.error = error;
-        this.alert.setAlert('danger', `Failed to update device: ${error.message}`);
+        this.alert.setAlertBuildingDevices('danger', `Failed to update device: ${error.message}`);
       }
     });
-    */
   }
 
   private deleteDevice(id: number): void {
-    /*
-    this.deviceService.deleteDevice(id).subscribe({
+    this.buildingDeviceService.removeDevice(id).subscribe({
       next: () => {
-        this.deviceDataSource.data = this.deviceDataSource.data.filter(device => device.id !== id);
-        this.alert.setAlert('success', 'Device deleted successfully');
+        this.deviceDataSource.data = [...this.deviceDataSource.data.filter(device => device.id !== id)];
+        this.alert.setAlertBuildingDevices('success', 'Device deleted successfully');
       },
       error: (error) => {
         this.error = error;
-        this.alert.setAlert('danger', `Failed to delete device: ${error.message}`);
+        this.alert.setAlertBuildingDevices('danger', `Failed to delete device: ${error.message}`);
       }
     });
-    */
   }
 
   private createApartment(apartmentData: any): void {
