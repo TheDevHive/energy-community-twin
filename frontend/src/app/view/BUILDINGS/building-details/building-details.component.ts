@@ -10,18 +10,14 @@ import { BuildingService } from '../../../services/building.service';
 import { BuildingDeviceService } from '../../../services/building-device.service';
 import { ApartmentService } from '../../../services/apartment.service';
 import { Building } from '../../../models/building';
-//import { Device } from '../../../models/device';
 import { BuildingDevice } from '../../../models/building_device';
 import { Apartment } from '../../../models/apartment';
 import { ErrorType } from '../../../models/api-error';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
-//import { AddDeviceComponent } from '../add-device/add-device.component';
-//import { AddApartmentComponent } from '../add-apartment/add-apartment.component';
 import { CommunityService } from '../../../services/community.service';
-
-import { B_DEVICES } from '../../../MOCKS/B_DEVICES';
-import { APARTMENTS } from '../../../MOCKS/APARTMENTS';
+import { AddApartmentComponent } from '../../add-apartment/add-apartment.component';
+import { AddDeviceComponent } from '../../add-device/add-device.component';
 
 @Component({
   selector: 'app-building-details',
@@ -65,7 +61,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      const buildingId = params.get('buildingId'); // Use 'buildingId' instead of 'id'
+      const buildingId = params.get('buildingId');
       if (buildingId) {
         this.loadBuildingDetails(+buildingId);
       }
@@ -99,8 +95,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         default: return item[property];
       }
     };
-
-    console.log(this.devicePaginator);
   }
 
   private loadBuildingDetails(buildingId: number): void {
@@ -190,33 +184,30 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Device related methods
   openAddDeviceDialog(): void {
-    /*
     const modalRef = this.modalService.open(AddDeviceComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    modalRef.result.then(
-      (result) => {
-        if (result && this.building) {
-          this.createDevice(result);
-        }
-      }
+    modalRef.componentInstance.isBuildingDevice = true;
+    modalRef.componentInstance.building = this.building;
+
+    modalRef.result.then(result =>
+      this.createDevice(result)
     );
-    */
   }
 
   openEditDeviceDialog(device: BuildingDevice): void {
-    /*
     const modalRef = this.modalService.open(AddDeviceComponent, {
       centered: true,
       backdrop: 'static'
     });
     
     modalRef.componentInstance.isEdit = true;
-    modalRef.componentInstance.device = device;
+    modalRef.componentInstance.isBuildingDevice = true;
+    modalRef.componentInstance.buildingDevice = device;
+    modalRef.componentInstance.building = this.building;
 
     modalRef.result.then(
       (result) => {
@@ -225,7 +216,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         }
       }
     );
-    */
   }
 
   openDeleteDeviceDialog(device: BuildingDevice): void {
@@ -242,6 +232,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
+          console.log(device.id);
           this.deleteDevice(device.id);
         }
       }
@@ -250,7 +241,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
   // Apartment related methods
   openAddApartmentDialog(): void {
-    /*
     const modalRef = this.modalService.open(AddApartmentComponent, {
       centered: true,
       backdrop: 'static'
@@ -263,18 +253,27 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         }
       }
     );
-    */
   }
 
   openEditApartmentDialog(apartment: Apartment): void {
-    /*
     const modalRef = this.modalService.open(AddApartmentComponent, {
       centered: true,
       backdrop: 'static'
     });
-    
+
     modalRef.componentInstance.isEdit = true;
-    modalRef.componentInstance.apartment = apartment;
+    modalRef.componentInstance.apartmentForm.patchValue({
+      id: apartment.id,
+      residents: apartment.residents,
+      squareFootage: apartment.squareFootage,
+      stats: {
+        apartmentId: apartment.stats.apartmentId,
+        energyClass: apartment.stats.energyClass,
+        energyProduction: apartment.stats.energyProduction,
+        energyConsumption: apartment.stats.energyConsumption
+      }
+    });
+
 
     modalRef.result.then(
       (result) => {
@@ -283,7 +282,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         }
       }
     );
-    */
+
   }
 
   openDeleteApartmentDialog(apartment: Apartment): void {
@@ -292,7 +291,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       backdrop: 'static'
     });
     modalRef.componentInstance.title = 'Delete Apartment';
-    modalRef.componentInstance.message = `Are you sure you want to delete apartment #${apartment.id}?`;
+    modalRef.componentInstance.message = `Are you sure you want to delete apartment <strong>${apartment.id}</strong>?`;
     modalRef.componentInstance.confirmText = 'Delete';
     modalRef.componentInstance.cancelText = 'Cancel';
     modalRef.componentInstance.color = 'red';
@@ -308,103 +307,118 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
   // CRUD operations
   private createDevice(deviceData: any): void {
-    /*
-    if (!this.building) return;
-    
-    deviceData.buildingId = this.building.id;
-    this.deviceService.createDevice(deviceData).subscribe({
-      next: (newDevice) => {
-        this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
-        this.alert.setAlert('success', `Device "${newDevice.name}" created successfully`);
-      },
-      error: (error) => {
-        this.error = error;
-        this.alert.setAlert('danger', `Failed to create device: ${error.message}`);
-      }
-    });
-    */
+    deviceData.building = this.building;
+      this.buildingDeviceService.createDevice(deviceData).subscribe({
+        next: (newDevice: BuildingDevice) => {
+          this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
+          this.alert.setAlertBuildingDevices('success', `Device <strong>${newDevice.id}</strong> created successfully`);
+        },
+        error: (error) => {
+          this.error = error;
+          this.alert.setAlertBuildingDevices('danger', `Failed to create device: ${error.message}`);
+        }
+      });
   }
 
   private editDevice(deviceData: any): void {
-    /*
-    this.deviceService.updateDevice(deviceData).subscribe({
+    this.buildingDeviceService.updateDevice(deviceData).subscribe({
       next: (updatedDevice) => {
         this.deviceDataSource.data = this.deviceDataSource.data.map(
           device => device.id === updatedDevice.id ? updatedDevice : device
         );
-        this.alert.setAlert('success', `Device "${updatedDevice.name}" updated successfully`);
+        this.alert.setAlertBuildingDevices('success', `Device <strong>${updatedDevice.id}</strong> updated successfully`);
       },
       error: (error) => {
         this.error = error;
-        this.alert.setAlert('danger', `Failed to update device: ${error.message}`);
+        this.alert.setAlertBuildingDevices('danger', `Failed to update device: ${error.message}`);
       }
     });
-    */
   }
 
   private deleteDevice(id: number): void {
-    /*
-    this.deviceService.deleteDevice(id).subscribe({
+    this.buildingDeviceService.removeDevice(id).subscribe({
       next: () => {
-        this.deviceDataSource.data = this.deviceDataSource.data.filter(device => device.id !== id);
-        this.alert.setAlert('success', 'Device deleted successfully');
+        this.deviceDataSource.data = [...this.deviceDataSource.data.filter(device => device.id !== id)];
+        this.alert.setAlertBuildingDevices('success', 'Device deleted successfully');
       },
       error: (error) => {
         this.error = error;
-        this.alert.setAlert('danger', `Failed to delete device: ${error.message}`);
+        this.alert.setAlertBuildingDevices('danger', `Failed to delete device: ${error.message}`);
       }
     });
-    */
   }
 
   private createApartment(apartmentData: any): void {
-    /*
-    if (!this.building) return;
-    
-    apartmentData.buildingId = this.building.id;
+    this.loading = true;
+    this.error = undefined;
+
+    apartmentData.building = this.building;
     this.apartmentService.createApartment(apartmentData).subscribe({
       next: (newApartment) => {
-        this.apartmentDataSource.data = [...this.apartmentDataSource.data, newApartment];
-        this.alert.setAlert('success', 'Apartment created successfully');
+        newApartment.stats = {
+          apartmentId: newApartment.id,
+          energyClass: '',
+          energyProduction: 0,
+          energyConsumption: 0
+        };
+        this.apartments = [...this.apartments, newApartment];
+        this.apartmentDataSource.data = this.apartments;
+        this.loading = false;
+        this.alert.setAlertApartments('success', `Apartment <strong>${newApartment.id}</strong> created successfully`);
+        this.loadApartments(this.building!.id);
       },
       error: (error) => {
         this.error = error;
-        this.alert.setAlert('danger', `Failed to create apartment: ${error.message}`);
+        this.loading = false;
       }
     });
-    */
-  }
+  }  
 
   private editApartment(apartmentData: any): void {
-    /*
+    this.loading = true;
+    this.error = undefined;
+
+    apartmentData.building = this.building;
     this.apartmentService.updateApartment(apartmentData).subscribe({
       next: (updatedApartment) => {
-        this.apartmentDataSource.data = this.apartmentDataSource.data.map(
-          apartment => apartment.id === updatedApartment.id ? updatedApartment : apartment
-        );
-        this.alert.setAlert('success', 'Apartment updated successfully');
+        updatedApartment.stats = this.apartments.find((apartment) => apartment.id === updatedApartment.id)!.stats;
+        this.apartments = this.apartments.map((apartment) => {
+          if (apartment.id === updatedApartment.id) {
+            return updatedApartment;
+          }
+          return apartment;
+        });
+        this.apartmentDataSource.data = this.apartments;
+        this.loading = false;
+        this.alert.setAlertApartments('success', `Apartment <strong>${updatedApartment.id}</strong> updated successfully`);
       },
       error: (error) => {
         this.error = error;
-        this.alert.setAlert('danger', `Failed to update apartment: ${error.message}`);
+        this.loading = false;
+        this.alert.setAlertApartments('danger', `Failed to update apartment: ${error.message}`);
       }
     });
-    */
   }
 
   private deleteApartment(id: number): void {
-    /*
+    this.loading = true;
+    this.error = undefined;
+
     this.apartmentService.deleteApartment(id).subscribe({
       next: () => {
-        this.apartmentDataSource.data = this.apartmentDataSource.data.filter(apartment => apartment.id !== id);
-        this.alert.setAlert('success', 'Apartment deleted successfully');
+        console.log(this.apartments+ "nnjn");
+        this.apartments = this.apartments.filter(apartment => apartment.id !== id);
+        this.apartmentDataSource.data = this.apartments;
+        this.loading = false;
+        this.alert.setAlertApartments('success', 'Apartment deleted successfully');
       },
       error: (error) => {
+        console.log(error + "erroreeeeeee");
         this.error = error;
-        this.alert.setAlert('danger', `Failed to delete apartment: ${error.message}`);
+        this.loading = false;
+        this.alert.setAlertApartments('danger', `Failed to delete apartment: ${error.message}`);
       }
     });
-    */
   }
 
   // Utility methods

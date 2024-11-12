@@ -27,7 +27,10 @@ public class ApartmentDAO {
                 pstmt.setInt(2, apartment.getSquareFootage());
                 pstmt.setString(3, apartment.getEnergyClass());
                 pstmt.setInt(4, apartment.getBuilding().getId());
-                pstmt.setInt(5, apartment.getUser().getId());
+                if(apartment.getUser()==null)
+                    pstmt.setNull(5, java.sql.Types.INTEGER);
+                else
+                    pstmt.setInt(5, apartment.getUser().getId());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -44,7 +47,10 @@ public class ApartmentDAO {
                 pstmt.setInt(2, apartment.getSquareFootage());
                 pstmt.setString(3, apartment.getEnergyClass());
                 pstmt.setInt(4, apartment.getBuilding().getId());
-                pstmt.setInt(5, apartment.getUser().getId());
+                if(apartment.getUser()==null)
+                    pstmt.setNull(5, java.sql.Types.INTEGER);
+                else
+                    pstmt.setInt(5, apartment.getUser().getId());
                 pstmt.setInt(6, apartment.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {

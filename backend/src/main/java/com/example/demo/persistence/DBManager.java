@@ -92,7 +92,6 @@ public class DBManager {
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
                     "energy INTEGER NOT NULL, "+
-                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
                     "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
@@ -103,7 +102,7 @@ public class DBManager {
                     "square_footage FLOAT NOT NULL, "+
                     "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+
-                    "user_id INTEGER NOT NULL, "+
+                    "user_id INTEGER,"+
                     "FOREIGN KEY (user_id) REFERENCES user(id), "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
@@ -111,7 +110,6 @@ public class DBManager {
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
                     "energy INTEGER NOT NULL, "+
-                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
                     "energy_class CHAR(1), " +
                     "apartment_id INTEGER NOT NULL, "+
                     "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");

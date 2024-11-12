@@ -6,20 +6,20 @@ export const B_DEVICES: BuildingDevice[] = [
         name: "Device 1",
         energy: 100,
         energyClass: "A",
-        buildingId: 1
+        building: null
     },
     {
         id: 2,
         name: "Device 2",
         energy: 0,
         energyClass: "B",
-        buildingId: 1
+        building: null
     },
     {
         id: 3,
         name: "Device 3",
         energy: -100,
         energyClass: "C",
-        buildingId: 2
+        building: null
     }
 ];

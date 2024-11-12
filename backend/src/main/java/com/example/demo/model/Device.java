@@ -4,14 +4,12 @@ public class Device {
     private int id;
     private String name;
     private int energy;
-    private boolean consumesEnergy;
     private String energyClass;
 
-    public Device(int id, String name, int energy, boolean consumesEnergy, String energyClass) {
+    public Device(int id, String name, int energy, String energyClass) {
         this.id = id;
         this.name = name;
         this.energy = energy;
-        this.consumesEnergy = consumesEnergy;
         this.energyClass = energyClass;
     }
 
@@ -27,9 +25,6 @@ public class Device {
         return energy;
     }
 
-    public boolean consumesEnergy() {
-        return consumesEnergy;
-    }
 
     public String getEnergyClass() {
         return energyClass;
@@ -46,9 +41,6 @@ public class Device {
     public void setEnergy(int energy) {
         this.energy = energy;
     }
-    public void setConsumesEnergy(boolean consumesEnergy) {
-        this.consumesEnergy = consumesEnergy;
-    }
 
     public void setEnergyClass(String energyClass) {
         this.energyClass = energyClass;
@@ -59,7 +51,6 @@ public class Device {
                 "id=" + id +
                 ", name=" + name +
                 ", energy=" + energy +
-                ", consumesEnergy=" + consumesEnergy +
                 ", energyClass=" + energyClass +
                 '}';
     }

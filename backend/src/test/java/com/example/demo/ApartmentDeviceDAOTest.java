@@ -43,7 +43,7 @@ public class ApartmentDeviceDAOTest {
         MockitoAnnotations.openMocks(this);
         apartmentDeviceDAO = new ApartmentDeviceDAO(mockConnection);
         spyApartmentDeviceDAO = Mockito.spy(apartmentDeviceDAO);
-        apartmentDevice = new ApartmentDevice(1, "Device", 1, true, "A", mockApartment);
+        apartmentDevice = new ApartmentDevice(1, "Device", 1, "A", mockApartment);
     }
 
     @Test
@@ -65,9 +65,8 @@ public class ApartmentDeviceDAOTest {
         // Verify
         verify(mockPreparedStatement).setString(1, apartmentDevice.getName());
         verify(mockPreparedStatement).setInt(2, apartmentDevice.getEnergy());
-        verify(mockPreparedStatement).setBoolean(3, apartmentDevice.consumesEnergy());
-        verify(mockPreparedStatement).setString(4, apartmentDevice.getEnergyClass());
-        verify(mockPreparedStatement).setInt(5, apartmentDevice.getApartment().getId());
+        verify(mockPreparedStatement).setString(3, apartmentDevice.getEnergyClass());
+        verify(mockPreparedStatement).setInt(4, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, apartmentDevice.getId());
     }
@@ -88,9 +87,8 @@ public class ApartmentDeviceDAOTest {
         verify(mockPreparedStatement).setInt(1, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).setString(2, apartmentDevice.getName());
         verify(mockPreparedStatement).setInt(3, apartmentDevice.getEnergy());
-        verify(mockPreparedStatement).setBoolean(4, apartmentDevice.consumesEnergy());
-        verify(mockPreparedStatement).setString(5, apartmentDevice.getEnergyClass());
-        verify(mockPreparedStatement).setInt(6, apartmentDevice.getId());
+        verify(mockPreparedStatement).setString(4, apartmentDevice.getEnergyClass());
+        verify(mockPreparedStatement).setInt(5, apartmentDevice.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -103,7 +101,6 @@ public class ApartmentDeviceDAOTest {
         when(mockResultSet.getInt("id")).thenReturn(1);
         when(mockResultSet.getString("name")).thenReturn("Device");
         when(mockResultSet.getInt("energy")).thenReturn(1);
-        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true);
         when(mockResultSet.getString("energy_class")).thenReturn("A");
         when(mockResultSet.getInt("apartment_id")).thenReturn(1);
 
@@ -124,7 +121,6 @@ public class ApartmentDeviceDAOTest {
             assertEquals(1, resultApartmentDevice.getId());
             assertEquals("Device", resultApartmentDevice.getName());
             assertEquals(1, resultApartmentDevice.getEnergy());
-            assertTrue(resultApartmentDevice.consumesEnergy());
             assertEquals("A", resultApartmentDevice.getEnergyClass());
             assertEquals(mockApartment, resultApartmentDevice.getApartment());
         }
@@ -153,7 +149,6 @@ public class ApartmentDeviceDAOTest {
         when(mockResultSet.getInt("id")).thenReturn(1, 2);
         when(mockResultSet.getString("name")).thenReturn("Device1", "Device2");
         when(mockResultSet.getInt("energy")).thenReturn(1, 2);
-        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true, false);
         when(mockResultSet.getString("energy_class")).thenReturn("A", "B");
         when(mockResultSet.getInt("apartment_id")).thenReturn(1, 2);
 

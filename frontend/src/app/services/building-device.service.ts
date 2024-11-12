@@ -55,12 +55,11 @@ export class BuildingDeviceService {
     );
   }
 
-  removeDevice(deviceId: number): Observable<BuildingDevice> {
-    return this.apiResponseService.extractBody(
-      this.http.delete<ResponseEntity<BuildingDevice>>(`${this.apiUrl}/${deviceId}`, {
-        headers: this.auth.getHeaders(),
-        observe: 'response'
-      })
-    );
+  removeDevice(deviceId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${deviceId}`, {
+      headers: this.auth.getHeaders(),
+      observe: 'body'
+    });
   }
+  
 }

@@ -44,7 +44,7 @@ public class ApartmentController {
         }
         if(!DBManager.getInstance().getApartmentDAO().delete(apartment))
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(apartment, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

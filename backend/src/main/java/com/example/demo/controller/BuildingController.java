@@ -3,9 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.*;
 import com.example.demo.persistence.DAO.ApartmentDAO;
-import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
-import com.example.demo.persistence.DAO.CommunityDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -81,7 +79,6 @@ public class BuildingController {
         if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         ApartmentDAO dao = DBManager.getInstance().getApartmentDAO();
         List<Apartment> apartments = dao.findAll().stream().filter(apartment -> apartment.getBuilding().getId() == building_id).toList();
-        DBManager.getInstance().getApartmentDAO().findAll().forEach(System.out::println);
         if (apartments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

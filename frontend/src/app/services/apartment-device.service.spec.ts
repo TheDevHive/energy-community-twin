@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
-import { ApartmentDeviceServiceService } from './apartment-device-service.service';
+import { ApartmentDeviceServiceService } from './apartment-device.service';
 
 describe('ApartmentDeviceServiceService', () => {
   let service: ApartmentDeviceServiceService;

@@ -3,8 +3,8 @@ package com.example.demo.model;
 public class BuildingDevice extends Device{
 
     private Building building;
-    public BuildingDevice(int id, String name, int energy, boolean consumesEnergy, String energyClass, Building building) {
-        super(id, name, energy, consumesEnergy, energyClass);
+    public BuildingDevice(int id, String name, int energy, String energyClass, Building building) {
+        super(id, name, energy, energyClass);
         this.building = building;
     }
 

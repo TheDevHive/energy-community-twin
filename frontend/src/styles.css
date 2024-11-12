@@ -177,6 +177,33 @@
     .table tbody td {
       border-bottom: 1px solid var(--color-border);
     }
+    
+    /* Base styling for the select element */
+.form-control.form-select {
+  appearance: none; /* Remove default browser arrow */
+  padding-right: 2.5rem; /* Space for custom arrow */
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'); /* Add a down arrow */
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  transition: all 0.3s ease-in-out;
+  border-radius: 8px;
+  border: 2px solid var(--color-border-light);
+  padding: 0.75rem 1rem;
+}
+
+/* Rotate the arrow when the dropdown is expanded */
+.form-control.form-select.expanded {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>'); /* Add an up arrow */
+}
+
+
+/* Add focus style for the select input */
+.form-control.form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
   
     /* Mat Table Styling */
     .mat-mdc-header-row.mdc-data-table__header-row.cdk-header-row {
