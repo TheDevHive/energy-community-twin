@@ -10,18 +10,12 @@ import { BuildingService } from '../../../services/building.service';
 import { BuildingDeviceService } from '../../../services/building-device.service';
 import { ApartmentService } from '../../../services/apartment.service';
 import { Building } from '../../../models/building';
-//import { Device } from '../../../models/device';
 import { BuildingDevice } from '../../../models/building_device';
 import { Apartment } from '../../../models/apartment';
 import { ErrorType } from '../../../models/api-error';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
-//import { AddDeviceComponent } from '../add-device/add-device.component';
-//import { AddApartmentComponent } from '../add-apartment/add-apartment.component';
 import { CommunityService } from '../../../services/community.service';
-
-import { B_DEVICES } from '../../../MOCKS/B_DEVICES';
-import { APARTMENTS } from '../../../MOCKS/APARTMENTS';
 import { AddApartmentComponent } from '../../add-apartment/add-apartment.component';
 import { AddDeviceComponent } from '../../add-device/add-device.component';
 
@@ -199,23 +193,8 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.componentInstance.isBuildingDevice = true;
     modalRef.componentInstance.building = this.building;
 
-    modalRef.result.then(
-      (deviceData: Partial<BuildingDevice>) => {
-        deviceData.building = this.building;
-        this.buildingDeviceService.createDevice(deviceData).subscribe({
-          next: (newDevice: BuildingDevice) => {
-            this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
-            this.alert.setAlertBuildingDevices('success', `Device <strong>${newDevice.id}</strong> created successfully`);
-          },
-          error: (error) => {
-            this.error = error;
-            this.alert.setAlertBuildingDevices('danger', `Failed to create device: ${error.message}`);
-          }
-        });
-      },
-      (reason) => {
-        console.log('Add device modal dismissed:', reason);
-      }
+    modalRef.result.then(result =>
+      this.createDevice(result)
     );
   }
 
@@ -328,21 +307,17 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
   // CRUD operations
   private createDevice(deviceData: any): void {
-    /*
-    if (!this.building) return;
-    
-    deviceData.buildingId = this.building.id;
-    this.deviceService.createDevice(deviceData).subscribe({
-      next: (newDevice) => {
-        this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
-        this.alert.setAlert('success', `Device "${newDevice.name}" created successfully`);
-      },
-      error: (error) => {
-        this.error = error;
-        this.alert.setAlert('danger', `Failed to create device: ${error.message}`);
-      }
-    });
-    */
+    deviceData.building = this.building;
+      this.buildingDeviceService.createDevice(deviceData).subscribe({
+        next: (newDevice: BuildingDevice) => {
+          this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
+          this.alert.setAlertBuildingDevices('success', `Device <strong>${newDevice.id}</strong> created successfully`);
+        },
+        error: (error) => {
+          this.error = error;
+          this.alert.setAlertBuildingDevices('danger', `Failed to create device: ${error.message}`);
+        }
+      });
   }
 
   private editDevice(deviceData: any): void {
