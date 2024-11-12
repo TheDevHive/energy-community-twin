@@ -21,7 +21,7 @@ export class AddApartmentComponent implements OnInit {
     this.apartmentForm = this.fb.group({
       id: [''],
       residents: [0, [Validators.required, Validators.min(0)]],
-      squareFootage: [0, [Validators.required, Validators.min(1)]]
+      squareFootage: [0, [Validators.required, Validators.min(1)]],
     });
   }
 

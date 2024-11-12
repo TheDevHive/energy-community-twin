@@ -365,6 +365,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         this.apartmentDataSource.data = this.apartments;
         this.loading = false;
         this.alert.setAlertApartments('success', `Apartment <strong>${newApartment.id}</strong> created successfully`);
+        this.loadApartments(this.building!.id);
       },
       error: (error) => {
         this.error = error;
