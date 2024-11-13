@@ -48,7 +48,7 @@ public class ApartmentDeviceDAO {
             String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?, ?)";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
-                pstmt.setBoolean(2, apartmentDevice.consumesEnergy());
+                pstmt.setBoolean(2, apartmentDevice.isConsumesEnergy());
                 pstmt.setBlob(3, new JSONBlobConverter().toBlob(connection, apartmentDevice.getEnergyCurve()));
                 pstmt.setInt(4, apartmentDevice.getApartment().getId());
                 pstmt.executeUpdate();
@@ -68,7 +68,7 @@ public class ApartmentDeviceDAO {
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, apartmentDevice.getApartment().getId());
                 pstmt.setString(2, apartmentDevice.getName());
-                pstmt.setBoolean(3, apartmentDevice.consumesEnergy());
+                pstmt.setBoolean(3, apartmentDevice.isConsumesEnergy());
                 pstmt.setBlob(4, new JSONBlobConverter().toBlob(connection, apartmentDevice.getEnergyCurve()));
                 pstmt.setInt(5, apartmentDevice.getId());
                 pstmt.executeUpdate();

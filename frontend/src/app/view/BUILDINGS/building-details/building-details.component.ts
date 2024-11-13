@@ -461,8 +461,8 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     this.deviceDataSource.data = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'energy': return this.compare(a.energy, b.energy, isAsc);
-        case 'energyClass': return this.compare(a.energyClass, b.energyClass, isAsc);
+        case 'energy': return this.compare(a.energy, b.energy, isAsc); // TODO
+        case 'energyClass': return this.compare(a.energyClass, b.energyClass, isAsc); // TODO
         default: {
           const aValue = a[sort.active as keyof BuildingDevice];
           const bValue = b[sort.active as keyof BuildingDevice];

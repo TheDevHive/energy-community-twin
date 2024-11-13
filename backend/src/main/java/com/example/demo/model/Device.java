@@ -21,6 +21,9 @@ public class Device {
         return name;
     }
 
+    public boolean isConsumesEnergy() {
+        return consumesEnergy;
+    }
 
     public EnergyCurve getEnergyCurve() {
         return energyCurve;

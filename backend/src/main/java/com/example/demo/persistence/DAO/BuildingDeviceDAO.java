@@ -48,7 +48,7 @@ public class BuildingDeviceDAO {
             String sql = "INSERT INTO building_device (name, consumes_energy, energy_curve, building_id) VALUES (?, ?, ?, ?)";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, buldingDevice.getName());
-                pstmt.setBoolean(2, buldingDevice.consumesEnergy());
+                pstmt.setBoolean(2, buldingDevice.isConsumesEnergy());
                 pstmt.setBlob(3, new JSONBlobConverter().toBlob(connection, buldingDevice.getEnergyCurve()));
                 pstmt.setInt(4, buldingDevice.getBuilding().getId());
                 pstmt.executeUpdate();
@@ -68,9 +68,9 @@ public class BuildingDeviceDAO {
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, buldingDevice.getBuilding().getId());
                 pstmt.setString(2, buldingDevice.getName());
-                pstmt.setBoolean(4, buldingDevice.consumesEnergy());
-                pstmt.setBlob(5, new JSONBlobConverter().toBlob(connection, buldingDevice.getEnergyCurve()));
-                pstmt.setInt(6, buldingDevice.getId());
+                pstmt.setBoolean(3, buldingDevice.isConsumesEnergy());
+                pstmt.setBlob(4, new JSONBlobConverter().toBlob(connection, buldingDevice.getEnergyCurve()));
+                pstmt.setInt(5, buldingDevice.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();

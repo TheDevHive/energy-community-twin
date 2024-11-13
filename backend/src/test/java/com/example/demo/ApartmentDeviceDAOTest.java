@@ -66,7 +66,7 @@ public class ApartmentDeviceDAOTest {
 
         // Verify
         verify(mockPreparedStatement).setString(1, apartmentDevice.getName());
-        verify(mockPreparedStatement).setBoolean(2, apartmentDevice.consumesEnergy());
+        verify(mockPreparedStatement).setBoolean(2, apartmentDevice.isConsumesEnergy());
         verify(mockPreparedStatement).setObject(3, apartmentDevice.getEnergyCurve());
         verify(mockPreparedStatement).setInt(4, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).executeUpdate();
@@ -88,7 +88,7 @@ public class ApartmentDeviceDAOTest {
         // Verify
         verify(mockPreparedStatement).setInt(1, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).setString(2, apartmentDevice.getName());
-        verify(mockPreparedStatement).setBoolean(3, apartmentDevice.consumesEnergy());
+        verify(mockPreparedStatement).setBoolean(3, apartmentDevice.isConsumesEnergy());
         verify(mockPreparedStatement).setObject(4, apartmentDevice.getEnergyCurve());
         verify(mockPreparedStatement).setInt(5, apartmentDevice.getId());
         verify(mockPreparedStatement).executeUpdate();
@@ -122,7 +122,7 @@ public class ApartmentDeviceDAOTest {
             assertNotNull(resultApartmentDevice);
             assertEquals(1, resultApartmentDevice.getId());
             assertEquals("Device", resultApartmentDevice.getName());
-            assertTrue(resultApartmentDevice.consumesEnergy());
+            assertTrue(resultApartmentDevice.isConsumesEnergy());
             assertEquals("A", resultApartmentDevice.getEnergyCurve());
             assertEquals(mockApartment, resultApartmentDevice.getApartment());
         }
