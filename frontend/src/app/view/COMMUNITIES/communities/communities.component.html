@@ -1,4 +1,3 @@
-<!-- communities.component.html -->
 <div class="container-fluid p-0 vh-100 d-flex flex-column">
 
   <!-- Main Content -->
@@ -93,13 +92,30 @@
       </button>
     </div>
 
-
     <app-alert [page]="'Communities'"></app-alert>
 
     <!-- Communities Table Section -->
     <div class="card">
       <div class="card-body">
-        <div class="table-responsive">
+        <!-- Empty State -->
+        <div *ngIf="!communities || communities.length === 0" class="text-center py-5">
+          <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-buildings text-primary fs-1"></i>
+          </div>
+          <h5 class="text-muted mb-3">No Communities Yet</h5>
+          <p class="text-muted mb-4">
+            Get started by creating your first energy community.<br>
+            You can manage and monitor its performance from this dashboard.
+          </p>
+          <button class="btn btn-primary" (click)="openAddCommunityDialog()">
+            <i class="bi bi-plus-lg me-2"></i>
+            Create Your First Community
+          </button>
+        </div>
+
+        <!-- Table (shown when there are communities) -->
+        <div class="table-responsive" *ngIf="communities && communities.length > 0">
           <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)"
             class="table align-middle mb-0 bg-white">
             <!-- Name Column -->
@@ -108,7 +124,7 @@
               <td mat-cell *matCellDef="let community">
                 <div class="d-flex align-items-center">
                   <div class="community-icon me-3">
-                    <i class="bi bi-building text-primary"></i>
+                    <i class="bi bi-buildings text-primary"></i>
                   </div>
                   <span>{{community.name}}</span>
                 </div>
@@ -159,12 +175,22 @@
               </td>
             </ng-container>
 
+            <!-- Energy Difference Column -->
+            <ng-container matColumnDef="energyDifference">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Energy Difference </th>
+              <td mat-cell *matCellDef="let community">
+                <span class="me-2">
+                  <i class="bi" [ngClass]="energyDifferenceIcon(community)"></i>
+                </span>{{ energyDifference(community) }} kWh
+              </td>
+            </ng-container>
+
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef> Actions </th>
               <td mat-cell *matCellDef="let community">
                 <div class="d-flex gap-2 actions-buttons">
-                  <button class="btn btn-primary btn-sm" (click)="navigateToCommunity(community.id)">
+                  <button class="btn btn-primary btn-sm" (click)="navigateToCommunity(community)">
                     Details
                   </button>
                   <button class="btn btn-secondary btn-sm" (click)="openEditCommunityDialog(community)"> Edit </button>
@@ -172,8 +198,6 @@
                 </div>
               </td>
             </ng-container>
-
-
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

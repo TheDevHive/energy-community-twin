@@ -5,7 +5,6 @@ import com.example.demo.model.*;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.CommunityDAO;
-import com.example.demo.persistence.DAO.UserDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -111,8 +110,8 @@ public class CommunityController {
             List<Building> buildings = buildingDAO.findAll().stream()
                     .filter(building -> building.getCommunity().getId() == id)
                     .toList();
+            BuildingController buildingController = new BuildingController();
             for (Building building : buildings) {
-                BuildingController buildingController = new BuildingController();
                 if(buildingController.deleteBuilding(req, building.getId()).getStatusCode() != HttpStatus.OK)
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }

@@ -103,7 +103,7 @@ public class DBManager {
                     "square_footage FLOAT NOT NULL, "+
                     "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+
-                    "user_id INTEGER NOT NULL, "+
+                    "user_id INTEGER,"+
                     "FOREIGN KEY (user_id) REFERENCES user(id), "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 

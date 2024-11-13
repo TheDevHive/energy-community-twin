@@ -89,9 +89,7 @@ public class BuildingDAO {
             while (rs.next()) {
                 Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(rs.getInt("community_id"));
                 if(community == null) {
-                    continue; // TODO - should we return null instead?
-                    //System.out.println("Community not found");
-                    //return null;
+                    continue;
                 }
                 buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors")));
             }

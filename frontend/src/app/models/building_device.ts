@@ -1,5 +1,7 @@
 import { EnergyCurve } from "./energy_curve";
 
+import { Building } from "./building";
+
 export interface BuildingDevice
 {
     id: number;

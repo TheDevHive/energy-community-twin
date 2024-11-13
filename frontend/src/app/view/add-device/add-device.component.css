@@ -1,0 +1,17 @@
+.custom-checkbox {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.mb-3.d-flex.align-items-center {
+    display: flex;
+    align-items: center;
+}
+
+.form-label.mb-0 {
+    margin-bottom: 0;
+}
+
+.name-color {
+    color: black;
+}
