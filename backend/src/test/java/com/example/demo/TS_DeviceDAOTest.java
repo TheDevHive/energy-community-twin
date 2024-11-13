@@ -37,7 +37,7 @@ public class TS_DeviceDAOTest {
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         deviceDAO = new TS_DeviceDAO(mockConnection);
-        device = new TS_Device(1, 12345);
+        device = new TS_Device(1, "B12345");
         spyDeviceDAO = Mockito.spy(deviceDAO);
     }
 
@@ -56,7 +56,7 @@ public class TS_DeviceDAOTest {
         spyDeviceDAO.saveOrUpdate(device);
 
         // Assert
-        verify(mockPreparedStatement).setInt(1, device.getUuid());
+        verify(mockPreparedStatement).setString(1, device.getUuid());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -72,7 +72,7 @@ public class TS_DeviceDAOTest {
         spyDeviceDAO.saveOrUpdate(device);
 
         // Assert
-        verify(mockPreparedStatement).setInt(1, device.getUuid());
+        verify(mockPreparedStatement).setString(1, device.getUuid());
         verify(mockPreparedStatement).setInt(2, device.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
@@ -84,7 +84,7 @@ public class TS_DeviceDAOTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt("device_id")).thenReturn(1);
-        when(mockResultSet.getInt("device_uuid")).thenReturn(12345);
+        when(mockResultSet.getString("device_uuid")).thenReturn("B12345");
 
         // Execute
         TS_Device result = deviceDAO.findByPrimaryKey(1);
@@ -92,7 +92,7 @@ public class TS_DeviceDAOTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.getId());
-        assertEquals(12345, result.getUuid());
+        assertEquals("B12345", result.getUuid());
     }
 
     @Test
@@ -116,10 +116,10 @@ public class TS_DeviceDAOTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt("device_id")).thenReturn(1);
-        when(mockResultSet.getInt("device_uuid")).thenReturn(12345);
+        when(mockResultSet.getString("device_uuid")).thenReturn("B12345");
 
         // Execute
-        TS_Device result = deviceDAO.findByUuid(12345);
+        TS_Device result = deviceDAO.findByUuid("B12345");
 
         // Assert
         assertNotNull(result);
@@ -149,7 +149,7 @@ public class TS_DeviceDAOTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("device_id")).thenReturn(1, 2);
-        when(mockResultSet.getInt("device_uuid")).thenReturn(12345, 67890);
+        when(mockResultSet.getString("device_uuid")).thenReturn("B12345", "B67890");
 
         // Execute
         List<TS_Device> devices = deviceDAO.findAll();
@@ -158,8 +158,8 @@ public class TS_DeviceDAOTest {
         assertNotNull(devices);
         assertEquals(2, devices.size());
         assertEquals(1, devices.get(0).getId());
-        assertEquals(12345, devices.get(0).getUuid());
+        assertEquals("B12345", devices.get(0).getUuid());
         assertEquals(2, devices.get(1).getId());
-        assertEquals(67890, devices.get(1).getUuid());
+        assertEquals("B67890", devices.get(1).getUuid());
     }
 }

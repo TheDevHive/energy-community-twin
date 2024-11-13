@@ -28,6 +28,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './view/SHARED/confirmation-dialog/confirmation-dialog.component';
 import { AlertComponent } from './view/SHARED/alert/alert.component';
+import { EnergySimulatorComponent } from './view/energy-simulator/energy-simulator.component';
 
 
 
@@ -47,6 +48,7 @@ import { AlertComponent } from './view/SHARED/alert/alert.component';
     HeaderComponent,
     ConfirmationDialogComponent,
     AlertComponent,
+    EnergySimulatorComponent,
   ],
   imports: [
     BrowserModule,

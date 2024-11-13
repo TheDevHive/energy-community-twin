@@ -91,10 +91,10 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS building_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
-                    "log_path VARCHAR NOT NULL, "+
                     "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
                     "energy_class CHAR(1), " +
                     "building_id INTEGER NOT NULL, "+
+                    "energy_curve BLOB, "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
             statement.execute("CREATE TABLE IF NOT EXISTS apartment ("+
@@ -110,10 +110,10 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS apartment_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
-                    "log_path VARCHAR NOT NULL, "+
                     "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
                     "energy_class CHAR(1), " +
                     "apartment_id INTEGER NOT NULL, "+
+                    "energy_curve BLOB, "+
                     "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
 
         } catch (SQLException ignored) {

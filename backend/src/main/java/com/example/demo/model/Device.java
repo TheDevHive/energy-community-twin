@@ -3,16 +3,14 @@ package com.example.demo.model;
 public class Device {
     private int id;
     private String name;
-    private String logPath;
     private boolean consumesEnergy;
-    private String energyClass;
+    private EnergyCurve energyCurve;
 
-    public Device(int id, String name, String logPath, boolean consumesEnergy, String energyClass) {
+    public Device(int id, String name, boolean consumesEnergy, EnergyCurve energyCurve) {
         this.id = id;
         this.name = name;
-        this.logPath = logPath;
         this.consumesEnergy = consumesEnergy;
-        this.energyClass = energyClass;
+        this.energyCurve = energyCurve;
     }
 
     public int getId() {
@@ -23,16 +21,12 @@ public class Device {
         return name;
     }
 
-    public String getLogPath() {
-        return logPath;
-    }
-
     public boolean consumesEnergy() {
         return consumesEnergy;
     }
 
-    public String getEnergyClass() {
-        return energyClass;
+    public EnergyCurve getEnergyCurve() {
+        return energyCurve;
     }
 
     public void setId(int id) {
@@ -43,25 +37,20 @@ public class Device {
         this.name = name;
     }
 
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
-    }
-
     public void setConsumesEnergy(boolean consumesEnergy) {
         this.consumesEnergy = consumesEnergy;
     }
 
-    public void setEnergyClass(String energyClass) {
-        this.energyClass = energyClass;
+    public void setEnergyCurve(EnergyCurve energyCurve) {
+        this.energyCurve = energyCurve;
     }
 
     public String toString() {
         return "Device{" +
                 "id=" + id +
                 ", name=" + name +
-                ", logPath=" + logPath +
                 ", consumesEnergy=" + consumesEnergy +
-                ", energyClass=" + energyClass +
+                ", energyCurve=" + energyCurve.toString() +
                 '}';
     }
 

@@ -1,9 +1,10 @@
+import { EnergyCurve } from './energy_curve';
+
 export interface ApartmentDevice
 {
     id: number;
     name: string;
-    log_path: string;
     consumes_energy: boolean;
-    energy_class: string;
+    energy_curve: EnergyCurve;
     apartment_id: number;
 }

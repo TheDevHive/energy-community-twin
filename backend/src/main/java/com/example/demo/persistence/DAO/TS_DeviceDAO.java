@@ -24,7 +24,7 @@ public class TS_DeviceDAO {
             if (rs.next()) {
                 device = new TS_Device(
                         rs.getInt("device_id"),
-                        rs.getInt("device_uuid"));
+                        rs.getString("device_uuid"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -32,16 +32,16 @@ public class TS_DeviceDAO {
         return device;
     }
 
-    public TS_Device findByUuid(int uuid) {
+    public TS_Device findByUuid(String uuid) {
         String sql = "SELECT * FROM device WHERE device_uuid = ?";
         TS_Device device = null;
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, uuid);
+            pstmt.setString(1, uuid);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 device = new TS_Device(
                         rs.getInt("device_id"),
-                        rs.getInt("device_uuid"));
+                        rs.getString("device_uuid"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ public class TS_DeviceDAO {
         if (findByPrimaryKey(device.getId()) == null) {
             String sql = "INSERT INTO device (device_uuid) VALUES (?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setInt(1, device.getUuid());
+                pstmt.setString(1, device.getUuid());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -68,7 +68,7 @@ public class TS_DeviceDAO {
         } else {
             String sql = "UPDATE device SET device_uuid = ? WHERE device_id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setInt(1, device.getUuid());
+                pstmt.setString(1, device.getUuid());
                 pstmt.setInt(2, device.getId());
                 pstmt.executeUpdate();
                 return true;
@@ -100,7 +100,7 @@ public class TS_DeviceDAO {
             while (rs.next()) {
                 devices.add(new TS_Device(
                         rs.getInt("device_id"),
-                        rs.getInt("device_uuid")));
+                        rs.getString("device_uuid")));
             }
         } catch (SQLException e) {
             e.printStackTrace();

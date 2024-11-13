@@ -2,9 +2,9 @@ package com.example.demo.model;
 
 public class TS_Device {
     private int id;
-    private int uuid;
+    private String uuid;
 
-    public TS_Device(int id, int uuid) {
+    public TS_Device(int id, String uuid) {
         this.id = id;
         this.uuid = uuid;
     }
@@ -13,7 +13,7 @@ public class TS_Device {
         return id;
     }
 
-    public int getUuid() {
+    public String getUuid() {
         return uuid;
     }
 

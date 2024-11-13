@@ -62,7 +62,7 @@ public class TS_DBManager {
             statement.execute("""
                         CREATE TABLE IF NOT EXISTS device (
                             device_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            device_uuid INTEGER NOT NULL UNIQUE,
+                            device_uuid VARCHAR NOT NULL UNIQUE,
                         )
                     """);
 
