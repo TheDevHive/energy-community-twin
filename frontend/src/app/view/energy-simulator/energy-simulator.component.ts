@@ -73,7 +73,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     this.updateChart();
   }
 
-  private createChart(): void {
+  createChart(): void {
     // Clear any existing SVG
     d3.select(this.chartContainer.nativeElement).select('svg').remove();
 
@@ -110,7 +110,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     this.updateChart();
   }
 
-  private handleMouseMove(event: MouseEvent): void {
+  handleMouseMove(event: MouseEvent): void {
     // Only update if mouse button is pressed
     if (event.buttons !== 1) return;
 
@@ -134,7 +134,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private updateChart(): void {
+  updateChart(): void {
     const innerWidth = this.width - this.margin.left - this.margin.right;
     const innerHeight = this.height - this.margin.top - this.margin.bottom;
 
@@ -217,7 +217,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     }
   
     const pattern: EnergyCurve = {
-      energy_curve: this.data.map(d => d.value)
+      energyCurve: this.data.map(d => d.value)
     };
     
     this.deviceService.saveEnergyPattern(this.deviceUuid, pattern).subscribe({

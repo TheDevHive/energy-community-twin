@@ -1,3 +1,3 @@
 export interface EnergyCurve {
-    energy_curve: number[];
+    energyCurve: number[];
 }

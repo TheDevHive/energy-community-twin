@@ -1,9 +1,12 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Device {
     private int id;
     private String name;
     private boolean consumesEnergy;
+    @JsonProperty("energy_curve")
     private EnergyCurve energyCurve;
 
     public Device(int id, String name, boolean consumesEnergy, EnergyCurve energyCurve) {
@@ -21,7 +24,7 @@ public class Device {
         return name;
     }
 
-    public boolean isConsumesEnergy() {
+    public boolean getConsumesEnergy() {
         return consumesEnergy;
     }
 

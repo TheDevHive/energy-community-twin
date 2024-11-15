@@ -146,7 +146,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyIcon(device.energy)"></i>
                                 </span>
-                                {{device.energy}} kWh
+                                {{this.energy(device) / 24}} Wh
                             </td>
                         </ng-container>
 
@@ -156,7 +156,7 @@
                             <th mat-header-cell *matHeaderCellDef mat-sort-header>Energy Class</th>
                             <td mat-cell *matCellDef="let device">
                                 <span class="badge bg-{{getEnergyClassColor(device.energyClass)}} energy-class-badge">
-                                    {{device.energyClass}}
+                                    {{energyClass(device)}}
                                 </span>
                             </td>
                         </ng-container>

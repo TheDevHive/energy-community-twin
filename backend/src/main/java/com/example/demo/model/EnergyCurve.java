@@ -1,10 +1,15 @@
 package com.example.demo.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class EnergyCurve {
     private List<Integer> energyCurve;
     
+    public EnergyCurve() {
+        energyCurve = Arrays.asList(new Integer[]{50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50});
+    }
+
     public EnergyCurve(List<Integer> energyCurve) {
         this.energyCurve = energyCurve;
         if(! validate()){

@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-public class BuildingDevice extends Device{
+public class BuildingDevice extends Device {
 
     private Building building;
     public BuildingDevice(int id, String name, boolean consumesEnergy, EnergyCurve energyCurve, Building building) {

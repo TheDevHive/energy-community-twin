@@ -54,8 +54,12 @@ export class AddDeviceComponent implements OnInit {
           ...this.buildingDevice,
           id: this.isEdit && this.buildingDevice ? this.buildingDevice.id : 0,
           name: this.deviceForm.get('name')?.value?.trim(),
-          energy: this.buildingDevice?.energy ?? 0, // TODO
-          energyClass: this.buildingDevice?.energyClass ?? 'A', // TODO
+          consumes_energy: true,
+          energy_curve: {
+            energyCurve: [
+              50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+            ]
+          },
           building: this.building
         };
     

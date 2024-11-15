@@ -50,7 +50,7 @@ public class TS_DeviceDAO {
     }
 
     public boolean saveOrUpdate(TS_Device device) {
-        if (findByPrimaryKey(device.getId()) == null) {
+        if (findByPrimaryKey(device.getId()) == null || device.getId() == 0) {
             String sql = "INSERT INTO device (device_uuid) VALUES (?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, device.getUuid());

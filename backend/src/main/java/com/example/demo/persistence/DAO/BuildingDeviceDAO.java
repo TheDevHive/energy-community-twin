@@ -4,7 +4,7 @@ import com.example.demo.model.Building;
 import com.example.demo.model.BuildingDevice;
 import com.example.demo.model.EnergyCurve;
 import com.example.demo.persistence.DBManager;
-import com.example.demo.utility.JSONBlobConverter;
+import com.example.demo.utility.SQLiteBlobConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
@@ -17,6 +17,7 @@ import java.util.List;
 
 public class BuildingDeviceDAO {
     Connection connection;
+    SQLiteBlobConverter blobConverter = new SQLiteBlobConverter();
 
     public BuildingDeviceDAO(Connection connection) {
         this.connection = connection;
@@ -33,7 +34,7 @@ public class BuildingDeviceDAO {
                 if(building == null) {
                     return null;
                 }
-                buldingDevice = new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), new JSONBlobConverter().fromBlob(rs.getBlob("energy_curve"), EnergyCurve.class),building);
+                buldingDevice = new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class),building);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,8 +49,8 @@ public class BuildingDeviceDAO {
             String sql = "INSERT INTO building_device (name, consumes_energy, energy_curve, building_id) VALUES (?, ?, ?, ?)";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, buldingDevice.getName());
-                pstmt.setBoolean(2, buldingDevice.isConsumesEnergy());
-                pstmt.setBlob(3, new JSONBlobConverter().toBlob(connection, buldingDevice.getEnergyCurve()));
+                pstmt.setBoolean(2, buldingDevice.getConsumesEnergy());
+                blobConverter.setBlob(pstmt, 3, buldingDevice.getEnergyCurve());
                 pstmt.setInt(4, buldingDevice.getBuilding().getId());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
@@ -68,8 +69,8 @@ public class BuildingDeviceDAO {
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, buldingDevice.getBuilding().getId());
                 pstmt.setString(2, buldingDevice.getName());
-                pstmt.setBoolean(3, buldingDevice.isConsumesEnergy());
-                pstmt.setBlob(4, new JSONBlobConverter().toBlob(connection, buldingDevice.getEnergyCurve()));
+                pstmt.setBoolean(3, buldingDevice.getConsumesEnergy());
+                blobConverter.setBlob(pstmt, 4, buldingDevice.getEnergyCurve());
                 pstmt.setInt(5, buldingDevice.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
@@ -105,7 +106,7 @@ public class BuildingDeviceDAO {
                 if(building == null) {
                     continue;
                 }
-                buldingDevices.add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), new JSONBlobConverter().fromBlob(rs.getBlob("energy_curve"), EnergyCurve.class), building));
+                buldingDevices.add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), building));
             }
             return buldingDevices;
         } catch (SQLException e) {
