@@ -124,7 +124,7 @@ public class TS_DeviceDAOTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.getId());
-        assertEquals(12345, result.getUuid());
+        assertEquals("B12345", result.getUuid());
     }
 
     @Test

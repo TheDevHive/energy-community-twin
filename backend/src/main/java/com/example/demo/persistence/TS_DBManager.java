@@ -62,7 +62,7 @@ public class TS_DBManager {
             statement.execute("""
                         CREATE TABLE IF NOT EXISTS device (
                             device_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            device_uuid VARCHAR NOT NULL UNIQUE,
+                            device_uuid VARCHAR UNIQUE NOT NULL
                         )
                     """);
 
@@ -78,10 +78,10 @@ public class TS_DBManager {
                     """);
 
             // Indici per ottimizzare le query
-            statement.execute("""
-                        CREATE INDEX IF NOT EXISTS idx_device_name
-                        ON device(device_name)
-                    """);
+            // statement.execute("""
+            //            CREATE INDEX IF NOT EXISTS idx_device_name
+            //            ON device(device_name)
+            //        """);
 
             statement.execute("""
                         CREATE INDEX IF NOT EXISTS idx_measurement_device_timestamp
@@ -92,8 +92,9 @@ public class TS_DBManager {
                         CREATE INDEX IF NOT EXISTS idx_measurement_timestamp
                         ON measurement(timestamp)
                     """);
-
+            System.out.println("CIAO Database creato con successo");
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         } finally {
             if (statement != null) {

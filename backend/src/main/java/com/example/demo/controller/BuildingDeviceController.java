@@ -35,12 +35,12 @@ public class BuildingDeviceController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if(DBManager.getInstance().getBuildingDeviceDAO().saveOrUpdate(device)){
-            //if(TS_DBManager.getInstance().getTS_DeviceDAO().saveOrUpdate(new TS_Device(0, "B" + Integer.toString(device.getId())))){
+            if(TS_DBManager.getInstance().getTS_DeviceDAO().saveOrUpdate(new TS_Device(0, "B" + Integer.toString(device.getId())))){
                 return new ResponseEntity<>(device, HttpStatus.CREATED);
-            //} else {
-            //    DBManager.getInstance().getBuildingDeviceDAO().delete(device);
-            //    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            //}
+            } else {
+                DBManager.getInstance().getBuildingDeviceDAO().delete(device);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

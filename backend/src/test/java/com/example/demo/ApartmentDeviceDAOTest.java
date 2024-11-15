@@ -2,111 +2,193 @@ package com.example.demo;
 
 import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
-import com.example.demo.model.Building;
-import com.example.demo.model.Credentials;
 import com.example.demo.model.EnergyCurve;
-import com.example.demo.model.User;
+import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DBManager;
-import com.example.demo.utility.SQLiteBlobConverter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.io.IOException;
+import org.mockito.*;
+
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class ApartmentDeviceDAOTest {
 
-    private Connection connection;
+    @Mock
+    private Connection mockConnection;
+
+    @Mock
+    private PreparedStatement mockPreparedStatement;
+
+    @Mock
+    private ResultSet mockResultSet;
+
+    @Mock
+    private Apartment mockApartment;
+
+    @InjectMocks
     private ApartmentDeviceDAO apartmentDeviceDAO;
-    private SQLiteBlobConverter blobConverter;
+
+    private ApartmentDevice apartmentDevice;
+
+    private ApartmentDeviceDAO spyApartmentDeviceDAO;
 
     @BeforeEach
-    public void setUp() {
-        connection = mock(Connection.class);
-        blobConverter = mock(SQLiteBlobConverter.class);
-        apartmentDeviceDAO = new ApartmentDeviceDAO(connection);
-        apartmentDeviceDAO.blobConverter = blobConverter;
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+        apartmentDeviceDAO = new ApartmentDeviceDAO(mockConnection);
+        spyApartmentDeviceDAO = Mockito.spy(apartmentDeviceDAO);
+        apartmentDevice = new ApartmentDevice(1, "Device", true, new EnergyCurve(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24)), mockApartment);
     }
 
     @Test
-    public void testFindByPrimaryKey() throws SQLException, IOException {
-        PreparedStatement pstmt = mock(PreparedStatement.class);
-        ResultSet rs = mock(ResultSet.class);
-        when(connection.prepareStatement(any(String.class))).thenReturn(pstmt);
-        when(pstmt.executeQuery()).thenReturn(rs);
-        when(rs.next()).thenReturn(true);
-        when(rs.getInt("id")).thenReturn(1);
-        when(rs.getString("name")).thenReturn("Device1");
-        when(rs.getBoolean("consumes_energy")).thenReturn(true);
-        when(rs.getInt("apartment_id")).thenReturn(1);
+    public void testSaveOrUpdate_InsertNewApartment() throws SQLException {
+        // Set up
+        when(mockApartment.getId()).thenReturn(1);
 
-        Apartment apartment = mock(Apartment.class);
-        when(DBManager.getInstance().getApartmentDAO().findByPrimaryKey(anyInt())).thenReturn(apartment);
+        doReturn(null).when(spyApartmentDeviceDAO).findByPrimaryKey(apartmentDevice.getId());
 
-        ApartmentDevice apartmentDevice = apartmentDeviceDAO.findByPrimaryKey(1);
-        assertNotNull(apartmentDevice);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+        when(mockPreparedStatement.getGeneratedKeys()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt(1)).thenReturn(1);
+
+        // Execute
+        spyApartmentDeviceDAO.saveOrUpdate(apartmentDevice);
+
+        // Verify
+        verify(mockPreparedStatement).setString(1, apartmentDevice.getName());
+        verify(mockPreparedStatement).setBoolean(2, apartmentDevice.getConsumesEnergy());
+        // verify(mockPreparedStatement).setBinaryStream(3,  new ByteArrayInputStream(new SQLiteBlobConverter().toBytes(apartmentDevice.getEnergyCurve())), new SQLiteBlobConverter().toBytes(apartmentDevice.getEnergyCurve()).length);
+        verify(mockPreparedStatement).setInt(4, apartmentDevice.getApartment().getId());
+        verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, apartmentDevice.getId());
-        assertEquals("Device1", apartmentDevice.getName());
-        assertTrue(apartmentDevice.getConsumesEnergy());
     }
 
     @Test
-    public void testSaveOrUpdate_Insert() throws SQLException, JsonProcessingException {
-        ApartmentDevice apartmentDevice = new ApartmentDevice(0, "Device1", true, new EnergyCurve(), new Apartment(1, new Building(), 1, 1, "A", new User(0, "User1", "come", new Credentials("ciao", "ciao"), new Date(0),"1234567890")));
-        when(connection.prepareStatement(any(String.class), anyInt())).thenReturn(mock(PreparedStatement.class));
-        when(connection.prepareStatement(any(String.class))).thenReturn(mock(PreparedStatement.class));
+    public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
+        // Set up
+        when(mockApartment.getId()).thenReturn(1);
+        doReturn(apartmentDevice).when(spyApartmentDeviceDAO).findByPrimaryKey(apartmentDevice.getId());
 
-        boolean result = apartmentDeviceDAO.saveOrUpdate(apartmentDevice);
-        assertTrue(result);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        // Execute
+        spyApartmentDeviceDAO.saveOrUpdate(apartmentDevice);
+
+        // Verify
+        verify(mockPreparedStatement).setInt(1, apartmentDevice.getApartment().getId());
+        verify(mockPreparedStatement).setString(2, apartmentDevice.getName());
+        verify(mockPreparedStatement).setBoolean(3, apartmentDevice.getConsumesEnergy());
+        // verify(mockPreparedStatement).setObject(4, apartmentDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
+        verify(mockPreparedStatement).setInt(5, apartmentDevice.getId());
+        verify(mockPreparedStatement).executeUpdate();
     }
 
     @Test
-    public void testSaveOrUpdate_Update() throws SQLException, JsonProcessingException {
-        ApartmentDevice apartmentDevice = new ApartmentDevice(1, "Device1", true, new EnergyCurve(), new Apartment(1, new Building(), 1, 1, "A", new User(0, "User1", "come", new Credentials("ciao", "ciao"), new Date(0),"1234567890")));
-        when(connection.prepareStatement(any(String.class))).thenReturn(mock(PreparedStatement.class));
-        when(apartmentDeviceDAO.findByPrimaryKey(anyInt())).thenReturn(apartmentDevice);
+    public void testFindByPrimaryKey_Found() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
-        boolean result = apartmentDeviceDAO.saveOrUpdate(apartmentDevice);
-        assertTrue(result);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt("id")).thenReturn(1);
+        when(mockResultSet.getString("name")).thenReturn("Device");
+        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true);
+        when(mockResultSet.getObject("energy_curve")).thenReturn(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24));
+        when(mockResultSet.getInt("apartment_id")).thenReturn(1);
+
+        ApartmentDAO mockApartmentDAO = mock(ApartmentDAO.class);
+        Apartment mockApartment = mock(Apartment.class);
+        when(mockApartmentDAO.findByPrimaryKey(1)).thenReturn(mockApartment);
+
+        DBManager mockDBManager = mock(DBManager.class);
+        try (MockedStatic<DBManager> mockedDBManager = Mockito.mockStatic(DBManager.class)) {
+            mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
+            when(mockDBManager.getApartmentDAO()).thenReturn(mockApartmentDAO);
+
+            // Execute
+            ApartmentDevice resultApartmentDevice = apartmentDeviceDAO.findByPrimaryKey(1);
+
+            // Assert
+            assertNotNull(resultApartmentDevice);
+            assertEquals(1, resultApartmentDevice.getId());
+            assertEquals("Device", resultApartmentDevice.getName());
+            assertTrue(resultApartmentDevice.getConsumesEnergy());
+            // assertEquals("A", resultApartmentDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
+            assertEquals(mockApartment, resultApartmentDevice.getApartment());
+        }
     }
 
     @Test
-    public void testDelete() throws SQLException {
-        ApartmentDevice apartmentDevice = new ApartmentDevice(1, "Device1", true, new EnergyCurve(), new Apartment(1, new Building(), 1, 1, "A", new User(0, "User1", "come", new Credentials("ciao", "ciao"), new Date(0),"1234567890")));
-        PreparedStatement pstmt = mock(PreparedStatement.class);
-        when(connection.prepareStatement(any(String.class))).thenReturn(pstmt);
+    public void testFindByPrimaryKey_NotFound() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
 
+        // Execute
+        ApartmentDevice resultApartmentDevice = apartmentDeviceDAO.findByPrimaryKey(1);
+
+        // Assert
+        assertNull(resultApartmentDevice);
+    }
+
+    @Test
+    public void testFindAll() throws SQLException {
+        // Set up
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("id")).thenReturn(1, 2);
+        when(mockResultSet.getString("name")).thenReturn("Device1", "Device2");
+        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true, false);
+        when(mockResultSet.getObject("energy_class")).thenReturn(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24), Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,25));
+        when(mockResultSet.getInt("apartment_id")).thenReturn(1, 2);
+
+        ApartmentDAO mockApartmentDAO = mock(ApartmentDAO.class);
+
+        Apartment mockApartment1 = mock(Apartment.class);
+        Apartment mockApartment2 = mock(Apartment.class);
+        when(mockApartmentDAO.findByPrimaryKey(1)).thenReturn(mockApartment1);
+        when(mockApartmentDAO.findByPrimaryKey(2)).thenReturn(mockApartment2);
+
+        DBManager mockDBManager = mock(DBManager.class);
+        try (MockedStatic<DBManager> mockedDBManager = Mockito.mockStatic(DBManager.class)) {
+            mockedDBManager.when(DBManager::getInstance).thenReturn(mockDBManager);
+            when(mockDBManager.getApartmentDAO()).thenReturn(mockApartmentDAO);
+
+            // Execute
+            List<ApartmentDevice> apartmentDevices = apartmentDeviceDAO.findAll();
+
+            // Assert
+            assertNotNull(apartmentDevices);
+            assertEquals(2, apartmentDevices.size());
+        }
+    }
+
+    @Test
+    public void testDelete_Success() throws SQLException {
+        // Set up
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        // Execute
         boolean result = apartmentDeviceDAO.delete(apartmentDevice);
+
+        // Assert
         assertTrue(result);
-    }
-
-    @Test
-    public void testFindAll() throws SQLException, IOException {
-        PreparedStatement pstmt = mock(PreparedStatement.class);
-        ResultSet rs = mock(ResultSet.class);
-        when(connection.prepareStatement(any(String.class))).thenReturn(pstmt);
-        when(pstmt.executeQuery()).thenReturn(rs);
-        when(rs.next()).thenReturn(true).thenReturn(false);
-        when(rs.getInt("id")).thenReturn(1);
-        when(rs.getString("name")).thenReturn("Device1");
-        when(rs.getBoolean("consumes_energy")).thenReturn(true);
-        when(rs.getInt("apartment_id")).thenReturn(1);
-
-        Apartment apartment = mock(Apartment.class);
-        when(DBManager.getInstance().getApartmentDAO().findByPrimaryKey(anyInt())).thenReturn(apartment);
-
-        List<ApartmentDevice> apartmentDevices = apartmentDeviceDAO.findAll();
-        assertNotNull(apartmentDevices);
-        assertEquals(1, apartmentDevices.size());
+        verify(mockPreparedStatement).setInt(1, apartmentDevice.getId());
+        verify(mockPreparedStatement).executeUpdate();
     }
 }
+
