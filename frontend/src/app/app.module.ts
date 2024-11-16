@@ -30,6 +30,7 @@ import { EnergySimulatorComponent } from './view/energy-simulator/energy-simulat
 import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/building-details.component';
 import { AddApartmentComponent } from './view/add-apartment/add-apartment.component';
 import { AddDeviceComponent } from './view/add-device/add-device.component';
+import { DeviceViewComponent } from './view/device-view/device-view.component';
 
 
 
@@ -49,7 +50,8 @@ import { AddDeviceComponent } from './view/add-device/add-device.component';
     EnergySimulatorComponent,
     BuildingDetailsComponent,
     AddApartmentComponent,
-    AddDeviceComponent
+    AddDeviceComponent,
+    DeviceViewComponent
   ],
   imports: [
     BrowserModule,

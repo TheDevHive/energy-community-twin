@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit, EventEmitter, Output } from '@angular/core';
 import * as d3 from 'd3';
 import { EnergyCurve } from '../../models/energy_curve';
 import { DeviceService } from '../../services/device.service';
@@ -17,6 +17,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
   @ViewChild('chartContainer') chartContainer!: ElementRef;
   @Input() deviceUuid?: String;
   @Input() type?: "Production" | "Consumption";
+  @Output() patternSaved = new EventEmitter<number[]>();
 
   data: EnergyData[] = [];
   energyScales = [
@@ -29,8 +30,8 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
   selectedScale = this.energyScales[0].value;
   
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-  private readonly width = 800;
-  private readonly height = 400;
+  private readonly width = 900;
+  private readonly height = 450;
   private readonly margin = { top: 20, right: 30, bottom: 50, left: 60 };
   private line: d3.Line<EnergyData>;
   private xScale: d3.ScaleLinear<number, number>;
@@ -59,6 +60,14 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.createChart();
   }
+
+  setEnergyData(data: EnergyData[]): void {
+    this.data = data;
+    if (this.svg) {
+      this.updateChart(); // Update the chart with the new data
+    }
+  }
+  
 
   onScaleChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
@@ -222,6 +231,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     
     this.deviceService.saveEnergyPattern(this.deviceUuid, pattern).subscribe({
       next: (savedPattern) => {
+        this.patternSaved.emit(this.data.map((d) => d.value));
         console.log('Pattern saved successfully', savedPattern);
         // You could emit an event here to notify parent components
       },

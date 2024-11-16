@@ -47,7 +47,8 @@ public class DeviceController {
                     return new ResponseEntity<>(energyCurve, HttpStatus.OK);
                 } else if (uuid.startsWith("B")){
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    int id = Integer.parseInt(uuid.replaceAll("\\D", ""));
+                    BuildingDevice device = dao.findByPrimaryKey(id);
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }

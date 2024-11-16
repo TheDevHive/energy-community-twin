@@ -25,6 +25,7 @@ export class AddDeviceComponent implements OnInit {
     this.deviceForm = this.fb.group({
       id: [''],
       name: ['', [Validators.required, this.noWhitespaceValidator]],
+      consumesEnergy: [false]
     });
   }
 
@@ -34,10 +35,12 @@ export class AddDeviceComponent implements OnInit {
       this.deviceForm.patchValue({
         id: this.buildingDevice.id,
         name: this.buildingDevice.name,
+        consumesEnergy: this.buildingDevice.consumesEnergy, // Set the correct value for the checkbox
         building: this.building
       });
     }
   }
+  
 
   noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
@@ -48,18 +51,19 @@ export class AddDeviceComponent implements OnInit {
   onSubmit(): void {
     if (this.deviceForm.valid && !this.loading) {
       this.loading = true;
-  
+
       if (this.isBuildingDevice) {
+
         const buildingData: BuildingDevice = {
           ...this.buildingDevice,
           id: this.isEdit && this.buildingDevice ? this.buildingDevice.id : 0,
           name: this.deviceForm.get('name')?.value?.trim(),
-          consumes_energy: true,
-          energy_curve: {
-            energyCurve: [
-              50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
-            ]
-          },
+          consumesEnergy: this.deviceForm.get('consumesEnergy')?.value,
+          energy_curve: this.isEdit && this.buildingDevice?.energy_curve
+            ? this.buildingDevice.energy_curve
+            : {
+                energyCurve: Array(24).fill(50)
+              },
           building: this.building
         };
     

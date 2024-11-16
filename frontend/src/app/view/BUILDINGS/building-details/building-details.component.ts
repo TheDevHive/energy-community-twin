@@ -193,8 +193,9 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.componentInstance.isBuildingDevice = true;
     modalRef.componentInstance.building = this.building;
 
-    modalRef.result.then(result =>
+    modalRef.result.then(result => {
       this.createDevice(result)
+    }
     );
   }
 
@@ -532,7 +533,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   navigateToDevice(id: number): void {
-    //this.router.navigate(['/devices', id]);
+    this.router.navigate(['/devices', id]);
   }
 
   navigateToApartment(id: number): void {

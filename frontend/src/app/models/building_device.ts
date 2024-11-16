@@ -6,7 +6,7 @@ export interface BuildingDevice
 {
     id: number;
     name: string;
-    consumes_energy: boolean;
+    consumesEnergy: boolean;
     energy_curve: EnergyCurve;
     building: Building | null;
 }
