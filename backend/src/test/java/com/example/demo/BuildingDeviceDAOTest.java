@@ -11,8 +11,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class BuildingDeviceDAOTest{
@@ -41,7 +43,7 @@ public class BuildingDeviceDAOTest{
         MockitoAnnotations.openMocks(this);
         buildingDeviceDAO = new BuildingDeviceDAO(mockConnection);
         spyBuildingDeviceDAO = Mockito.spy(buildingDeviceDAO);
-        buildingDevice = new BuildingDevice(1, "Device", 1, "A", mockBuilding);
+        buildingDevice = new BuildingDevice(1, "Device", true, new EnergyCurve(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24)), mockBuilding);
     }
 
     @Test
@@ -62,8 +64,8 @@ public class BuildingDeviceDAOTest{
 
         // Assert
         verify(mockPreparedStatement).setString(1, buildingDevice.getName());
-        verify(mockPreparedStatement).setInt(2, buildingDevice.getEnergy());
-        verify(mockPreparedStatement).setString(3, buildingDevice.getEnergyClass());
+        verify(mockPreparedStatement).setBoolean(2, buildingDevice.getConsumesEnergy());
+        //verify(mockPreparedStatement).setObject(3, buildingDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
         verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, buildingDevice.getId());
     }
@@ -84,8 +86,8 @@ public class BuildingDeviceDAOTest{
         // Assert
         verify(mockPreparedStatement).setInt(1, buildingDevice.getBuilding().getId());
         verify(mockPreparedStatement).setString(2, buildingDevice.getName());
-        verify(mockPreparedStatement).setInt(3, buildingDevice.getEnergy());
-        verify(mockPreparedStatement).setString(4, buildingDevice.getEnergyClass());
+        verify(mockPreparedStatement).setBoolean(3, buildingDevice.getConsumesEnergy());
+        //verify(mockPreparedStatement).setObject(4, buildingDevice.getEnergyCurve()); // TODO: vedi sopra
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -97,8 +99,8 @@ public class BuildingDeviceDAOTest{
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt("id")).thenReturn(1);
         when(mockResultSet.getString("name")).thenReturn("Device");
-        when(mockResultSet.getInt("energy")).thenReturn(1);
-        when(mockResultSet.getString("energy_class")).thenReturn("A");
+        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true);
+        when(mockResultSet.getObject("energy_curve")).thenReturn(new EnergyCurve(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24)));
         when(mockResultSet.getInt("building_id")).thenReturn(1);
 
         BuildingDAO mockBuildingDAO = mock(BuildingDAO.class);
@@ -117,8 +119,8 @@ public class BuildingDeviceDAOTest{
             assertNotNull(resultBuildingDevice);
             assertEquals(1, resultBuildingDevice.getId());
             assertEquals("Device", resultBuildingDevice.getName());
-            assertEquals(1, resultBuildingDevice.getEnergy());
-            assertEquals("A", resultBuildingDevice.getEnergyClass());
+            assertTrue(resultBuildingDevice.getConsumesEnergy());
+            // assertEquals(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24), resultBuildingDevice.getEnergyCurve()); // TODO: vedi sopra
             assertEquals(mockBuilding, resultBuildingDevice.getBuilding());
         }
     }
@@ -145,8 +147,8 @@ public class BuildingDeviceDAOTest{
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("id")).thenReturn(1, 2);
         when(mockResultSet.getString("name")).thenReturn("Device1", "Device2");
-        when(mockResultSet.getInt("energy")).thenReturn(1, 2);
-        when(mockResultSet.getString("energy_class")).thenReturn("A", "B");
+        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true, false);
+        when(mockResultSet.getObject("energy_curve")).thenReturn(new EnergyCurve(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24)), new EnergyCurve(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,25)));
         when(mockResultSet.getInt("building_id")).thenReturn(1, 2);
 
         BuildingDAO mockBuildingDAO = mock(BuildingDAO.class);

@@ -1,16 +1,19 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Device {
     private int id;
     private String name;
-    private int energy;
-    private String energyClass;
+    private boolean consumesEnergy;
+    @JsonProperty("energy_curve")
+    private EnergyCurve energyCurve;
 
-    public Device(int id, String name, int energy, String energyClass) {
+    public Device(int id, String name, boolean consumesEnergy, EnergyCurve energyCurve) {
         this.id = id;
         this.name = name;
-        this.energy = energy;
-        this.energyClass = energyClass;
+        this.consumesEnergy = consumesEnergy;
+        this.energyCurve = energyCurve;
     }
 
     public int getId() {
@@ -21,13 +24,12 @@ public class Device {
         return name;
     }
 
-    public int getEnergy() {
-        return energy;
+    public boolean getConsumesEnergy() {
+        return consumesEnergy;
     }
 
-
-    public String getEnergyClass() {
-        return energyClass;
+    public EnergyCurve getEnergyCurve() {
+        return energyCurve;
     }
 
     public void setId(int id) {
@@ -38,20 +40,20 @@ public class Device {
         this.name = name;
     }
 
-    public void setEnergy(int energy) {
-        this.energy = energy;
+    public void setConsumesEnergy(boolean consumesEnergy) {
+        this.consumesEnergy = consumesEnergy;
     }
 
-    public void setEnergyClass(String energyClass) {
-        this.energyClass = energyClass;
+    public void setEnergyCurve(EnergyCurve energyCurve) {
+        this.energyCurve = energyCurve;
     }
 
     public String toString() {
         return "Device{" +
                 "id=" + id +
                 ", name=" + name +
-                ", energy=" + energy +
-                ", energyClass=" + energyClass +
+                ", consumesEnergy=" + consumesEnergy +
+                ", energyCurve=" + energyCurve.toString() +
                 '}';
     }
 

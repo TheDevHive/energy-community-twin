@@ -193,8 +193,9 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.componentInstance.isBuildingDevice = true;
     modalRef.componentInstance.building = this.building;
 
-    modalRef.result.then(result =>
+    modalRef.result.then(result => {
       this.createDevice(result)
+    }
     );
   }
 
@@ -422,6 +423,13 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   // Utility methods
+  getEnergyDeviceIcon(device: BuildingDevice): string {
+    if (device.consumesEnergy) {
+      return 'bi-arrow-down-right text-danger';
+    }
+    return 'bi-arrow-up-right text-success';
+  }
+
   getEnergyIcon(energy: number): string {
     if (energy > 0) {
       return 'bi-arrow-up-right text-success';
@@ -461,8 +469,8 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     this.deviceDataSource.data = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'energy': return this.compare(a.energy, b.energy, isAsc);
-        case 'energyClass': return this.compare(a.energyClass, b.energyClass, isAsc);
+        case 'energy': return this.compare(this.energy(a), this.energy(b), isAsc);
+        case 'energyClass': return this.compare(this.energy(a), this.energy(b), isAsc);
         default: {
           const aValue = a[sort.active as keyof BuildingDevice];
           const bValue = b[sort.active as keyof BuildingDevice];
@@ -473,6 +481,22 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         };
       }
     });
+  }
+
+  energy(device: BuildingDevice): number {
+    return device.energy_curve.energyCurve.reduce((sum, value) => sum + value, 0);
+  }
+
+  energyClass(device: BuildingDevice): string {
+    let energy = this.energy(device);
+    if (energy < 1000) {
+      return 'A';
+    } else if (energy < 5000) {
+      return 'B';
+    } else if (energy < 10000) {
+      return 'C';
+    }
+    return 'D';
   }
 
   onApartmentSortChange(sort: Sort): void {
@@ -516,7 +540,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   navigateToDevice(id: number): void {
-    //this.router.navigate(['/devices', id]);
+    this.router.navigate(['/devices', id]);
   }
 
   navigateToApartment(id: number): void {

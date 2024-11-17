@@ -10,7 +10,7 @@ import { ResponseEntity } from '../models/response-entity';
 @Injectable({
   providedIn: 'root'
 })
-export class ApartmentDeviceServiceService {
+export class ApartmentDeviceService {
   private apiUrl = `${environment.API_ENDPOINT}/api/apartmentDevices`;
   
   constructor(

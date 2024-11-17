@@ -26,9 +26,11 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './view/SHARED/confirmation-dialog/confirmation-dialog.component';
 import { AlertComponent } from './view/SHARED/alert/alert.component';
+import { EnergySimulatorComponent } from './view/energy-simulator/energy-simulator.component';
 import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/building-details.component';
 import { AddApartmentComponent } from './view/add-apartment/add-apartment.component';
 import { AddDeviceComponent } from './view/add-device/add-device.component';
+import { DeviceViewComponent } from './view/device-view/device-view.component';
 
 
 
@@ -45,9 +47,11 @@ import { AddDeviceComponent } from './view/add-device/add-device.component';
     HeaderComponent,
     ConfirmationDialogComponent,
     AlertComponent,
+    EnergySimulatorComponent,
     BuildingDetailsComponent,
     AddApartmentComponent,
-    AddDeviceComponent
+    AddDeviceComponent,
+    DeviceViewComponent
   ],
   imports: [
     BrowserModule,

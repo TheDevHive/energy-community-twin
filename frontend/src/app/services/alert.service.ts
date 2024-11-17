@@ -82,4 +82,21 @@ export class AlertService {
     }, this.timeout);
   }
   
+  // Alert Page Device
+  alertDevice = { show: false, type: '', message: '' };
+
+  setAlertDevice(type: string, message: string) {
+    // Clear any existing timeout to reset the timer
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    // Set the new alert and start a new timeout
+    this.alertDevice = { show: true, type: type, message: message };
+
+    // Set the timeout to hide the alert after the specified timeout duration
+    this.timeoutId = setTimeout(() => {
+      this.alertDevice = { show: false, type: '', message: '' };
+    }, this.timeout);
+  }
 }

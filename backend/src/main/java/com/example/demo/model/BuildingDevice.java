@@ -1,10 +1,10 @@
 package com.example.demo.model;
 
-public class BuildingDevice extends Device{
+public class BuildingDevice extends Device {
 
     private Building building;
-    public BuildingDevice(int id, String name, int energy, String energyClass, Building building) {
-        super(id, name, energy, energyClass);
+    public BuildingDevice(int id, String name, boolean consumesEnergy, EnergyCurve energyCurve, Building building) {
+        super(id, name, consumesEnergy, energyCurve);
         this.building = building;
     }
 

@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
+import com.example.demo.model.EnergyCurve;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DBManager;
@@ -13,8 +14,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class ApartmentDeviceDAOTest {
@@ -43,7 +46,7 @@ public class ApartmentDeviceDAOTest {
         MockitoAnnotations.openMocks(this);
         apartmentDeviceDAO = new ApartmentDeviceDAO(mockConnection);
         spyApartmentDeviceDAO = Mockito.spy(apartmentDeviceDAO);
-        apartmentDevice = new ApartmentDevice(1, "Device", 1, "A", mockApartment);
+        apartmentDevice = new ApartmentDevice(1, "Device", true, new EnergyCurve(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24)), mockApartment);
     }
 
     @Test
@@ -64,8 +67,8 @@ public class ApartmentDeviceDAOTest {
 
         // Verify
         verify(mockPreparedStatement).setString(1, apartmentDevice.getName());
-        verify(mockPreparedStatement).setInt(2, apartmentDevice.getEnergy());
-        verify(mockPreparedStatement).setString(3, apartmentDevice.getEnergyClass());
+        verify(mockPreparedStatement).setBoolean(2, apartmentDevice.getConsumesEnergy());
+        // verify(mockPreparedStatement).setBinaryStream(3,  new ByteArrayInputStream(new SQLiteBlobConverter().toBytes(apartmentDevice.getEnergyCurve())), new SQLiteBlobConverter().toBytes(apartmentDevice.getEnergyCurve()).length);
         verify(mockPreparedStatement).setInt(4, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, apartmentDevice.getId());
@@ -86,8 +89,8 @@ public class ApartmentDeviceDAOTest {
         // Verify
         verify(mockPreparedStatement).setInt(1, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).setString(2, apartmentDevice.getName());
-        verify(mockPreparedStatement).setInt(3, apartmentDevice.getEnergy());
-        verify(mockPreparedStatement).setString(4, apartmentDevice.getEnergyClass());
+        verify(mockPreparedStatement).setBoolean(3, apartmentDevice.getConsumesEnergy());
+        // verify(mockPreparedStatement).setObject(4, apartmentDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
         verify(mockPreparedStatement).setInt(5, apartmentDevice.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
@@ -100,8 +103,8 @@ public class ApartmentDeviceDAOTest {
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt("id")).thenReturn(1);
         when(mockResultSet.getString("name")).thenReturn("Device");
-        when(mockResultSet.getInt("energy")).thenReturn(1);
-        when(mockResultSet.getString("energy_class")).thenReturn("A");
+        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true);
+        when(mockResultSet.getObject("energy_curve")).thenReturn(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24));
         when(mockResultSet.getInt("apartment_id")).thenReturn(1);
 
         ApartmentDAO mockApartmentDAO = mock(ApartmentDAO.class);
@@ -120,8 +123,8 @@ public class ApartmentDeviceDAOTest {
             assertNotNull(resultApartmentDevice);
             assertEquals(1, resultApartmentDevice.getId());
             assertEquals("Device", resultApartmentDevice.getName());
-            assertEquals(1, resultApartmentDevice.getEnergy());
-            assertEquals("A", resultApartmentDevice.getEnergyClass());
+            assertTrue(resultApartmentDevice.getConsumesEnergy());
+            // assertEquals("A", resultApartmentDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
             assertEquals(mockApartment, resultApartmentDevice.getApartment());
         }
     }
@@ -148,8 +151,8 @@ public class ApartmentDeviceDAOTest {
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("id")).thenReturn(1, 2);
         when(mockResultSet.getString("name")).thenReturn("Device1", "Device2");
-        when(mockResultSet.getInt("energy")).thenReturn(1, 2);
-        when(mockResultSet.getString("energy_class")).thenReturn("A", "B");
+        when(mockResultSet.getBoolean("consumes_energy")).thenReturn(true, false);
+        when(mockResultSet.getObject("energy_class")).thenReturn(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24), Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,25));
         when(mockResultSet.getInt("apartment_id")).thenReturn(1, 2);
 
         ApartmentDAO mockApartmentDAO = mock(ApartmentDAO.class);

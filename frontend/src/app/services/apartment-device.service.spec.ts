@@ -1,15 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
-import { ApartmentDeviceServiceService } from './apartment-device.service';
+import { ApartmentDeviceService } from './apartment-device.service';
 
-describe('ApartmentDeviceServiceService', () => {
-  let service: ApartmentDeviceServiceService;
+describe('ApartmentDeviceService', () => {
+  let service: ApartmentDeviceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule]  // Add HttpClientModule here
     });
-    service = TestBed.inject(ApartmentDeviceServiceService);
+    service = TestBed.inject(ApartmentDeviceService);
   });
 
   it('should be created', () => {

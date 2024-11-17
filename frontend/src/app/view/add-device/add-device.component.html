@@ -20,6 +20,19 @@
           Name is mandatory
         </div>
       </div>
+
+      <!-- Checkbox for Consumes energy -->
+      <div class="checkbox-container">
+        <input 
+          type="checkbox" 
+          id="customCheckbox" 
+          formControlName="consumesEnergy"
+          [checked]="deviceForm.get('consumesEnergy')?.value"
+        />
+        <label for="customCheckbox">Consumes energy</label>
+      </div>
+      
+      
     </div>
   
     <div class="modal-footer">
@@ -32,4 +45,3 @@
       </button>
     </div>
   </form>
-  
