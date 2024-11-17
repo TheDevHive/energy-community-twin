@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit, EventEm
 import * as d3 from 'd3';
 import { EnergyCurve } from '../../models/energy_curve';
 import { DeviceService } from '../../services/device.service';
+import { AlertService } from '../../services/alert.service';
 
 interface EnergyData {
   hour: string;
@@ -28,7 +29,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     { value: 10000, label: '10 KW' }
   ];
   selectedScale = this.energyScales[0].value;
-  
+
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private readonly width = 900;
   private readonly height = 450;
@@ -38,24 +39,25 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
   private yScale: d3.ScaleLinear<number, number>;
 
   constructor(
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private alert: AlertService
   ) {
     // Initialize data with 24 hours
     this.data = Array.from({ length: 24 }, (_, i) => ({
       hour: `${i}:00`,
       value: 50
     }));
-    
+
     // Initialize svg with a temporary empty selection
     this.svg = d3.select(null as unknown as SVGSVGElement);
-    
+
     // Initialize scales and line
     this.xScale = d3.scaleLinear();
     this.yScale = d3.scaleLinear();
     this.line = d3.line<EnergyData>();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     this.createChart();
@@ -67,7 +69,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
       this.updateChart(); // Update the chart with the new data
     }
   }
-  
+
 
   onScaleChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
@@ -129,11 +131,11 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
 
     // Convert x position to hour
     const hour = Math.round(this.xScale.invert(x));
-    
+
     // Ensure hour is within valid range
     if (hour >= 0 && hour < 24) {
       // Convert y position to value
-      const value = Math.max(0, Math.min(this.selectedScale, 
+      const value = Math.max(0, Math.min(this.selectedScale,
         this.yScale.invert(y)
       ));
 
@@ -185,13 +187,16 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
       .attr('class', 'y-axis')
       .call(d3.axisLeft(this.yScale));
 
+    // Determine the color dynamically based on consumption
+    const lineColor = this.type === "Consumption" ? '#dc3545' : '#28a745'; // Red for consumption, green otherwise
+
     // Add line
     g.append('path')
       .datum(this.data)
       .attr('class', 'line')
       .attr('d', this.line)
       .attr('fill', 'none')
-      .attr('stroke', this.type == "Production" ? '#28a745' : '#007bff')
+      .attr('stroke', lineColor)
       .attr('stroke-width', 2);
 
     // Add dots
@@ -203,7 +208,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
       .attr('cx', d => this.xScale(parseInt(d.hour)))
       .attr('cy', d => this.yScale(d.value))
       .attr('r', 4)
-      .attr('fill', this.type == "Production" ? '#28a745' : '#007bff');
+      .attr('fill', lineColor);
 
     // Add labels
     g.append('text')
@@ -219,16 +224,17 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
       .style('text-anchor', 'middle')
       .text('Hour of Day');
   }
+
   savePattern(): void {
     if (!this.deviceUuid) {
       console.error('No deviceUuid ID provided');
       return;
     }
-  
+
     const pattern: EnergyCurve = {
       energyCurve: this.data.map(d => d.value)
     };
-    
+
     this.deviceService.saveEnergyPattern(this.deviceUuid, pattern).subscribe({
       next: (savedPattern) => {
         this.patternSaved.emit(this.data.map((d) => d.value));
@@ -240,5 +246,15 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
         // Handle error (maybe show a notification)
       }
     });
+  }
+
+  resetPattern(): void {
+    this.data = this.data.map(d => ({
+      ...d,
+      value: 50
+    }));
+    this.updateChart();
+    // se a yellow warning message saying that the reset must be confirmed by saving
+    this.alert.setAlertDevice('warning', 'The curve has been reset. Changes will be lost if not saved.');
   }
 }
