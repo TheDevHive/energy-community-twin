@@ -87,9 +87,11 @@
       <!-- Right Column: Chart -->
       <div class="col-lg-8">
         <div class="card border shadow-sm h-100">
-          <div class="card-body d-flex justify-content-center align-items-center">
-            <app-energy-simulator [deviceUuid]="'B' + deviceId"
-              [type]="device.consumesEnergy ? 'Consumption' : 'Production'" (patternSaved)="onPatternSaved($event)">
+          <div class="card-body" style="padding: 5%;">  <!-- Removed d-flex classes here -->
+            <app-energy-simulator 
+              [deviceUuid]="'B' + deviceId"
+              [type]="device.consumesEnergy ? 'Consumption' : 'Production'" 
+              (patternSaved)="onPatternSaved($event)">
             </app-energy-simulator>
           </div>
         </div>
