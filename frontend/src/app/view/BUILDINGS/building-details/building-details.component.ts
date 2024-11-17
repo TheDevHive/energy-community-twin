@@ -423,6 +423,13 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   // Utility methods
+  getEnergyDeviceIcon(device: BuildingDevice): string {
+    if (device.consumesEnergy) {
+      return 'bi-arrow-down-right text-danger';
+    }
+    return 'bi-arrow-up-right text-success';
+  }
+
   getEnergyIcon(energy: number): string {
     if (energy > 0) {
       return 'bi-arrow-up-right text-success';

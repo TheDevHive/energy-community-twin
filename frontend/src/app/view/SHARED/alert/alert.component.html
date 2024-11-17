@@ -21,3 +21,9 @@
     <div [innerHTML]="alert.alertBuildingDevices.message"></div>
     <button type="button" class="btn-close" (click)="alert.alertBuildingDevices.show=false" aria-label="Close"></button>
 </div>
+
+<!-- Alert Page Device -->
+<div *ngIf="alert.alertDevice.show && page == 'Device'" [ngClass]="['alert', 'alert-' + alert.alertDevice.type, 'alert-dismissible', 'fade', 'show']" role="alert">
+    <div [innerHTML]="alert.alertDevice.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertDevice.show=false" aria-label="Close"></button>
+</div>

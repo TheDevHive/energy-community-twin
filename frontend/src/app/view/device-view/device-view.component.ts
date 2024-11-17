@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BuildingDeviceService } from '../../services/building-device.service';
 import { BuildingDevice } from '../../models/building_device';
 import { EnergySimulatorComponent } from '../energy-simulator/energy-simulator.component';
+import { AlertService } from '../../services/alert.service';
 
 interface EnergyData {
   hour: string;
@@ -26,7 +27,8 @@ export class DeviceViewComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private buildingDeviceService: BuildingDeviceService
+    private buildingDeviceService: BuildingDeviceService,
+    private alert: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -95,6 +97,7 @@ export class DeviceViewComponent {
   onPatternSaved(updatedEnergyCurve: number[]): void {
     this.device.energy_curve.energyCurve = updatedEnergyCurve;
     this.energyClassValue = this.energyClass(this.device); // Update energy class
+    this.alert.setAlertDevice('success', 'Energy pattern saved successfully!');
   }
   
 }
