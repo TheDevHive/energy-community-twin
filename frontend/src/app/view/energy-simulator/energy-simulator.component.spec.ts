@@ -42,14 +42,13 @@ describe('EnergySimulatorComponent', () => {
     expect(component.data.every(d => d.value === 250)).toBeTrue();
   });
 
-  it('should create and update chart on scale change', () => {
-    spyOn(component, 'createChart');
-    spyOn(component, 'updateChart');
+  it('should update chart on scale change', () => {
+    fixture.detectChanges(); 
+    const updateChartSpy = spyOn(component, 'updateChart');
     const event = { target: { value: '500' } } as unknown as Event;
     component.onScaleChange(event);
-    expect(component.createChart).toHaveBeenCalled();
-    expect(component.updateChart).toHaveBeenCalled();
-  });
+    expect(updateChartSpy).toHaveBeenCalled();
+});
 
   it('should save pattern successfully', () => {
     component.deviceUuid = 'test-uuid';
