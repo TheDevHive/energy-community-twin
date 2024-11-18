@@ -1,0 +1,343 @@
+<!-- building-details.component.html -->
+<div class="container-fluid p-0 vh-100 d-flex flex-column">
+    <div class="content-area p-4">
+        <!-- Building Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="text-primary mb-2">
+                                    <i class="bi bi-building me-2"></i>{{ building?.address }} - Building Details
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Quick Stats (Three Cards in a Row) -->
+        <div class="row g-4 mb-4">
+            <!-- Total Devices Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card border shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stats-icon bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                <i class="bi bi-cpu text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1">Total Building Devices</h6>
+                                <h4 class="mb-0">{{deviceDataSource.data.length}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Apartments Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card border shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stats-icon bg-info bg-opacity-10 p-3 rounded-circle me-3">
+                                <i class="bi bi-house-door text-info fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1">Total Apartments</h6>
+                                <h4 class="mb-0">{{apartmentDataSource.data.length}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Residents Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card border shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stats-icon bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                                <i class="bi bi-people text-success fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1">Total Residents</h6>
+                                <h4 class="mb-0">{{totalResidents}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buildings Section Header -->
+        <div
+            class="d-flex flex-column align-items-start align-items-md-center flex-md-row justify-content-between mb-4">
+            <ol class="breadcrumb mb-2 mb-md-0">
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', building?.community?.id]"
+                        style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <h5 class="card-title mb-0 d-inline">Building Devices List</h5>
+                </li>
+            </ol>
+            <button class="btn btn-primary mt-2 mt-md-0 align-self-start align-self-md-center"
+                (click)="openAddDeviceDialog()">
+                <i class="bi bi-plus-lg me-2"></i>
+                Add New Device
+            </button>
+        </div>
+
+        <app-alert [page]="'BuildingDevices'"></app-alert>
+
+        <!-- Devices Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <!-- Empty State for Devices -->
+                <div *ngIf="!deviceDataSource.data.length" class="text-center py-5">
+                    <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px;">
+                        <i class="bi bi-cpu text-primary fs-1"></i>
+                    </div>
+                    <h5 class="text-muted mb-3">No Devices Added Yet</h5>
+                    <p class="text-muted mb-4">
+                        Start by adding devices to monitor your building's energy consumption and production.
+                    </p>
+                    <button class="btn btn-primary" (click)="openAddDeviceDialog()">
+                        <i class="bi bi-plus-lg me-2"></i>Add Your First Device
+                    </button>
+                </div>
+
+                <!-- Devices Table -->
+                <div class="table-responsive" *ngIf="deviceDataSource.data.length">
+                    <table mat-table [dataSource]="deviceDataSource" matSort
+                        (matSortChange)="onDeviceSortChange($event)" #deviceSort="matSort"
+                        class="table align-middle mb-0 bg-white">
+                        <!-- ID Column -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                            <td mat-cell *matCellDef="let device">{{device.id}}</td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                            <td mat-cell *matCellDef="let device">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-cpu me-2"></i>
+                                    {{device.name}}
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Column -->
+                        <ng-container matColumnDef="energy">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Energy</th>
+                            <td mat-cell *matCellDef="let device">
+                                <span class="me-2">
+                                    <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
+                                </span>
+                                {{ (energy(device) / 24) | number:'1.2-2' }} Wh
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Class Column -->
+                        <!-- Adjusted Energy Class Column in Devices Table -->
+                        <ng-container matColumnDef="energyClass">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Energy Class</th>
+                            <td mat-cell *matCellDef="let device">
+                                <span class="badge bg-{{getEnergyClassColor(device.energyClass)}} energy-class-badge">
+                                    {{energyClass(device)}}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <!-- Actions Column -->
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Actions</th>
+                            <td mat-cell *matCellDef="let device">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm" (click)="navigateToDevice(device.id)">
+                                        Details
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" (click)="openEditDeviceDialog(device)">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" (click)="openDeleteDeviceDialog(device)">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="deviceColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: deviceColumns;"></tr>
+                    </table>
+
+                    <mat-paginator #devicePaginator [pageSizeOptions]="[5, 10, 20]"
+                        showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buildings Section Header -->
+        <div
+            class="d-flex flex-column align-items-start align-items-md-center flex-md-row justify-content-between mb-4">
+            <ol class="breadcrumb mb-2 mb-md-0">
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', building?.community?.id]"
+                        style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <h5 class="card-title mb-0 d-inline">Building Apartments List</h5>
+                </li>
+            </ol>
+            <button class="btn btn-primary mt-2 mt-md-0 align-self-start align-self-md-center"
+                (click)="openAddApartmentDialog()">
+                <i class="bi bi-plus-lg me-2"></i>
+                Add New Apartment
+            </button>
+        </div>
+
+        <app-alert [page]="'Apartments'"></app-alert>
+
+        <!-- Apartments Section -->
+        <div class="card">
+            <div class="card-body">
+                <!-- Empty State for Apartments -->
+                <div *ngIf="!apartmentDataSource.data.length" class="text-center py-5">
+                    <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px;">
+                        <i class="bi bi-house-door text-primary fs-1"></i>
+                    </div>
+                    <h5 class="text-muted mb-3">No Apartments Added Yet</h5>
+                    <p class="text-muted mb-4">
+                        Start by adding apartments to track residential energy usage and occupancy.
+                    </p>
+                    <button class="btn btn-primary" (click)="openAddApartmentDialog()">
+                        <i class="bi bi-plus-lg me-2"></i>Add Your First Apartment
+                    </button>
+                </div>
+
+                <!-- Apartments Table -->
+                <div class="table-responsive" *ngIf="apartmentDataSource.data.length">
+                    <table mat-table [dataSource]="apartmentDataSource" matSort
+                        (matSortChange)="onApartmentSortChange($event)" #apartmentSort="matSort"
+                        class="table align-middle mb-0 bg-white">
+                        <!-- ID Column -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                            <td mat-cell *matCellDef="let apartment">{{apartment.id}}</td>
+                        </ng-container>
+
+                        <!-- Residents Column -->
+                        <ng-container matColumnDef="residents">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Residents</th>
+                            <td mat-cell *matCellDef="let apartment">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-people me-2"></i>
+                                    {{apartment.residents}}
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- Square Footage Column -->
+                        <ng-container matColumnDef="squareFootage">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Square Footage</th>
+                            <td mat-cell *matCellDef="let apartment">{{apartment.squareFootage}} m²</td>
+                        </ng-container>
+
+                        <!-- Energy Class Column -->
+                        <!-- Adjusted Energy Class Column in Apartments Table -->
+                        <ng-container matColumnDef="energyClass">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Energy Class</th>
+                            <td mat-cell *matCellDef="let apartment">
+                                <span
+                                    class="badge bg-{{getEnergyClassColor(apartment.energyClass)}} energy-class-badge">
+                                    {{apartment.stats.energyClass}}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Production Column -->
+                        <ng-container matColumnDef="energyProduction">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Production</th>
+                            <td mat-cell *matCellDef="let apartment">
+                                <span class="text-success me-2">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </span>
+                                {{apartment.stats.energyProduction}} kWh
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Consumption Column -->
+                        <ng-container matColumnDef="energyConsumption">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Consumption</th>
+                            <td mat-cell *matCellDef="let apartment">
+                                <span class="text-danger me-2">
+                                    <i class="bi bi-arrow-down-right"></i>
+                                </span>
+                                {{apartment.stats.energyConsumption}} kWh
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Difference Column -->
+                        <ng-container matColumnDef="energyDifference">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Difference</th>
+                            <td mat-cell *matCellDef="let apartment">
+                                <span class="me-2">
+                                    <i class="bi" [ngClass]="getEnergyIcon(calculateEnergyDifference(apartment))"></i>
+                                </span>
+                                {{calculateEnergyDifference(apartment)}} kWh
+                            </td>
+                        </ng-container>
+
+                        <!-- Actions Column -->
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Actions</th>
+                            <td mat-cell *matCellDef="let apartment">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm" (click)="navigateToApartment(apartment.id)" disabled="true">
+                                        Details
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm"
+                                        (click)="openEditApartmentDialog(apartment)">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm"
+                                        (click)="openDeleteApartmentDialog(apartment)">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="apartmentColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: apartmentColumns;"></tr>
+                    </table>
+
+                    <mat-paginator #apartmentPaginator [pageSizeOptions]="[5, 10, 20]"
+                        showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="modal-header modal-dark">
+    <h4 class="modal-title">{{ isEdit ? 'Edit Device' : 'Add Device' }}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+  </div>
+  
+  <form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <!-- Field for device name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          formControlName="name"
+          placeholder="Enter device name"
+          [ngClass]="{ 'is-invalid': deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched }"
+        />
+        <div class="invalid-feedback" *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
+          Name is mandatory
+        </div>
+      </div>
+
+      <!-- Checkbox for Consumes energy -->
+      <div class="checkbox-container">
+        <input 
+          type="checkbox" 
+          id="customCheckbox" 
+          formControlName="consumesEnergy"
+          [checked]="deviceForm.get('consumesEnergy')?.value"
+        />
+        <label for="customCheckbox">Consumes energy</label>
+      </div>
+      
+      
+    </div>
+  
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" [disabled]="loading">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || loading">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
+        {{ isEdit ? 'Edit Device' : 'Add Device' }}
+      </button>
+    </div>
+  </form>

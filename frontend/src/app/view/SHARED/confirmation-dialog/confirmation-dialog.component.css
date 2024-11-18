@@ -1,0 +1,14 @@
+/* confirmation-dialog.component.css */
+.bg-danger {
+  background-color: #dc3545 !important;
+  color: white;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+  color: black;
+}
+
+.modal-body-dark {
+  color: black;
+}

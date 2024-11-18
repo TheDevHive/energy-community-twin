@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CommunityService } from './community.service';
 import { Community } from '../models/community';
-import { Building } from '../models/building';
+import { Building, BuildingStats } from '../models/building';
 import { Admin } from '../models/admin';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
@@ -21,14 +21,32 @@ describe('CommunityService', () => {
   const mockCommunity: Community = {
     id: 1,
     name: 'Test Community',
-    admin: mockAdmin
+    admin: mockAdmin,
+    stats: {
+      communityId: 1,
+      buildings: 5,
+      apartments: 25,
+      members: 100,
+      energyProduction: 5000,
+      energyConsumption: 4500
+    }
+  };
+
+  // Define a mock BuildingStats object
+  const mockBuildingStats: BuildingStats = {
+    buildingId: 1,
+    apartments: 5,
+    members: 20,
+    energyProduction: 1000,
+    energyConsumption: 900
   };
 
   const mockBuilding: Building = {
     id: 1,
     community: mockCommunity,
     address: '123 Test St',
-    floors: 3
+    floors: 3,
+    stats: mockBuildingStats // Add the stats property here
   };
 
   beforeEach(() => {

@@ -1,0 +1,28 @@
+<div class="container-fluid p-0">
+  <div class="row mb-3 align-items-center">
+    <div class="col-12 col-sm-6 mb-2 mb-sm-0 text-center text-sm-start">
+      <button class="btn btn-primary btn-md me-2" style="font-weight: 500;" (click)="savePattern()" [disabled]="!deviceUuid">
+        Save Pattern
+      </button>
+      <button class="btn btn-secondary btn-md" style="font-weight: 500;" (click)="resetPattern()" [disabled]="!deviceUuid">
+        Reset Pattern
+      </button>
+    </div>
+    <!--div class="col-12 col-sm-6 text-center text-sm-end">
+      <label for="energyScale" class="me-2">Max Scale:</label>
+      <select id="energyScale" class="form-select form-select-md d-inline-block" style="max-width: 150px;" (change)="onScaleChange($event)">
+        <option *ngFor="let scale of energyScales" [value]="scale.value">
+          {{ scale.label }}
+        </option>
+      </select>
+    </div-->
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div #chartContainer class="chart-container w-100"></div>
+      <small class="text-muted mt-2 d-block text-center">
+        Click and drag (or touch and drag on mobile) anywhere on the chart to modify the energy levels.
+      </small>
+    </div>
+  </div>
+</div>

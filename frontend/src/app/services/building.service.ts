@@ -7,6 +7,8 @@ import { ResponseEntity } from '../models/response-entity';
 import { ApiResponseService } from './api-response.service';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { BuildingStats } from '../models/building';
+import { BuildingDevice } from '../models/building_device';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +31,15 @@ export class BuildingService {
     );
   }
 
+  getStats(): Observable<BuildingStats[]> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<BuildingStats[]>>(`${this.apiUrl}/stats`, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
   createBuilding(building: Partial<Building>): Observable<Building> {
     return this.apiResponseService.extractBody(
       this.http.post<ResponseEntity<Building>>(`${this.apiUrl}`, building, {
@@ -41,6 +52,15 @@ export class BuildingService {
   removeBuilding(buildingId: number): Observable<Building> {
     return this.apiResponseService.extractBody(
       this.http.delete<ResponseEntity<Building>>(`${this.apiUrl}/${buildingId}`, {
+        headers : this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
+  getDevices(buildingId: number): Observable<BuildingDevice[]> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<BuildingDevice[]>>(`${this.apiUrl}/${buildingId}/devices`, {
         headers : this.auth.getHeaders(),
         observe: 'response'
       })
@@ -76,6 +96,15 @@ export class BuildingService {
           observe: 'response'
         }
       )
+    );
+  }
+
+  updateBuilding(building: Building): Observable<Building> {
+    return this.apiResponseService.extractBody(
+      this.http.put<ResponseEntity<Building>>(`${this.apiUrl}`, building, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
     );
   }
 }

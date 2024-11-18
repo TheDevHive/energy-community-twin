@@ -1,9 +1,12 @@
+import { EnergyCurve } from "./energy_curve";
+
+import { Building } from "./building";
+
 export interface BuildingDevice
 {
     id: number;
     name: string;
-    log_path: string;
-    consumes_energy: boolean;
-    energy_class: string;
-    building_id: number;
+    consumesEnergy: boolean;
+    energy_curve: EnergyCurve;
+    building: Building | null;
 }

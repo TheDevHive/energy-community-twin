@@ -4,16 +4,16 @@ public class Apartment {
     private int id;
     private Building building;
     private int residents;
-    private int square_footage;
-    private String energy_class;
+    private int squareFootage;
+    private String energyClass;
     private User user;
 
-    public Apartment(int id, Building building, int residents, int square_footage, String energy_class, User user) {
+    public Apartment(int id, Building building, int residents, int squareFootage, String energyClass, User user) {
         this.id = id;
         this.building = building;
         this.residents = residents;
-        this.square_footage = square_footage;
-        this.energy_class = energy_class;
+        this.squareFootage = squareFootage;
+        this.energyClass = energyClass;
         this.user = user;
     }
 
@@ -30,11 +30,11 @@ public class Apartment {
     }
 
     public int getSquareFootage() {
-        return square_footage;
+        return squareFootage;
     }
 
     public String getEnergyClass() {
-        return energy_class;
+        return energyClass;
     }
 
     public User getUser() {
@@ -43,6 +43,10 @@ public class Apartment {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void getBuilding(Building building) {
+        this.building = building;
     }
 
     public void setBuilding(Building building) {
@@ -54,24 +58,25 @@ public class Apartment {
     }
 
     public void setSquareFootage(int square_footage) {
-        this.square_footage = square_footage;
+        this.squareFootage = square_footage;
     }
 
     public void setEnergyClass(String energy_class) {
-        this.energy_class = energy_class;
+        this.energyClass = energy_class;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
+
     public String toString() {
         return "Apartment{" +
                 "id=" + id +
                 ", building=" + building +
                 ", residents=" + residents +
-                ", square_footage=" + square_footage +
-                ", energy_class=" + energy_class +
+                ", square_footage=" + squareFootage +
+                ", energy_class=" + energyClass +
                 ", user=" + user +
                 '}';
     }

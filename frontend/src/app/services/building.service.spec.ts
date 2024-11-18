@@ -1,13 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { BuildingService } from './building.service';
-import { Community } from '../models/community';
-import { Building } from '../models/building';
-import { Apartment } from '../models/apartment';
-import { Admin } from '../models/admin';
-import { User } from '../models/user';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { BUILDINGS } from '../MOCKS/BUILDINGS';
+import { COMMUNITIES } from '../MOCKS/COMMUNITIES';
+import { Apartment } from '../models/apartment';
 
 describe('BuildingService', () => {
   let service: BuildingService;
@@ -15,46 +13,10 @@ describe('BuildingService', () => {
   let authService: jasmine.SpyObj<AuthService>;
   const apiUrl = `${environment.API_ENDPOINT}/api/buildings`;
 
-  const mockAdmin: Admin = {
-    id: 1,
-    email: 'admin@test.com'
-  };
-
-  const mockCommunity: Community = {
-    id: 1,
-    name: 'Test Community',
-    admin: mockAdmin
-  };
-
-  const mockBuilding: Building = {
-    id: 1,
-    community: mockCommunity,
-    address: '123 Test St',
-    floors: 3
-  };
-
-  const mockUser: User = {
-    id: 1,
-    name: 'John',
-    surname: 'Doe',
-    birth_date: new Date(),
-    phone: '1234567890',
-    email: 'john@test.com'
-  };
-
-  const mockApartment: Apartment = {
-    id: 1,
-    building_id: mockBuilding.id,
-    residents: 2,
-    square_footage: 100,
-    energy_class: 'A',
-    user_id: mockUser.id
-  };
-
   beforeEach(() => {
     const authServiceSpy = jasmine.createSpyObj('AuthService', ['getHeaders']);
     authServiceSpy.getHeaders.and.returnValue({
-      set: () => ({ 'Authorization': 'Bearer test-token' })
+      'Authorization': 'Bearer test-token'
     });
 
     TestBed.configureTestingModule({
@@ -80,82 +42,100 @@ describe('BuildingService', () => {
 
   describe('getBuilding', () => {
     it('should return a building by id', () => {
-      service.getBuilding(1).subscribe(building => {
-        expect(building).toEqual(mockBuilding);
+      const buildingId = BUILDINGS[0].id;
+
+      service.getBuilding(buildingId).subscribe(building => {
+        expect(building).toEqual(BUILDINGS[0]);
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/1`);
+      const req = httpMock.expectOne(`${apiUrl}/${buildingId}`);
       expect(req.request.method).toBe('GET');
-      req.flush(mockBuilding);
+      req.flush(BUILDINGS[0]);
     });
   });
 
   describe('createBuilding', () => {
     it('should create a new building', () => {
       const newBuilding = {
-        community: mockCommunity,
+        community: COMMUNITIES[0],
         address: '123 New St',
-        floors: 4
+        floors: 4,
+        stats: BUILDINGS[0].stats
       };
 
       service.createBuilding(newBuilding).subscribe(building => {
-        expect(building).toEqual(mockBuilding);
+        expect(building).toEqual(BUILDINGS[0]);
       });
 
       const req = httpMock.expectOne(apiUrl);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(newBuilding);
-      req.flush(mockBuilding);
+      req.flush(BUILDINGS[0]);
     });
   });
 
   describe('removeBuilding', () => {
     it('should delete a building', () => {
-      service.removeBuilding(1).subscribe(building => {
-        expect(building).toEqual(mockBuilding);
+      const buildingId = BUILDINGS[0].id;
+
+      service.removeBuilding(buildingId).subscribe(building => {
+        expect(building).toEqual(BUILDINGS[0]);
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/1`);
+      const req = httpMock.expectOne(`${apiUrl}/${buildingId}`);
       expect(req.request.method).toBe('DELETE');
-      req.flush(mockBuilding);
+      req.flush(BUILDINGS[0]);
     });
   });
 
   describe('getApartments', () => {
     it('should get all apartments for a building', () => {
-      const mockApartments: Apartment[] = [mockApartment];
-
-      service.getApartments(1).subscribe(apartments => {
+      const buildingId = BUILDINGS[0].id;
+  
+      // Define mock apartments
+      const mockApartments: Apartment[] = [
+        { id: 1, buildingId: buildingId, residents: 2, squareFootage: 100, userId: 1, stats: { apartmentId: 1, energyProduction: 10, energyConsumption: 5, energyClass: 'A' } },
+        { id: 2, buildingId: buildingId, residents: 3, squareFootage: 150, userId: 2, stats: { apartmentId: 2, energyProduction: 15, energyConsumption: 7, energyClass: 'B' } }
+      ];
+  
+      service.getApartments(buildingId).subscribe(apartments => {
         expect(apartments).toEqual(mockApartments);
       });
-
-      const req = httpMock.expectOne(`${apiUrl}/1/apartments`);
+  
+      const req = httpMock.expectOne(`${apiUrl}/${buildingId}/apartments`);
       expect(req.request.method).toBe('GET');
       req.flush(mockApartments);
     });
   });
+  
 
   describe('addApartment', () => {
     it('should add an apartment to a building', () => {
-      service.addApartment(1, 1).subscribe(building => {
-        expect(building).toEqual(mockBuilding);
+      const buildingId = BUILDINGS[0].id;
+      const apartmentId = 1;
+
+      service.addApartment(buildingId, apartmentId).subscribe(building => {
+        expect(building).toEqual(BUILDINGS[0]);
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/1/apartments/1`);
+      const req = httpMock.expectOne(`${apiUrl}/${buildingId}/apartments/${apartmentId}`);
       expect(req.request.method).toBe('POST');
-      req.flush(mockBuilding);
+      req.flush(BUILDINGS[0]);
     });
   });
 
   describe('removeApartment', () => {
     it('should remove an apartment from a building', () => {
-      service.removeApartment(1, 1).subscribe(building => {
-        expect(building).toEqual(mockBuilding);
+      const buildingId = BUILDINGS[0].id;
+      const apartmentId = 1;
+
+      service.removeApartment(buildingId, apartmentId).subscribe(building => {
+        expect(building).toEqual(BUILDINGS[0]);
       });
 
-      const req = httpMock.expectOne(`${apiUrl}/1/apartments/1`);
+      const req = httpMock.expectOne(`${apiUrl}/${buildingId}/apartments/${apartmentId}`);
       expect(req.request.method).toBe('DELETE');
-      req.flush(mockBuilding);
+      req.flush(BUILDINGS[0]);
     });
   });
 });
