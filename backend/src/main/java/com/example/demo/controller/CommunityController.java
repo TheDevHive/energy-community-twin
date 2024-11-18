@@ -19,6 +19,8 @@ import java.util.List;
 @RequestMapping("/api/communities")
 public class CommunityController {
 
+    private BuildingController buildingController;
+
     @PostMapping
     public ResponseEntity<Community> addCommunity(HttpServletRequest req, @RequestBody Community community) {
         Credentials creds = AuthUtility.getRequestCredential(req);
@@ -191,7 +193,13 @@ public class CommunityController {
         List<List<Apartment>> apartments = new ArrayList<>();
 
         ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
+
+        int energyProduction = 0;
+        int energyConsumption = 0;
+
         for (Building building : buildings) {
+            energyProduction += BuildingController.getEnergyProduction(building.getId());
+            energyConsumption += BuildingController.getEnergyConsumption(building.getId());
             List<Apartment> tempApartments = apartmentDAO.findAll().stream()
                     .filter(apartment -> apartment.getBuilding().getId() == building.getId())
                     .toList();
@@ -204,9 +212,6 @@ public class CommunityController {
                 .filter(apartment -> apartment.getUser() != null)
                 .mapToInt(Apartment::getResidents)
                 .sum();
-
-        int energyProduction = 0;
-        int energyConsumption = 0;
 
         return new CommunityStats(
                 community.getId(),

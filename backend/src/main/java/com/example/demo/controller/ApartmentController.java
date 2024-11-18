@@ -5,6 +5,7 @@ import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.ApartmentStats;
+import com.example.demo.model.BuildingDevice;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DBManager;
 import jakarta.servlet.http.HttpServletRequest;
