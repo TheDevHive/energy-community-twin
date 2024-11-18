@@ -31,7 +31,7 @@ jobs:
       - name: Build and push Docker images
         env:
           # Convert repository name to lowercase
-          GITHUB_REPOSITORY: ${{ github.repository }}.lower()
+          GITHUB_REPOSITORY: thedevhive/energy-community-twin
           GITHUB_SHA: ${{ github.sha }}
         run: |
           # Build images
