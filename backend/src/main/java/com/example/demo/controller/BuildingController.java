@@ -131,6 +131,7 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/devices")
+
     public ResponseEntity<List<BuildingDevice>> getAllDevices(HttpServletRequest req, @PathVariable int buildingId) {
         if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         List<BuildingDevice> devices=DBManager.getInstance().getBuildingDeviceDAO().findAll().stream().filter(device -> device.getBuilding().getId() == buildingId).toList();
@@ -172,7 +173,8 @@ public class BuildingController {
                 totApartments,
                 totMembers,
                 energyProduction,
-                energyConsumption
+                energyConsumption,
+                getEnergyClass(energyProduction, energyConsumption)
         );
     }
 
@@ -198,5 +200,15 @@ public class BuildingController {
         }
 
         return energyConsumption;
+    }
+
+    private char getEnergyClass(int energyProduction, int energyConsumption) {
+        if (energyProduction > energyConsumption) {
+            return 'A';
+        } else if (energyProduction == energyConsumption) {
+            return 'B';
+        } else {
+            return 'C';
+        }
     }
 }

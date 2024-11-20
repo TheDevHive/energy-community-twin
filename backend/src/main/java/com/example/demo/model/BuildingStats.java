@@ -7,13 +7,15 @@ public class BuildingStats {
     private int members;
     private int energyProduction;
     private int energyConsumption;
+    private char energyClass;
 
-    public BuildingStats(int buildingId, int apartments, int members, int energyProduction, int energyConsumption) {
+    public BuildingStats(int buildingId, int apartments, int members, int energyProduction, int energyConsumption, char energyClass) {
         this.buildingId = buildingId;
         this.apartments = apartments;
         this.members = members;
         this.energyProduction = energyProduction;
         this.energyConsumption = energyConsumption;
+        this.energyClass = energyClass;
     }
 
     public int getApartments() {
@@ -22,6 +24,10 @@ public class BuildingStats {
 
     public int getMembers() {
         return members;
+    }
+
+    public char getEnergyClass() {
+        return energyClass;
     }
 
     public int getEnergyProduction() {
@@ -56,6 +62,10 @@ public class BuildingStats {
         this.buildingId = buildingId;
     }
 
+    public void setEnergyClass(char energyClass) {
+        this.energyClass = energyClass;
+    }
+
     public String toString() {
         return "BuildingStats{" +
                 "buildingId=" + buildingId +
@@ -63,6 +73,7 @@ public class BuildingStats {
                 ", members=" + members +
                 ", energyProduction=" + energyProduction +
                 ", energyConsumption=" + energyConsumption +
+                ", energyClass=" + energyClass +
                 '}';
     }
 }

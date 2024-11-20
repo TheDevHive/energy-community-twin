@@ -31,7 +31,7 @@ import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/buil
 import { AddApartmentComponent } from './view/add-apartment/add-apartment.component';
 import { AddDeviceComponent } from './view/add-device/add-device.component';
 import { DeviceViewComponent } from './view/device-view/device-view.component';
-
+import { ApartmentComponent } from './view/apartment/apartment.component';
 
 
 @NgModule({
@@ -51,7 +51,8 @@ import { DeviceViewComponent } from './view/device-view/device-view.component';
     BuildingDetailsComponent,
     AddApartmentComponent,
     AddDeviceComponent,
-    DeviceViewComponent
+    DeviceViewComponent,
+    ApartmentComponent
   ],
   imports: [
     BrowserModule,

@@ -203,7 +203,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
           apartments: 0,
           members: 0,
           energyProduction: 0,
-          energyConsumption: 0
+          energyConsumption: 0,
+          energyClass: ''
         };
         this.buildings = [...this.buildings, newBuilding];
         this.dataSource.data = this.buildings;

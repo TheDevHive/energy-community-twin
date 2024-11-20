@@ -11,6 +11,7 @@ import { BuildingDetailsComponent } from './view/BUILDINGS/building-details/buil
 import { AuthGuard } from './guards/auth.guard';
 import { LogoutGuard } from './guards/logout.guard';
 import { DeviceViewComponent } from './view/device-view/device-view.component';
+import { ApartmentComponent } from './view/apartment/apartment.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/communities', pathMatch: 'full' },
@@ -21,7 +22,8 @@ const routes: Routes = [
   { path: 'communities/:id/add', component: AddBuildingComponent, canActivate: [AuthGuard] },
   { path: 'communities/:id/buildings/:buildingId', component: BuildingsComponent, canActivate: [AuthGuard] },
   { path: 'buildings/:buildingId', component: BuildingDetailsComponent, canActivate: [AuthGuard] },
-  { path: 'devices/:id', component: DeviceViewComponent, canActivate: [AuthGuard] }
+  { path: 'devices/:id', component: DeviceViewComponent, canActivate: [AuthGuard] },
+  { path: 'apartments/:id', component: ApartmentComponent, canActivate: [AuthGuard] }
 ];
 
 

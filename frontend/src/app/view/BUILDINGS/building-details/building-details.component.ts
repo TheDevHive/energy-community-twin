@@ -544,6 +544,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   navigateToApartment(id: number): void {
-    //this.router.navigate(['/apartments', id]);
+    this.router.navigate(['/apartments', id]);
   }
 }

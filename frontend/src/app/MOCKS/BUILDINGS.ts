@@ -31,7 +31,8 @@ export const BUILDINGS: Building[] = [
             apartments: 5,
             members: 20,
             energyProduction: 1000,
-            energyConsumption: 900
+            energyConsumption: 900,
+            energyClass: 'A'
         }
     },
     {
@@ -44,7 +45,8 @@ export const BUILDINGS: Building[] = [
             apartments: 7,
             members: 30,
             energyProduction: 1500,
-            energyConsumption: 1300
+            energyConsumption: 1300,
+            energyClass: 'A'
         }
     },
     {
@@ -57,7 +59,8 @@ export const BUILDINGS: Building[] = [
             apartments: 13,
             members: 50,
             energyProduction: 2500,
-            energyConsumption: 3300
+            energyConsumption: 3300,
+            energyClass: 'B'
         }
     },
     {
@@ -70,7 +73,8 @@ export const BUILDINGS: Building[] = [
             apartments: 10,
             members: 40,
             energyProduction: 2000,
-            energyConsumption: 1800
+            energyConsumption: 1800,
+            energyClass: 'A'
         }
     },
     {
@@ -83,7 +87,8 @@ export const BUILDINGS: Building[] = [
             apartments: 10,
             members: 40,
             energyProduction: 2000,
-            energyConsumption: 2000
+            energyConsumption: 2000,
+            energyClass: 'B'
         }
     },
     {
@@ -96,7 +101,8 @@ export const BUILDINGS: Building[] = [
             apartments: 10,
             members: 40,
             energyProduction: 2000,
-            energyConsumption: 1800
+            energyConsumption: 1800,
+            energyClass: 'A'
         }
     },
     {
@@ -109,7 +115,8 @@ export const BUILDINGS: Building[] = [
             apartments: 10,
             members: 40,
             energyProduction: 2000,
-            energyConsumption: 1800
+            energyConsumption: 1800,
+            energyClass: 'A'
         }
     },
     {
@@ -122,7 +129,8 @@ export const BUILDINGS: Building[] = [
             apartments: 10,
             members: 40,
             energyProduction: 2000,
-            energyConsumption: 1800
+            energyConsumption: 1800,
+            energyClass: 'A'
         }
     },
     {
@@ -135,7 +143,8 @@ export const BUILDINGS: Building[] = [
             apartments: 10,
             members: 40,
             energyProduction: 2000,
-            energyConsumption: 1800
+            energyConsumption: 1800,
+            energyClass: 'A'
         }
     }
 ]

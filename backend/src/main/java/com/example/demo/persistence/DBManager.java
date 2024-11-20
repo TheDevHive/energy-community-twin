@@ -26,7 +26,7 @@ public class DBManager {
 
     private Connection connection;
 
-    public Connection getConnection() {
+    public synchronized Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath + dbName);
