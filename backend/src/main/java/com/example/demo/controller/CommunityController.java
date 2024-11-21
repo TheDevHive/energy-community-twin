@@ -207,6 +207,15 @@ public class CommunityController {
             apartments.add(tempApartments);
         }
 
+        for (List<Apartment> apartmentList : apartments)
+        {
+            for (Apartment apartment : apartmentList)
+            {
+                energyConsumption += ApartmentController.getEnergyConsumption(apartment.getId());
+                energyProduction += ApartmentController.getEnergyProduction(apartment.getId());
+            }
+        }
+
         int totMembers = apartments.stream()
                 .flatMap(List::stream)
                 .filter(apartment -> apartment.getUser() != null)

@@ -168,6 +168,12 @@ public class BuildingController {
         int energyProduction = getEnergyProduction(building.getId());
         int energyConsumption = getEnergyConsumption(building.getId());
 
+        for (Apartment apartment : apartments)
+        {
+            energyConsumption += ApartmentController.getEnergyConsumption(apartment.getId());
+            energyProduction += ApartmentController.getEnergyProduction(apartment.getId());
+        }
+
         return new BuildingStats(
                 building.getId(),
                 totApartments,
