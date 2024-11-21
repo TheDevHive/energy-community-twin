@@ -7,6 +7,7 @@ import { AlertService } from '../../services/alert.service';
 import { ApartmentDevice } from '../../models/apartment_device';
 import { ApartmentDeviceService } from '../../services/apartment-device.service';
 import { Building } from '../../models/building';
+import { Apartment } from '../../models/apartment';
 
 interface EnergyData {
   hour: string;
@@ -21,8 +22,9 @@ interface EnergyData {
 export class DeviceViewComponent {
   deviceLoaded: boolean = false;
   building?: Building | null;
+  apartment?: Apartment | null;
   deviceId!: number;
-  device!: BuildingDevice | ApartmentDevice;
+  device!: BuildingDevice | ApartmentDevice | null;
   buildingAddress!: string;
   isBuildingDevice!: boolean;
   communityName!: string;
@@ -39,6 +41,7 @@ export class DeviceViewComponent {
   ) {}
 
   ngOnInit(): void {
+    this.alert.clearAlertDevice();
     const uuid = this.route.snapshot.paramMap.get('id');
     if (uuid == null || (uuid[0] !== 'A' && uuid[0] !== 'B')) return;
   
@@ -79,7 +82,6 @@ export class DeviceViewComponent {
         next: (deviceData: BuildingDevice) => {
           this.device = deviceData;
           this.building = deviceData.building;
-          console.log(deviceData);
   
           this.buildingAddress = deviceData.building?.address || 'Unknown Address';
           this.communityName = deviceData.building?.community?.name || 'Unknown Community';
@@ -107,6 +109,7 @@ export class DeviceViewComponent {
         next: (deviceData: ApartmentDevice) => {
           this.device = deviceData;
           this.building = deviceData.apartment?.building;
+          this.apartment = deviceData.apartment;
   
           this.buildingAddress = deviceData.apartment?.building?.address || 'Unknown Address';
           this.communityName = deviceData.apartment?.building?.community?.name || 'Unknown Community';
@@ -118,7 +121,7 @@ export class DeviceViewComponent {
                 value,
               })
             );
-            this.energySimulator.type = (deviceData.consumesEnergy)? 'Consumption' : 'Production';
+            this.energySimulator.type = (deviceData?.consumesEnergy)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
           this.deviceLoaded = true;
@@ -147,6 +150,7 @@ export class DeviceViewComponent {
   }
 
   onPatternSaved(updatedEnergyCurve: number[]): void {
+    if(!this.device) return;
     this.device.energy_curve.energyCurve = updatedEnergyCurve;
     this.energyClassValue = this.energyClass(this.device); // Update energy class
     this.alert.setAlertDevice('success', 'Energy pattern saved successfully!');

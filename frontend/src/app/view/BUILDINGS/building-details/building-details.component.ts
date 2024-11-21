@@ -233,7 +233,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
-          console.log(device.id);
           this.deleteDevice(device.id);
         }
       }
@@ -407,14 +406,12 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
     this.apartmentService.deleteApartment(id).subscribe({
       next: () => {
-        console.log(this.apartments+ "nnjn");
         this.apartments = this.apartments.filter(apartment => apartment.id !== id);
         this.apartmentDataSource.data = this.apartments;
         this.loading = false;
         this.alert.setAlertApartments('success', 'Apartment deleted successfully');
       },
       error: (error) => {
-        console.log(error + "erroreeeeeee");
         this.error = error;
         this.loading = false;
         this.alert.setAlertApartments('danger', `Failed to delete apartment: ${error.message}`);

@@ -81,7 +81,6 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
     this.apartmentService.getApartment(apartmentId).subscribe({
       next: (apartment) => {
-        console.log(apartment);
         this.apartment = apartment;
         this.loadCommunityName(apartment.building.community.id);
         this.loadDevices(apartmentId);
@@ -175,7 +174,6 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
-          console.log(device.id);
           this.deleteDevice(device.id);
         }
       }

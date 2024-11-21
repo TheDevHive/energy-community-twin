@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AlertService {
+  
 
   constructor() { }
 
@@ -115,5 +116,12 @@ export class AlertService {
     this.timeoutId = setTimeout(() => {
       this.alertApartmentDevice = { show: false, type: '', message: '' };
     }, this.timeout);
+  }
+
+  clearAlertDevice() {
+    console.log('clearAlertDevice');
+    this.alertBuildingDevices = { show: false, type: '', message: '' };
+    this.alertApartmentDevice = { show: false, type: '', message: '' };
+    this.alertDevice = { show: false, type: '', message: '' };
   }
 }

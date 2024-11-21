@@ -27,12 +27,26 @@
             <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
           </a>
         </li>
-        <li class="breadcrumb-item">
+        <li *ngIf="isBuildingDevice" class="breadcrumb-item">
             <a
             [routerLink]="['/buildings', building?.id]"
             style="text-decoration-color: var(--color-secondary-dark);">
             <h5 *ngIf="device" class="card-title mb-0 d-inline">{{ device.name }}</h5>
           </a>
+        </li>
+        <li *ngIf="!isBuildingDevice" class="breadcrumb-item">
+          <a
+          [routerLink]="['/buildings', building?.id]"
+          style="text-decoration-color: var(--color-secondary-dark);">
+          <h5 *ngIf="device" class="card-title mb-0 d-inline"> Apartment {{ apartment?.id }}</h5>
+        </a>
+      </li>
+        <li *ngIf="!isBuildingDevice" class="breadcrumb-item">
+          <a
+          [routerLink]="['/apartments', apartment?.id]"
+          style="text-decoration-color: var(--color-secondary-dark);">
+          <h5 *ngIf="device" class="card-title mb-0 d-inline"> {{ device.name }}</h5>
+        </a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">
           <h5 class="card-title mb-0 d-inline">Device Details</h5>
