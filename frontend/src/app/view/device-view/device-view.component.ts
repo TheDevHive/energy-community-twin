@@ -4,6 +4,9 @@ import { BuildingDeviceService } from '../../services/building-device.service';
 import { BuildingDevice } from '../../models/building_device';
 import { EnergySimulatorComponent } from '../energy-simulator/energy-simulator.component';
 import { AlertService } from '../../services/alert.service';
+import { ApartmentDevice } from '../../models/apartment_device';
+import { ApartmentDeviceService } from '../../services/apartment-device.service';
+import { Building } from '../../models/building';
 
 interface EnergyData {
   hour: string;
@@ -16,9 +19,11 @@ interface EnergyData {
   styleUrl: './device-view.component.css'
 })
 export class DeviceViewComponent {
+  building?: Building | null;
   deviceId!: number;
-  device!: BuildingDevice;
+  device!: BuildingDevice | ApartmentDevice;
   buildingAddress!: string;
+  isBuildingDevice!: boolean;
   communityName!: string;
 
   energyClassValue!: string;
@@ -28,19 +33,28 @@ export class DeviceViewComponent {
   constructor(
     private route: ActivatedRoute,
     private buildingDeviceService: BuildingDeviceService,
+    private apartmentDeviceService: ApartmentDeviceService,
     private alert: AlertService
   ) {}
 
   ngOnInit(): void {
-    this.deviceId = +(this.route.snapshot.paramMap.get('id') ?? -1);
-
-    if (this.deviceId === -1) {
-      console.error('An error occurred: couldn\'t retrieve the device ID.');
-      return;
+    const uuid = this.route.snapshot.paramMap.get('id');
+    if (uuid == null || (uuid[0] !== 'A' && uuid[0] !== 'B')) return;
+  
+    if (uuid[0] === 'B')
+    {
+      this.deviceId = parseInt(uuid.slice(1), 10);
+      this.isBuildingDevice = true;
     }
-
+    else
+    {
+      this.deviceId = parseInt(uuid.slice(1), 10);
+      this.isBuildingDevice = false;
+    }
+    
     this.loadDevice();
   }
+  
 
   ngAfterViewInit(): void {
     if (this.device && this.energySimulator) {
@@ -55,34 +69,64 @@ export class DeviceViewComponent {
   }
 
   loadDevice(): void {
-    this.buildingDeviceService.getDevice(this.deviceId).subscribe({
-      next: (deviceData: BuildingDevice) => {
-        this.device = deviceData;
 
-        this.buildingAddress = deviceData.building?.address || 'Unknown Address';
-        this.communityName = deviceData.building?.community?.name || 'Unknown Community';
-
-        if (this.energySimulator) {
-          const energyData: EnergyData[] = deviceData.energy_curve.energyCurve.map(
-            (value: number, index: number) => ({
-              hour: `${index}:00`,
-              value,
-            })
-          );
-          this.energySimulator.setEnergyData(energyData);
+    if (this.isBuildingDevice)
+    {
+      this.buildingDeviceService.getDevice(this.deviceId).subscribe({
+        next: (deviceData: BuildingDevice) => {
+          this.device = deviceData;
+          this.building = deviceData.building;
+  
+          this.buildingAddress = deviceData.building?.address || 'Unknown Address';
+          this.communityName = deviceData.building?.community?.name || 'Unknown Community';
+  
+          if (this.energySimulator) {
+            const energyData: EnergyData[] = deviceData.energy_curve.energyCurve.map(
+              (value: number, index: number) => ({
+                hour: `${index}:00`,
+                value,
+              })
+            );
+            this.energySimulator.setEnergyData(energyData);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching device data:', error);
         }
-      },
-      error: (error) => {
-        console.error('Error fetching device data:', error);
-      }
-    });
+      });
+    }
+    else
+    {
+      this.apartmentDeviceService.getApartmentDevice(this.deviceId).subscribe({
+        next: (deviceData: ApartmentDevice) => {
+          this.device = deviceData;
+          this.building = deviceData.apartment?.building;
+  
+          this.buildingAddress = deviceData.apartment?.building?.address || 'Unknown Address';
+          this.communityName = deviceData.apartment?.building?.community?.name || 'Unknown Community';
+  
+          if (this.energySimulator) {
+            const energyData: EnergyData[] = deviceData.energy_curve.energyCurve.map(
+              (value: number, index: number) => ({
+                hour: `${index}:00`,
+                value,
+              })
+            );
+            this.energySimulator.setEnergyData(energyData);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching device data:', error);
+        }
+      });
+    }
   }
 
-  energy(device: BuildingDevice): number {
+  energy(device: BuildingDevice | ApartmentDevice): number {
     return device.energy_curve.energyCurve.reduce((sum, value) => sum + value, 0);
   }
 
-  energyClass(device: BuildingDevice): string {
+  energyClass(device: BuildingDevice | ApartmentDevice): string {
     let energy = this.energy(device);
     if (energy < 1000) {
       return 'A';

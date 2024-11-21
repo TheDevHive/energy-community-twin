@@ -38,7 +38,8 @@ public class DeviceController {
             } else {
                 if (uuid.startsWith("A")){
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    int id = Integer.parseInt(uuid.replaceAll("\\D", ""));
+                    ApartmentDevice device = dao.findByPrimaryKey(id);
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }

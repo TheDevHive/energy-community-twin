@@ -4,6 +4,8 @@ import { Building } from '../../models/building';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { id } from '@swimlane/ngx-datatable';
 import { BuildingDevice } from '../../models/building_device';
+import { ApartmentDevice } from '../../models/apartment_device';
+import { Apartment } from '../../models/apartment';
 
 @Component({
   selector: 'app-add-device',
@@ -11,9 +13,10 @@ import { BuildingDevice } from '../../models/building_device';
   styleUrls: ['./add-device.component.css']
 })
 export class AddDeviceComponent implements OnInit {
-  @Input() isEdit: boolean = false;  // Add this line
-  @Input() buildingDevice!: BuildingDevice;  // Add this line to handle existing building data
+  @Input() isEdit: boolean = false;
+  @Input() device!: BuildingDevice | ApartmentDevice;
   @Input() building!: Building;
+  @Input() apartment!: Apartment;
   @Input() isBuildingDevice!: boolean;
   deviceForm: FormGroup;
   loading = false;
@@ -31,13 +34,25 @@ export class AddDeviceComponent implements OnInit {
 
   ngOnInit() {
     // Initialize form with existing data if in edit mode
-    if (this.isEdit && this.buildingDevice) {
-      this.deviceForm.patchValue({
-        id: this.buildingDevice.id,
-        name: this.buildingDevice.name,
-        consumesEnergy: this.buildingDevice.consumesEnergy, // Set the correct value for the checkbox
-        building: this.building
-      });
+    if (this.isEdit && this.device) {
+      if (this.isBuildingDevice)
+      {
+        this.deviceForm.patchValue({
+          id: this.device.id,
+          name: this.device.name,
+          consumesEnergy: this.device.consumesEnergy, // Set the correct value for the checkbox
+          building: this.building
+        });
+      }
+      else
+      {
+        this.deviceForm.patchValue({
+          id: this.device.id,
+          name: this.device.name,
+          consumesEnergy: this.device.consumesEnergy, // Set the correct value for the checkbox
+          apartment: this.apartment
+        });
+      }
     }
   }
   
@@ -54,23 +69,37 @@ export class AddDeviceComponent implements OnInit {
 
       if (this.isBuildingDevice) {
 
-        const buildingData: BuildingDevice = {
-          ...this.buildingDevice,
-          id: this.isEdit && this.buildingDevice ? this.buildingDevice.id : 0,
+        const bDevice: BuildingDevice = {
+          ...this.device,
+          id: this.isEdit && this.device ? this.device.id : 0,
           name: this.deviceForm.get('name')?.value?.trim(),
           consumesEnergy: this.deviceForm.get('consumesEnergy')?.value,
-          energy_curve: this.isEdit && this.buildingDevice?.energy_curve
-            ? this.buildingDevice.energy_curve
+          energy_curve: this.isEdit && this.device?.energy_curve
+            ? this.device.energy_curve
             : {
                 energyCurve: Array(24).fill(50)
               },
           building: this.building
         };
     
-        this.activeModal.close(buildingData);
+        this.activeModal.close(bDevice);
       }
       else {
-        // handle apartment device here...
+
+        const aDevice: ApartmentDevice = {
+          ...this.device,
+          id: this.isEdit && this.device ? this.device.id : 0,
+          name: this.deviceForm.get('name')?.value?.trim(),
+          consumesEnergy: this.deviceForm.get('consumesEnergy')?.value,
+          energy_curve: this.isEdit && this.device?.energy_curve
+            ? this.device.energy_curve
+            : {
+                energyCurve: Array(24).fill(50)
+              },
+          apartment: this.apartment
+        };
+
+        this.activeModal.close(aDevice);
       }
       this.loading = false;
     } else {
