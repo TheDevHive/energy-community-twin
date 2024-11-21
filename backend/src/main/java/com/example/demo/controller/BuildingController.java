@@ -131,6 +131,7 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/devices")
+
     public ResponseEntity<List<BuildingDevice>> getAllDevices(HttpServletRequest req, @PathVariable int buildingId) {
         if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         List<BuildingDevice> devices=DBManager.getInstance().getBuildingDeviceDAO().findAll().stream().filter(device -> device.getBuilding().getId() == buildingId).toList();
@@ -164,39 +165,56 @@ public class BuildingController {
         int totApartments = apartments.size();
         int totMembers = apartments.stream().mapToInt(Apartment::getResidents).sum();
 
-        int energyProduction = getEnergyProduction(building.getId());
-        int energyConsumption = getEnergyConsumption(building.getId());
+        double energyProduction = getEnergyProduction(building.getId());
+        double energyConsumption = getEnergyConsumption(building.getId());
+
+        for (Apartment apartment : apartments)
+        {
+            energyConsumption += ApartmentController.getEnergyConsumption(apartment.getId());
+            energyProduction += ApartmentController.getEnergyProduction(apartment.getId());
+        }
 
         return new BuildingStats(
                 building.getId(),
                 totApartments,
                 totMembers,
                 energyProduction,
-                energyConsumption
+                energyConsumption,
+                getEnergyClass(energyProduction, energyConsumption)
         );
     }
 
-    public static int getEnergyProduction(int buildingId)
+    public static double getEnergyProduction(int buildingId)
     {
-        int energyProduction = 0;
+        double energyProduction = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream().filter(device -> (device.getBuilding().getId() == buildingId && !device.getConsumesEnergy())).toList();
         for (BuildingDevice device : devices) {
-            int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / device.getEnergyCurve().getEnergyCurve().size();
+            double temp = Math.round(((double) device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / device.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
             energyProduction += temp;
         }
 
         return energyProduction;
     }
 
-    public static int getEnergyConsumption(int buildingId)
+    public static double getEnergyConsumption(int buildingId)
     {
-        int energyConsumption = 0;
+        double energyConsumption = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream().filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy())).toList();
         for (BuildingDevice device : devices) {
-            int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / device.getEnergyCurve().getEnergyCurve().size();
+            double temp = Math.round(((double) device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / device.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
             energyConsumption += temp;
         }
 
         return energyConsumption;
+    }
+
+    private char getEnergyClass(double energyProduction, double energyConsumption) {
+        if (energyProduction > energyConsumption) {
+            return 'A';
+        } else if (energyProduction == energyConsumption) {
+            return 'B';
+        } else {
+            return 'C';
+        }
     }
 }

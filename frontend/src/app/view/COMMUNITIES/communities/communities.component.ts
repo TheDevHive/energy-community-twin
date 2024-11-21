@@ -244,11 +244,11 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   totalEnergyProduction(): number {
-    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyProduction, 0);
+    return Math.round((this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyProduction, 0)) * 100) / 100;
   }
 
   totalEnergyConsumption(): number {
-    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyConsumption, 0);
+    return Math.round((this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyConsumption, 0)) * 100) / 100;
   }  
   
   totalMembers(): number {
@@ -256,7 +256,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(community: Community): number {
-    return community.stats.energyProduction - community.stats.energyConsumption;
+    return Math.round((community.stats.energyProduction - community.stats.energyConsumption) * 100) / 100;
   }
 
   energyDifferenceIcon(community: Community): string {

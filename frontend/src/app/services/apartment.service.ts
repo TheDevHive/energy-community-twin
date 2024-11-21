@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 
 import { ApartmentStats } from '../models/apartment';
+import { ApartmentDevice } from '../models/apartment_device';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,15 @@ export class ApartmentService {
   deleteApartment(apartmentId: number): Observable<Apartment> {
     return this.apiResponseService.extractBody(
       this.http.delete<ResponseEntity<Apartment>>(`${this.apiUrl}/${apartmentId}`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
+  getApartmentDevices(apartmentId: number): Observable<ApartmentDevice[]> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<ApartmentDevice[]>>(`${this.apiUrl}/${apartmentId}/devices`, {
         headers: this.auth.getHeaders(),
         observe: 'response'
       })

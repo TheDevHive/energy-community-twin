@@ -123,8 +123,8 @@ public class ApartmentController {
     }
 
     public ApartmentStats extractStats(Apartment apartment) {
-        int energyProduction = 0;
-        int energyConsumption = 0;
+        double energyProduction = getEnergyProduction(apartment.getId());
+        double energyConsumption = getEnergyConsumption(apartment.getId());
 
         return new ApartmentStats(
                 apartment.getId(),
@@ -134,7 +134,25 @@ public class ApartmentController {
         );
     }
 
-    private char getEnergyClass(int energyProduction, int energyConsumption) {
+    public static double getEnergyProduction(int apartmentId)
+    {
+        List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO().findAll().stream().filter(device -> device.getApartment().getId() == apartmentId && !device.getConsumesEnergy()).toList();
+        double energyProduction = 0;
+        for (ApartmentDevice apartmentDevice : apartmentDevices)
+            energyProduction += Math.round(((double) apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
+        return energyProduction;
+    }
+
+    public static double getEnergyConsumption(int apartmentId)
+    {
+        List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO().findAll().stream().filter(device -> device.getApartment().getId() == apartmentId && device.getConsumesEnergy()).toList();
+        double energyConsumption = 0;
+        for (ApartmentDevice apartmentDevice : apartmentDevices)
+            energyConsumption += Math.round(((double) apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
+        return energyConsumption;
+    }
+
+    private char getEnergyClass(double energyProduction, double energyConsumption) {
         if (energyProduction > energyConsumption) {
             return 'A';
         } else if (energyProduction == energyConsumption) {

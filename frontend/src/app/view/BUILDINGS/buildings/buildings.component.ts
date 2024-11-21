@@ -203,7 +203,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
           apartments: 0,
           members: 0,
           energyProduction: 0,
-          energyConsumption: 0
+          energyConsumption: 0,
+          energyClass: ''
         };
         this.buildings = [...this.buildings, newBuilding];
         this.dataSource.data = this.buildings;
@@ -269,11 +270,11 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   totalEnergyProduction(): number {
-    return this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyProduction, 0);
+    return Math.round(this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyProduction, 0) * 100) / 100;
   }
 
   totalEnergyConsumption(): number {
-    return this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyConsumption, 0);
+    return Math.round(this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyConsumption, 0) * 100) / 100;
   }  
   
   totalMembers(): number {
@@ -285,7 +286,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(building: Building): number {
-    return building.stats.energyProduction - building.stats.energyConsumption;
+    return Math.floor((building.stats.energyProduction - building.stats.energyConsumption) * 100) / 100;
   }
 
   energyDifferenceIcon(building: Building): string {
