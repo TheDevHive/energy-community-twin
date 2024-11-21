@@ -6,10 +6,10 @@ public class CommunityStats {
     private int buildings;
     private int apartments;
     private int members;
-    private int energyProduction;
-    private int energyConsumption;
+    private double energyProduction;
+    private double energyConsumption;
 
-    public CommunityStats(int communityId, int buildings, int apartments, int members, int energyProduction, int energyConsumption) {
+    public CommunityStats(int communityId, int buildings, int apartments, int members, double energyProduction, double energyConsumption) {
         this.communityId = communityId;
         this.buildings = buildings;
         this.apartments = apartments;
@@ -30,11 +30,11 @@ public class CommunityStats {
         return members;
     }
 
-    public int getEnergyProduction() {
+    public double getEnergyProduction() {
         return energyProduction;
     }
 
-    public int getEnergyConsumption() {
+    public double getEnergyConsumption() {
         return energyConsumption;
     }
 
@@ -50,11 +50,11 @@ public class CommunityStats {
         this.members = members;
     }
 
-    public void setEnergyProduction(int energyProduction) {
+    public void setEnergyProduction(double energyProduction) {
         this.energyProduction = energyProduction;
     }
 
-    public void setEnergyConsumption(int energyConsumption) {
+    public void setEnergyConsumption(double energyConsumption) {
         this.energyConsumption = energyConsumption;
     }
 

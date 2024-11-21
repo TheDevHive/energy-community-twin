@@ -440,7 +440,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   calculateEnergyDifference(apartment: Apartment): number {
-    return apartment.stats.energyProduction - apartment.stats.energyConsumption;
+    return Math.round((apartment.stats.energyProduction - apartment.stats.energyConsumption) * 100) / 100;
   }
 
   getEnergyClassColor(energyClass: string): string {

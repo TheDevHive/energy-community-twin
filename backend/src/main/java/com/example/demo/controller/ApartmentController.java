@@ -123,8 +123,8 @@ public class ApartmentController {
     }
 
     public ApartmentStats extractStats(Apartment apartment) {
-        int energyProduction = getEnergyProduction(apartment.getId());
-        int energyConsumption = getEnergyConsumption(apartment.getId());
+        double energyProduction = getEnergyProduction(apartment.getId());
+        double energyConsumption = getEnergyConsumption(apartment.getId());
 
         return new ApartmentStats(
                 apartment.getId(),
@@ -134,25 +134,25 @@ public class ApartmentController {
         );
     }
 
-    public static int getEnergyProduction(int apartmentId)
+    public static double getEnergyProduction(int apartmentId)
     {
         List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO().findAll().stream().filter(device -> device.getApartment().getId() == apartmentId && !device.getConsumesEnergy()).toList();
-        int energyProduction = 0;
+        double energyProduction = 0;
         for (ApartmentDevice apartmentDevice : apartmentDevices)
-            energyProduction += apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size();
+            energyProduction += Math.round(((double) apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
         return energyProduction;
     }
 
-    public static int getEnergyConsumption(int apartmentId)
+    public static double getEnergyConsumption(int apartmentId)
     {
         List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO().findAll().stream().filter(device -> device.getApartment().getId() == apartmentId && device.getConsumesEnergy()).toList();
-        int energyConsumption = 0;
+        double energyConsumption = 0;
         for (ApartmentDevice apartmentDevice : apartmentDevices)
-            energyConsumption += apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size();
+            energyConsumption += Math.round(((double) apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
         return energyConsumption;
     }
 
-    private char getEnergyClass(int energyProduction, int energyConsumption) {
+    private char getEnergyClass(double energyProduction, double energyConsumption) {
         if (energyProduction > energyConsumption) {
             return 'A';
         } else if (energyProduction == energyConsumption) {

@@ -194,8 +194,8 @@ public class CommunityController {
 
         ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
 
-        int energyProduction = 0;
-        int energyConsumption = 0;
+        double energyProduction = 0;
+        double energyConsumption = 0;
 
         for (Building building : buildings) {
             energyProduction += BuildingController.getEnergyProduction(building.getId());
