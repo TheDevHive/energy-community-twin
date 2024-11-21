@@ -15,7 +15,6 @@ import { CommunityService } from '../../services/community.service';
 import { BuildingService } from '../../services/building.service';
 import { AddDeviceComponent } from '../add-device/add-device.component';
 import { ConfirmationDialogComponent } from '../SHARED/confirmation-dialog/confirmation-dialog.component';
-import { Building } from '../../models/building';
 
 @Component({
   selector: 'app-apartment',
@@ -253,12 +252,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     };
     return colors[energyClass] || 'secondary';
   }
-/*
-  get totalResidents() {
-    return this.apartmentDataSource.data.reduce((sum, apartment) => sum + apartment.residents, 0);
-  }
-*/
-  // Sorting event handlers
+
   onDeviceSortChange(sort: Sort): void {
     const data = this.deviceDataSource.data.slice();
     if (!sort.active || sort.direction === '') {
