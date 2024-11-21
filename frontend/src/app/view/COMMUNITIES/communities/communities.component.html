@@ -161,7 +161,7 @@
               <td mat-cell *matCellDef="let community">
                 <span class="text-success me-2">
                   <i class="bi bi-arrow-up-right"></i>
-                </span>{{ community.stats.energyProduction }} Wh
+                </span>{{ community.stats.energyProduction | number:'1.2-2'}} Wh
               </td>
             </ng-container>
 
@@ -171,7 +171,7 @@
               <td mat-cell *matCellDef="let community">
                 <span class="text-danger me-2">
                   <i class="bi bi-arrow-down-right"></i>
-                </span>{{ community.stats.energyConsumption }} Wh
+                </span>{{ community.stats.energyConsumption | number:'1.2-2' }} Wh
               </td>
             </ng-container>
 

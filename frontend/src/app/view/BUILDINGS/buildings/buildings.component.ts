@@ -270,11 +270,11 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   totalEnergyProduction(): number {
-    return this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyProduction, 0);
+    return Math.round(this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyProduction, 0) * 100) / 100;
   }
 
   totalEnergyConsumption(): number {
-    return this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyConsumption, 0);
+    return Math.round(this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyConsumption, 0) * 100) / 100;
   }  
   
   totalMembers(): number {
