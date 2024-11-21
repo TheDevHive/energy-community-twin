@@ -19,6 +19,7 @@ interface EnergyData {
   styleUrl: './device-view.component.css'
 })
 export class DeviceViewComponent {
+  deviceLoaded: boolean = false;
   building?: Building | null;
   deviceId!: number;
   device!: BuildingDevice | ApartmentDevice;
@@ -53,6 +54,7 @@ export class DeviceViewComponent {
     }
     
     this.loadDevice();
+
   }
   
 
@@ -67,6 +69,7 @@ export class DeviceViewComponent {
       this.energySimulator.setEnergyData(energyData);
     }
   }
+  
 
   loadDevice(): void {
 
@@ -76,10 +79,11 @@ export class DeviceViewComponent {
         next: (deviceData: BuildingDevice) => {
           this.device = deviceData;
           this.building = deviceData.building;
+          console.log(deviceData);
   
           this.buildingAddress = deviceData.building?.address || 'Unknown Address';
           this.communityName = deviceData.building?.community?.name || 'Unknown Community';
-  
+
           if (this.energySimulator) {
             const energyData: EnergyData[] = deviceData.energy_curve.energyCurve.map(
               (value: number, index: number) => ({
@@ -87,8 +91,10 @@ export class DeviceViewComponent {
                 value,
               })
             );
+            this.energySimulator.type = (deviceData.consumesEnergy)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
+          this.deviceLoaded = true;
         },
         error: (error) => {
           console.error('Error fetching device data:', error);
@@ -112,8 +118,10 @@ export class DeviceViewComponent {
                 value,
               })
             );
+            this.energySimulator.type = (deviceData.consumesEnergy)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
+          this.deviceLoaded = true;
         },
         error: (error) => {
           console.error('Error fetching device data:', error);

@@ -284,7 +284,7 @@
                                 <span class="text-success me-2">
                                     <i class="bi bi-arrow-up-right"></i>
                                 </span>
-                                {{apartment.stats.energyProduction}} kWh
+                                {{apartment.stats.energyProduction | number:'1.2-2' }} kWh
                             </td>
                         </ng-container>
 
@@ -295,7 +295,7 @@
                                 <span class="text-danger me-2">
                                     <i class="bi bi-arrow-down-right"></i>
                                 </span>
-                                {{apartment.stats.energyConsumption}} kWh
+                                {{apartment.stats.energyConsumption | number:'1.2-2' }} kWh
                             </td>
                         </ng-container>
 
