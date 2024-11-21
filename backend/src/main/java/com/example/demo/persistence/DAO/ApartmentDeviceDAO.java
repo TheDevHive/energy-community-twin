@@ -47,7 +47,7 @@ public class ApartmentDeviceDAO {
 
     public boolean saveOrUpdate(ApartmentDevice apartmentDevice) {
         if(findByPrimaryKey(apartmentDevice.getId()) == null) {
-            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?)";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
                 pstmt.setBoolean(2, apartmentDevice.getConsumesEnergy());
@@ -66,7 +66,7 @@ public class ApartmentDeviceDAO {
                 return false;
             }
         } else {
-            String sql = "UPDATE apartment_device SET apartment_id = ?, name = ?, consumes_energy = ?, energy_curve = ?,  WHERE id = ?";
+            String sql = "UPDATE apartment_device SET apartment_id = ?, name = ?, consumes_energy = ?, energy_curve = ?  WHERE id = ?";
             try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, apartmentDevice.getApartment().getId());
                 pstmt.setString(2, apartmentDevice.getName());

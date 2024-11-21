@@ -207,7 +207,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     
     modalRef.componentInstance.isEdit = true;
     modalRef.componentInstance.isBuildingDevice = true;
-    modalRef.componentInstance.buildingDevice = device;
+    modalRef.componentInstance.device = device;
     modalRef.componentInstance.building = this.building;
 
     modalRef.result.then(
@@ -440,7 +440,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   calculateEnergyDifference(apartment: Apartment): number {
-    return apartment.stats.energyProduction - apartment.stats.energyConsumption;
+    return Math.round((apartment.stats.energyProduction - apartment.stats.energyConsumption) * 100) / 100;
   }
 
   getEnergyClassColor(energyClass: string): string {
@@ -540,7 +540,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   navigateToDevice(id: number): void {
-    this.router.navigate(['/devices', id]);
+    this.router.navigate(['/devices', 'B' + id.toString()]);
   }
 
   navigateToApartment(id: number): void {

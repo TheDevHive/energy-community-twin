@@ -132,7 +132,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
       backdrop: 'static'
     });
 
-    modalRef.componentInstance.isApartmentDevice = true;
+    modalRef.componentInstance.isBuildingDevice = false;
     modalRef.componentInstance.apartment = this.apartment;
 
     modalRef.result.then(result => {
@@ -148,8 +148,8 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     });
     
     modalRef.componentInstance.isEdit = true;
-    modalRef.componentInstance.isApartmentDevice = true;
-    modalRef.componentInstance.apartment_device = device;
+    modalRef.componentInstance.isBuildingDevice = false;
+    modalRef.componentInstance.device = device;
     modalRef.componentInstance.apartment = this.apartment;
 
     modalRef.result.then(
@@ -227,7 +227,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
   // Utility methods
   getEnergyDeviceIcon(device: ApartmentDevice): string {
-    if (device.consumes_energy) {
+    if (device.consumesEnergy) {
       return 'bi-arrow-down-right text-danger';
     }
     return 'bi-arrow-up-right text-success';
@@ -312,6 +312,6 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
   }
 
   navigateToDevice(id: number): void {
-    this.router.navigate(['/devices', id]);
+    this.router.navigate(['/devices', 'A' + id.toString()]);
   }
 }

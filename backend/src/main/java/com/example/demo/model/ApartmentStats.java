@@ -2,11 +2,11 @@ package com.example.demo.model;
 
 public class ApartmentStats {
     private int apartmentId;
-    private int energyProduction;
-    private int energyConsumption;
+    private double energyProduction;
+    private double energyConsumption;
     private char energyClass;
 
-    public ApartmentStats(int apartmentId, int energyProduction, int energyConsumption, char energyClass) {
+    public ApartmentStats(int apartmentId, double energyProduction, double energyConsumption, char energyClass) {
         this.apartmentId = apartmentId;
         this.energyProduction = energyProduction;
         this.energyConsumption = energyConsumption;
@@ -17,11 +17,11 @@ public class ApartmentStats {
         return apartmentId;
     }
 
-    public int getEnergyProduction() {
+    public double getEnergyProduction() {
         return energyProduction;
     }
 
-    public int getEnergyConsumption() {
+    public double getEnergyConsumption() {
         return energyConsumption;
     }
 
@@ -33,11 +33,11 @@ public class ApartmentStats {
         this.apartmentId = apartmentId;
     }
 
-    public void setEnergyProduction(int energyProduction) {
+    public void setEnergyProduction(double energyProduction) {
         this.energyProduction = energyProduction;
     }
 
-    public void setEnergyConsumption(int energyConsumption) {
+    public void setEnergyConsumption(double energyConsumption) {
         this.energyConsumption = energyConsumption;
     }
 

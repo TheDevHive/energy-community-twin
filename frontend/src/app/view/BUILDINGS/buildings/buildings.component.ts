@@ -286,7 +286,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(building: Building): number {
-    return building.stats.energyProduction - building.stats.energyConsumption;
+    return Math.floor((building.stats.energyProduction - building.stats.energyConsumption) * 100) / 100;
   }
 
   energyDifferenceIcon(building: Building): string {
