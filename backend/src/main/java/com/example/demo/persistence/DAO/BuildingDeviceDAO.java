@@ -26,15 +26,17 @@ public class BuildingDeviceDAO {
     public BuildingDevice findByPrimaryKey(int id) {
         String sql = "SELECT * FROM building_device WHERE id = ?";
         BuildingDevice buldingDevice = null;
-        try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(rs.getInt("building_id"));
-                if(building == null) {
+                if (building == null) {
                     return null;
                 }
-                buldingDevice = new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class),building);
+                buldingDevice = new BuildingDevice(rs.getInt("id"), rs.getString("name"),
+                        rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class),
+                        building);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,17 +46,37 @@ public class BuildingDeviceDAO {
         return buldingDevice;
     }
 
+    public List<BuildingDevice> findByBuilding(Building building) {
+        String sql = "SELECT * FROM building_device WHERE building_id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, building.getId());
+            ResultSet rs = pstmt.executeQuery();
+            List<BuildingDevice> buldingDevices = new ArrayList<>();
+            while (rs.next()) {
+                buldingDevices
+                        .add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"),
+                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), building));
+            }
+            return buldingDevices;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean saveOrUpdate(BuildingDevice buldingDevice) {
-        if(findByPrimaryKey(buldingDevice.getId()) == null) {
+        if (findByPrimaryKey(buldingDevice.getId()) == null) {
             String sql = "INSERT INTO building_device (name, consumes_energy, energy_curve, building_id) VALUES (?, ?, ?, ?)";
-            try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, buldingDevice.getName());
                 pstmt.setBoolean(2, buldingDevice.getConsumesEnergy());
                 blobConverter.setBlob(pstmt, 3, buldingDevice.getEnergyCurve());
                 pstmt.setInt(4, buldingDevice.getBuilding().getId());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
-                if(rs.next()) {
+                if (rs.next()) {
                     buldingDevice.setId(rs.getInt(1));
                 }
             } catch (SQLException e) {
@@ -66,7 +88,7 @@ public class BuildingDeviceDAO {
             }
         } else {
             String sql = "UPDATE building_device SET building_id = ?, name = ?, consumes_energy = ?, energy_curve = ? WHERE id = ?";
-            try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, buldingDevice.getBuilding().getId());
                 pstmt.setString(2, buldingDevice.getName());
                 pstmt.setBoolean(3, buldingDevice.getConsumesEnergy());
@@ -103,10 +125,12 @@ public class BuildingDeviceDAO {
             List<BuildingDevice> buldingDevices = new ArrayList<>();
             while (rs.next()) {
                 Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(rs.getInt("building_id"));
-                if(building == null) {
+                if (building == null) {
                     continue;
                 }
-                buldingDevices.add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), building));
+                buldingDevices
+                        .add(new BuildingDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"),
+                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), building));
             }
             return buldingDevices;
         } catch (SQLException e) {

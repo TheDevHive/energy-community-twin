@@ -1,7 +1,10 @@
 package com.example.demo.model.generation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import com.example.demo.model.BuildingDevice;
 import com.example.demo.model.Device;
 import com.example.demo.model.EnergyCurve;
 import com.example.demo.model.TS_Device;
@@ -56,6 +59,18 @@ public class GenerateData {
             ts_MeasurementDAO.saveOrUpdate(ts_measurement);
         }
         return true;
+    }
+
+    public static ArrayList<String> generateDataBuilding(List<BuildingDevice> devices, String dateStart,
+            String dateEnd) {
+        ArrayList<String> uuids = new ArrayList<>();
+        for (BuildingDevice buildingDevice : devices) {
+            String uuid = "B" + buildingDevice.getId();
+            if (generateDataDevice(uuid, dateStart, dateEnd)) {
+                uuids.add(uuid);
+            }
+        }
+        return uuids;
     }
 
 }
