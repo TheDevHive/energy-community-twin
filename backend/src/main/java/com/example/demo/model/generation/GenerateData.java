@@ -38,10 +38,10 @@ public class GenerateData {
         Device device = null;
         if (ts_device.getUuid().startsWith("A")) {
             device = DBManager.getInstance().getApartmentDeviceDAO()
-                    .findByPrimaryKey(Integer.parseInt(ts_device.getUuid(), 1, ts_device.getUuid().length() - 2, 10));
+                    .findByPrimaryKey(Integer.parseInt(ts_device.getUuid().substring(1)));
         } else if (ts_device.getUuid().startsWith("B")) {
             device = DBManager.getInstance().getBuildingDeviceDAO()
-                    .findByPrimaryKey(Integer.parseInt(ts_device.getUuid(), 1, ts_device.getUuid().length() - 2, 10));
+                    .findByPrimaryKey(Integer.parseInt(ts_device.getUuid().substring(1)));
         }
         if (device == null) {
             return false;

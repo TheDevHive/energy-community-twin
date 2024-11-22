@@ -30,4 +30,18 @@ public final class CalculateDate {
         return dateTime.plusHours(hours).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+    public static boolean validate(String date) {
+        try {
+            LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            return true;
+        } catch (DateTimeParseException e) {
+            try {
+                LocalDate.parse(date);
+                return true;
+            } catch (DateTimeParseException e2) {
+                return false;
+            }
+        }
+    }
+
 }

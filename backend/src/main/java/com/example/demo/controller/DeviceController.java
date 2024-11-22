@@ -7,6 +7,7 @@ import com.example.demo.model.EnergyCurve;
 import com.example.demo.model.TS_Device;
 import com.example.demo.model.TS_Measurement;
 import com.example.demo.model.generation.GenerateData;
+import com.example.demo.model.generation.TimeRange;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDeviceDAO;
 import com.example.demo.persistence.DAO.TS_DeviceDAO;
@@ -16,6 +17,7 @@ import com.example.demo.persistence.TS_DBManager;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.sql.Time;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -214,17 +216,17 @@ public class DeviceController {
 
     @PostMapping("/{uuid}/generate-measurements")
     public ResponseEntity<Boolean> generateMeasurements(HttpServletRequest req, @PathVariable String uuid,
-            @RequestBody String dateStart, @RequestBody String dateEnd) {
-        if (!AuthUtility.isAuthorized(req))
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        if (dateStart == null || dateEnd == null) {
+            @RequestBody TimeRange timeRange) {
+        // if (!AuthUtility.isAuthorized(req))
+        // return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (timeRange == null || !timeRange.validate()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                GenerateData.generateDataDevice(uuid, dateStart, dateEnd);
+                GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd());
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         } catch (Exception e) {
