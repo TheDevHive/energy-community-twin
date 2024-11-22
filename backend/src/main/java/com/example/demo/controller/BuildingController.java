@@ -183,11 +183,21 @@ public class BuildingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findByBuilding(building);
-        if (devices.isEmpty()) {
+        List<Apartment> apartments = DBManager.getInstance().getApartmentDAO().findByBuilding(building);
+        if (devices.isEmpty() && apartments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(
-                GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd()), HttpStatus.OK);
+        List<String> uuids = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd());
+        for (Apartment apartment : apartments) {
+            List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO()
+                    .findByApartment(apartment);
+            uuids.addAll(
+                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd()));
+        }
+        if (uuids.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(uuids, HttpStatus.OK);
     }
 
     public BuildingStats extractStats(Building building) {
