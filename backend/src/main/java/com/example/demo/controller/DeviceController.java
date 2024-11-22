@@ -217,8 +217,8 @@ public class DeviceController {
     @PostMapping("/{uuid}/generate-measurements")
     public ResponseEntity<Boolean> generateMeasurements(HttpServletRequest req, @PathVariable String uuid,
             @RequestBody TimeRange timeRange) {
-        // if (!AuthUtility.isAuthorized(req))
-        // return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         if (timeRange == null || !timeRange.validate()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
