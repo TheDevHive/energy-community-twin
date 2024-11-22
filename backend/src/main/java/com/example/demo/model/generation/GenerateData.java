@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.BuildingDevice;
 import com.example.demo.model.Device;
 import com.example.demo.model.EnergyCurve;
@@ -66,6 +67,18 @@ public class GenerateData {
         ArrayList<String> uuids = new ArrayList<>();
         for (BuildingDevice buildingDevice : devices) {
             String uuid = "B" + buildingDevice.getId();
+            if (generateDataDevice(uuid, dateStart, dateEnd)) {
+                uuids.add(uuid);
+            }
+        }
+        return uuids;
+    }
+
+    public static ArrayList<String> generateDataApartment(List<ApartmentDevice> devices, String dateStart,
+            String dateEnd) {
+        ArrayList<String> uuids = new ArrayList<>();
+        for (ApartmentDevice apartmentDevice : devices) {
+            String uuid = "A" + apartmentDevice.getId();
             if (generateDataDevice(uuid, dateStart, dateEnd)) {
                 uuids.add(uuid);
             }
