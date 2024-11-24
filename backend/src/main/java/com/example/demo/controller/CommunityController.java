@@ -193,6 +193,9 @@ public class CommunityController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (timeRange == null || !timeRange.validate()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(commId);
         if (community == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

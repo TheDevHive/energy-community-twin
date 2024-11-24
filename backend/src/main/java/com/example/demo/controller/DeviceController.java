@@ -17,7 +17,6 @@ import com.example.demo.persistence.TS_DBManager;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.sql.Time;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;

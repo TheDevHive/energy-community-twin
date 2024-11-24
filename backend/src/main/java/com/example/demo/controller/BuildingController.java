@@ -178,6 +178,9 @@ public class BuildingController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (timeRange == null || !timeRange.validate()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(buildingId);
         if (building == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

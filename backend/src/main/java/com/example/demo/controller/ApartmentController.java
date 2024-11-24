@@ -138,6 +138,9 @@ public class ApartmentController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (timeRange == null || !timeRange.validate()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Apartment apartment = DBManager.getInstance().getApartmentDAO().findByPrimaryKey(ApartmentId);
         if (apartment == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
