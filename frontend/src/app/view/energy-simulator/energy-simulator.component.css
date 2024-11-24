@@ -2,6 +2,7 @@
   width: 100%;
   min-height: 300px;
   position: relative;
+  user-select: none;
 }
 
 /* Make the SVG responsive */

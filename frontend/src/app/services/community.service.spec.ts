@@ -38,7 +38,8 @@ describe('CommunityService', () => {
     apartments: 5,
     members: 20,
     energyProduction: 1000,
-    energyConsumption: 900
+    energyConsumption: 900,
+    energyClass: 'B'
   };
 
   const mockBuilding: Building = {
