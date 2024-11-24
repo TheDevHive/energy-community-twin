@@ -32,6 +32,7 @@ import { AddApartmentComponent } from './view/add-apartment/add-apartment.compon
 import { AddDeviceComponent } from './view/add-device/add-device.component';
 import { DeviceViewComponent } from './view/device-view/device-view.component';
 import { ApartmentComponent } from './view/apartment/apartment.component';
+import { PieChartComponent } from './view/SHARED/pie-chart/pie-chart.component';
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { ApartmentComponent } from './view/apartment/apartment.component';
     AddApartmentComponent,
     AddDeviceComponent,
     DeviceViewComponent,
-    ApartmentComponent
+    ApartmentComponent,
+    PieChartComponent
   ],
   imports: [
     BrowserModule,
