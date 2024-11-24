@@ -9,7 +9,7 @@ public class BuildingStats {
     private double energyConsumption;
     private char energyClass;
 
-    public BuildingStats(int buildingId, int apartments, int members, double energyProduction, double energyConsumption, char energyClass) {
+    public BuildingStats(int buildingId, int apartments, int members, double energyProduction, double energyConsumption) {
         this.buildingId = buildingId;
         this.apartments = apartments;
         this.members = members;
