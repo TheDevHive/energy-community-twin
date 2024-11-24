@@ -75,7 +75,7 @@ public class TS_MeasurementDAO {
     }
 
     public boolean saveOrUpdate(TS_Measurement measurement) {
-        if (findByPrimaryKey(measurement.getId()) == null) {
+        if (measurement.getId() == -1 || findByPrimaryKey(measurement.getId()) == null) {
             String sql = "INSERT INTO measurement (device_id, timestamp, value) VALUES (?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, measurement.getDeviceId());

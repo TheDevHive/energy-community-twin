@@ -3,12 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.BuildingDevice;
-import com.example.demo.model.Device;
 import com.example.demo.model.EnergyCurve;
 import com.example.demo.model.TS_Device;
 import com.example.demo.model.TS_Measurement;
-import com.example.demo.model.generation.CalculateDate;
 import com.example.demo.model.generation.GenerateData;
+import com.example.demo.model.generation.TimeRange;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDeviceDAO;
 import com.example.demo.persistence.DAO.TS_DeviceDAO;
@@ -30,23 +29,24 @@ import org.springframework.web.bind.annotation.*;
 public class DeviceController {
 
     @PostMapping("/{uuid}/energy-pattern")
-    public ResponseEntity<EnergyCurve> saveEnergyPattern(HttpServletRequest req, @PathVariable String uuid,@RequestBody EnergyCurve energyCurve) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<EnergyCurve> saveEnergyPattern(HttpServletRequest req, @PathVariable String uuid,
+            @RequestBody EnergyCurve energyCurve) {
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                if (uuid.startsWith("A")){
+                if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    int id = Integer.parseInt(uuid.replaceAll("\\D", ""));
-                    ApartmentDevice device = dao.findByPrimaryKey(id);
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     device.setEnergyCurve(energyCurve);
                     dao.saveOrUpdate(device);
                     return new ResponseEntity<>(energyCurve, HttpStatus.OK);
-                } else if (uuid.startsWith("B")){
+                } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
                     int id = Integer.parseInt(uuid.replaceAll("\\D", ""));
                     BuildingDevice device = dao.findByPrimaryKey(id);
@@ -68,21 +68,22 @@ public class DeviceController {
 
     @GetMapping("/{uuid}/energy-pattern")
     public ResponseEntity<EnergyCurve> getDevicePattern(HttpServletRequest req, @PathVariable String uuid) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                if (uuid.startsWith("A")){
+                if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     return new ResponseEntity<>(device.getEnergyCurve(), HttpStatus.OK);
-                } else if (uuid.startsWith("B")){
+                } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -98,24 +99,26 @@ public class DeviceController {
     }
 
     @PutMapping("/{uuid}/energy-pattern")
-    public ResponseEntity<EnergyCurve> updateDevicePattern(HttpServletRequest req, @PathVariable String uuid, @RequestBody EnergyCurve energyCurve) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<EnergyCurve> updateDevicePattern(HttpServletRequest req, @PathVariable String uuid,
+            @RequestBody EnergyCurve energyCurve) {
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                if (uuid.startsWith("A")){
+                if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     device.setEnergyCurve(energyCurve);
                     dao.saveOrUpdate(device);
                     return new ResponseEntity<>(energyCurve, HttpStatus.OK);
-                } else if (uuid.startsWith("B")){
+                } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -134,23 +137,24 @@ public class DeviceController {
 
     @DeleteMapping("/{uuid}/energy-pattern")
     public ResponseEntity<EnergyCurve> deleteDevicePattern(HttpServletRequest req, @PathVariable String uuid) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                if (uuid.startsWith("A")){
+                if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     device.setEnergyCurve(new EnergyCurve());
                     dao.saveOrUpdate(device);
                     return new ResponseEntity<>(HttpStatus.OK);
-                } else if (uuid.startsWith("B")){
+                } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length()-2, 10));
+                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -169,7 +173,8 @@ public class DeviceController {
 
     @GetMapping("/{uuid}/mean-energy")
     public ResponseEntity<Double> getMeanEnergy(HttpServletRequest req, @PathVariable String uuid) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -178,7 +183,8 @@ public class DeviceController {
                 TS_Device ts_device = ts_DeviceDAO.findByUuid(uuid);
                 TS_MeasurementDAO ts_MeasurementDAO = TS_DBManager.getInstance().getTS_MeasurementDAO();
                 List<TS_Measurement> list_measurements = ts_MeasurementDAO.findByDeviceId(ts_device.getId());
-                double average = list_measurements.stream().mapToDouble(measurement -> measurement.getValue()).average().orElse(0);
+                double average = list_measurements.stream().mapToDouble(measurement -> measurement.getValue()).average()
+                        .orElse(0);
                 return new ResponseEntity<>(average, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -187,13 +193,10 @@ public class DeviceController {
         }
     }
 
-    /*
-     * Può servire in futuro
-     */
-
     @GetMapping("/{uuid}/get-measurements")
     public ResponseEntity<List<TS_Measurement>> getMeasurements(HttpServletRequest req, @PathVariable String uuid) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -211,28 +214,18 @@ public class DeviceController {
     }
 
     @PostMapping("/{uuid}/generate-measurements")
-    public ResponseEntity<Boolean> generateMeasurements(HttpServletRequest req, @PathVariable String uuid, @RequestBody String dateStart, @RequestBody String dateEnd) {
-        if(!AuthUtility.isAuthorized(req)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Boolean> generateMeasurements(HttpServletRequest req, @PathVariable String uuid,
+            @RequestBody TimeRange timeRange) {
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (timeRange == null || !timeRange.validate()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                TS_DeviceDAO ts_DeviceDAO = TS_DBManager.getInstance().getTS_DeviceDAO();
-                TS_Device ts_device = ts_DeviceDAO.findByUuid(uuid);
-                TS_MeasurementDAO ts_MeasurementDAO = TS_DBManager.getInstance().getTS_MeasurementDAO();
-                Device device = null;
-                if (ts_device.getUuid().startsWith("A")){
-                    device = DBManager.getInstance().getApartmentDeviceDAO().findByPrimaryKey(Integer.parseInt(ts_device.getUuid(), 1, ts_device.getUuid().length()-2, 10));
-                } else if (ts_device.getUuid().startsWith("B")){
-                    device = DBManager.getInstance().getBuildingDeviceDAO().findByPrimaryKey(Integer.parseInt(ts_device.getUuid(), 1, ts_device.getUuid().length()-2, 10));
-                }
-                for(int i = 0; i < CalculateDate.dateDifference(dateEnd, dateStart); i++) {
-                    for(int hour = 0; hour < 24; hour++) {
-                        String newDate = CalculateDate.dateAdd(dateStart, i);
-                        TS_Measurement ts_measurement = new TS_Measurement(0, ts_device.getId(), newDate, GenerateData.generate(newDate, hour, device.getEnergyCurve()));
-                        ts_MeasurementDAO.saveOrUpdate(ts_measurement);
-                    }
-                }
+                GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd());
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         } catch (Exception e) {
