@@ -16,6 +16,9 @@ interface EnergyReport {
   endDate: Date;
   days: number;
   devices: number;
+  totalProduction: number;
+  totalConsumption: number;
+  totalDifference: number;
 }
 
 interface TimeSeriesData {
@@ -34,9 +37,9 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   // Table configuration
-  displayedColumns: string[] = ['startDate', 'endDate', 'days', 'devices', 'actions'];
+  displayedColumns: string[] = ['id', 'startDate', 'endDate', 'days', 'devices', 'totalProduction', 'totalConsumption', 'totalDifference', 'actions'];
   dataSource: MatTableDataSource<EnergyReport>;
-  
+
   // Chart configuration
   timeSeriesChart: any;
 
@@ -46,7 +49,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     end: new FormControl<Date | null>(null),
   });
 
-  
+
   // Sample data - replace with actual data service
   reports: EnergyReport[] = [
     {
@@ -54,43 +57,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       startDate: new Date('2024-11-20'),
       endDate: new Date('2024-01-07'),
       days: 7,
-      devices: 12
+      devices: 12,
+      totalProduction: 1200,
+      totalConsumption: 900,
+      totalDifference: 300
     },
-    {
-      id: 2,
-      startDate: new Date('2024-01-08'),
-      endDate: new Date('2024-01-14'),
-      days: 7,
-      devices: 15
-    },
-    {
-      id: 3,
-      startDate: new Date('2024-01-15'),
-      endDate: new Date('2024-01-21'),
-      days: 2,
-      devices: 10
-    },
-    {
-      id: 4,
-      startDate: new Date('2024-01-22'),
-      endDate: new Date('2024-01-28'),
-      days: 7,
-      devices: 8
-    },
-    {
-      id: 5,
-      startDate: new Date('2024-01-29'),
-      endDate: new Date('2024-02-04'),
-      days: 7,
-      devices: 2
-    },
-    {
-      id: 6,
-      startDate: new Date('2024-02-05'),
-      endDate: new Date('2024-02-11'),
-      days: 7,
-      devices: 5
-    }
   ];
 
   timeSeriesData: TimeSeriesData[] = [
@@ -103,6 +74,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     { date: new Date('2024-02-07'), production: 120 },
   ];
 
+  public isDarkMode = false;
+
   constructor() {
     this.dataSource = new MatTableDataSource(this.reports);
 
@@ -113,6 +86,19 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.dateRange.valueChanges.subscribe(() => {
       this.updateChartData();
     });
+
+    // Check initial dark mode preference
+    this.checkDarkModePreference();
+
+    // Listen for dark mode changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.checkDarkModePreference.bind(this));
+  }
+
+  private checkDarkModePreference() {
+    this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (this.timeSeriesChart) {
+      this.updateChartTheme();
+    }
   }
 
   ngOnInit() {
@@ -124,8 +110,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-   // Quick select functions
-   setLastWeek() {
+  // Quick select functions
+  setLastWeek() {
     const end = new Date();
     const start = new Date();
     start.setDate(end.getDate() - 7);
@@ -164,7 +150,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         datasets: [{
           label: 'Energy Production (W)',
           data: [],
-          borderColor: '#3498db',
+          borderColor: this.isDarkMode ? '#3498db' : '#2980b9',
           tension: 0.1,
           fill: false
         }]
@@ -178,6 +164,12 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
             title: {
               display: true,
               text: 'Energy Production (W)'
+            },
+            grid: {
+              color: this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+            },
+            ticks: {
+              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
             }
           },
           x: {
@@ -187,25 +179,52 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
             },
             ticks: {
               maxRotation: 45,
-              minRotation: 45
+              minRotation: 45,
+              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+            },
+            grid: {
+              color: this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
             }
           }
         },
         plugins: {
           legend: {
-            display: false
+            display: false,
+            labels: {
+              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+            }
           }
         },
+        backgroundColor: this.isDarkMode ? 'rgba(20,20,20,0.9)' : 'rgba(255,255,255,0.9)'
       }
     };
-    
+
     this.timeSeriesChart = new Chart(ctx, chartConfig);
     this.updateChartData();
   }
 
+  private updateChartTheme() {
+    if (!this.timeSeriesChart) return;
+
+    // Update chart colors for dark/light mode
+    this.timeSeriesChart.data.datasets[0].borderColor = this.isDarkMode ? '#3498db' : '#2980b9';
+
+    this.timeSeriesChart.options.scales.y.grid.color = this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    this.timeSeriesChart.options.scales.y.ticks.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
+
+    this.timeSeriesChart.options.scales.x.grid.color = this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    this.timeSeriesChart.options.scales.x.ticks.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
+
+    this.timeSeriesChart.options.plugins.legend.labels.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
+
+    this.timeSeriesChart.options.backgroundColor = this.isDarkMode ? 'rgba(20,20,20,0.9)' : 'rgba(255,255,255,0.9)';
+
+    this.timeSeriesChart.update('none');
+  }
+
   private aggregateDataByMonth(data: TimeSeriesData[]): TimeSeriesData[] {
     const monthlyData = new Map<string, number>();
-    
+
     data.forEach(item => {
       const date = new Date(item.date);
       const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
@@ -226,23 +245,16 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     const dates: Date[] = [];
     let currentDate = new Date(startDate);
     const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     // Determine appropriate tick interval based on date range
     let tickInterval: number;
-    if (totalDays <= 7) {
-      tickInterval = 1; // Daily ticks for week or less
-    } else if (totalDays <= 31) {
-      tickInterval = 3; // Every 3 days for month
+    if (totalDays <= 30) {
+      tickInterval = 1; // Daily ticks for month or less
     } else {
-      // For longer periods, use monthly ticks
-      while (currentDate <= endDate) {
-        dates.push(new Date(currentDate));
-        currentDate.setMonth(currentDate.getMonth() + 1);
-      }
-      return dates;
+      // Calculate tick interval based on division of total days
+      tickInterval = Math.ceil(totalDays / 30);
     }
 
-    // Generate ticks for daily/3-day intervals
     while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + tickInterval);
@@ -257,17 +269,19 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     if (!startDate || !endDate) return;
 
     const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     // Choose date formatter based on range
     let dateFormatter: Intl.DateTimeFormat;
     if (totalDays <= 31) {
       dateFormatter = new Intl.DateTimeFormat('en-US', {
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        year: 'numeric'
       });
     } else {
       dateFormatter = new Intl.DateTimeFormat('en-US', {
         month: 'short',
+        day: 'numeric',
         year: 'numeric'
       });
     }
@@ -293,8 +307,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       const matchingData = filteredData.find(d => {
         const dataDate = new Date(d.date);
         if (totalDays > 31) {
-          return dataDate.getMonth() === tickDate.getMonth() && 
-                 dataDate.getFullYear() === tickDate.getFullYear();
+          return dataDate.getMonth() === tickDate.getMonth() &&
+            dataDate.getFullYear() === tickDate.getFullYear();
         } else {
           return dataDate.toDateString() === tickDate.toDateString();
         }
@@ -309,11 +323,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     if (this.timeSeriesChart) {
       this.timeSeriesChart.data.labels = chartData.map(d => dateFormatter.format(d.date));
       this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
-      
+
       // Update tick settings based on data range
-      this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit = 
+      this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit =
         totalDays > 7 && totalDays <= 31 ? 10 : undefined;
-      
+
       this.timeSeriesChart.update('none');
     }
   }
@@ -328,5 +342,15 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   onDelete(report: EnergyReport) {
     console.log('Delete report:', report);
+  }
+
+  energyDifferenceIcon(report: EnergyReport): string {
+    if (report.totalDifference > 0) {
+      return 'bi-arrow-up-right text-success';
+    } else if (report.totalDifference < 0) {
+      return 'bi-arrow-down-right text-danger';
+    } else {
+      return 'bi-arrow-right text-info';
+    }
   }
 }

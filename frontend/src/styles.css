@@ -65,34 +65,34 @@ body {
 }
 
 /* Accordion */
-mat-expansion-panel:hover{
+mat-expansion-panel:hover {
   transition: all 0.3s ease;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
-mat-expansion-panel-header{
+mat-expansion-panel-header {
   background-color: white;
 }
 
-mat-expansion-panel-header:hover{
+mat-expansion-panel-header:hover {
   background: white !important;
 }
 
-mat-expansion-panel-header:focus{
+mat-expansion-panel-header:focus {
   background: white !important;
 }
 
-.mat-expansion-panel-body{
+.mat-expansion-panel-body {
   background-color: white;
 }
 
-.mat-mdc-table{
+.mat-mdc-table {
   background-color: white !important;
 }
 
 /* Range Picker */
-.mat-mdc-text-field-wrapper{
+.mat-mdc-text-field-wrapper {
   background-color: white !important;
 }
 
@@ -333,60 +333,60 @@ mat-expansion-panel-header:focus{
   }
 
   /* Device Chart */
-  .chart-container{
+  .chart-container {
     color: var(--color-text) !important;
   }
 
-  .form-group{
+  .form-group {
     color: var(--color-text) !important;
   }
 
   .chart-container text {
-    fill: var(--color-text) ;
+    fill: var(--color-text);
   }
 
   /* Accordion */
-  mat-expansion-panel-header{
+  mat-expansion-panel-header {
     background-color: var(--color-background-light) !important;
     border-radius: 0px !important;
   }
 
-  mat-panel-title{
+  mat-panel-title {
     color: var(--color-text-muted) !important;
   }
-  
-  mat-expansion-panel-header:hover{
-    background: var(--color-background-light) !important;
-  }
-  
-  mat-expansion-panel-header:focus{
+
+  mat-expansion-panel-header:hover {
     background: var(--color-background-light) !important;
   }
 
-  .mat-expansion-panel-body{
+  mat-expansion-panel-header:focus {
+    background: var(--color-background-light) !important;
+  }
+
+  .mat-expansion-panel-body {
     background-color: var(--color-background-light) !important;
   }
 
-  .mat-mdc-table{
+  .mat-mdc-table {
     background-color: var(--color-background-light) !important;
     color: var(--color-text) !important;
   }
-  
+
   /* Range Picker */
-  .mat-mdc-text-field-wrapper{
+  .mat-mdc-text-field-wrapper {
     background-color: var(--color-background-light) !important;
   }
 
-  tr{
+  tr {
     color: var(--color-text) !important;
   }
 
 
-  label{
+  label {
     color: var(--color-text) !important;
   }
 
-  select{
+  select {
     color: var(--color-text) !important;
     background-color: var(--color-background-light) !important;
     border-color: var(--color-border) !important;
