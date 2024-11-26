@@ -1,37 +1,24 @@
 // energy-reports.component.ts
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
 import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FormControl, FormGroup } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddSimulationComponent } from '../add-simulation/add-simulation.component';
+
+import { EnergyReport } from '../../../models/energy-report';
+import { TimeSeriesData } from '../../../models/time-series-data';
 
 
 // This is important! Register Chart.js components
 Chart.register(...registerables);
 
-interface EnergyReport {
-  id: number;
-  startDate: Date;
-  endDate: Date;
-  days: number;
-  devices: number;
-  totalProduction: number;
-  totalConsumption: number;
-  totalDifference: number;
-
-  timeSeriesData: TimeSeriesData[];
-}
-
-interface TimeSeriesData {
-  date: Date;
-  production: number;
-}
-
 @Component({
   selector: 'app-energy-reports',
   templateUrl: './energy-reports.component.html',
-  styleUrls: ['./energy-reports.component.scss']
+  styleUrls: ['./energy-reports.component.css']
 })
 export class EnergyReportsComponent implements OnInit, AfterViewInit {
   @ViewChild('timeSeriesChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -51,7 +38,10 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     end: new FormControl<Date | null>(null),
   });
 
+  @Input() reports: EnergyReport[] = [];
+
   // Sample data - replace with actual data service
+  /*
   reports: EnergyReport[] = [
     {
       id: 1,
@@ -163,6 +153,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       ]
     }
   ];
+  */
+  
 
   selectedReport: EnergyReport = {
     id: 0,
@@ -178,7 +170,9 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   public isDarkMode = false;
 
-  constructor() {
+  constructor(
+    private modalService: NgbModal,
+  ) {
     this.selectLastReport();
 
     this.dataSource = new MatTableDataSource(this.reports);
@@ -195,13 +189,6 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.checkDarkModePreference.bind(this));
   }
 
-  selectLastReport() {
-    //Order the reports by id in descending order
-    this.reports.sort((a, b) => b.id - a.id);
-
-    this.selectedReport = this.reports[0];
-  }
-
   private checkDarkModePreference() {
     this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (this.timeSeriesChart) {
@@ -212,11 +199,38 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.initializeChart();
     this.setReportDateRange(this.selectedReport);
+    this.updateChartData();
+  }
+
+  selectLastReport() {
+    //Order the reports by id in descending order
+    this.reports.sort((a, b) => b.id - a.id);
+
+    this.selectedReport = this.reports[0];
+  }
+
+  private updateDataSource() {
+    if (this.dataSource && this.reports.length > 0) {
+      // Reorder reports by ID in descending order
+      this.reports.sort((a, b) => b.id - a.id);
+
+      this.dataSource.data = this.reports;
+      
+      // Re-apply paginator and sort after updating data
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+      }
+      if (this.sort) {
+        this.dataSource.sort = this.sort;
+      }
+
+      // Select the last report after updating
+      this.selectLastReport();
+    }
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.updateDataSource();
 
     this.initializeChart();
     this.selectLastReport();
@@ -533,6 +547,21 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   }
 
   startNewSimulation() {
-    // Open a dialog or navigate to a simulation setup page
+    const modalRef = this.modalService.open(AddSimulationComponent, {
+      centered: true,
+      backdrop: 'static',
+      windowClass: 'building-modal'
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          console.log('Simulation data:', result);
+        }
+      },
+      (reason) => {
+        // Modal dismissed
+      }
+    );
   }
 }

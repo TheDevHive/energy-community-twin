@@ -42,6 +42,7 @@ import { DeviceViewComponent } from './view/device-view/device-view.component';
 import { ApartmentComponent } from './view/apartment/apartment.component';
 import { EnergyReportsComponent } from './view/SHARED/energy-reports/energy-reports.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulation.component';
 
 
 @NgModule({
@@ -63,7 +64,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     AddDeviceComponent,
     DeviceViewComponent,
     ApartmentComponent,
-    EnergyReportsComponent
+    EnergyReportsComponent,
+    AddSimulationComponent
   ],
   imports: [
     BrowserModule,
