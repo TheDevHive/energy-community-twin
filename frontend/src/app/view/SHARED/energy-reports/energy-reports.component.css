@@ -81,6 +81,62 @@ mat-expansion-panel-header {
     height: 80px !important;
 }
 
+/* energy-reports.component.css */
+.border-margin {
+    margin-left: 1%;
+    margin-right: 0.3%;
+}
+
+.date-simulation-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.date-range-field {
+    flex-grow: 1;
+    height: 56px; /* Match Angular Material input height */
+}
+
+.date-range-input {
+    height: 100%;
+}
+
+.simulation-btn {
+    height: 56px; /* Match date picker height */
+    display: inline-flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .date-simulation-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .date-range-field,
+    .simulation-btn {
+        width: 100%;
+    }
+
+    .simulation-btn {
+        margin-top: 8px;
+    }
+}
+
+/* Ensure consistent input height for mat-form-field */
+.mat-mdc-form-field-subscript-wrapper {
+    height: 0;
+}
+
+/* Additional styling to align input text and icon */
+.mat-mdc-text-field-wrapper {
+    height: 100%;
+}
+
 .center-date-picker {
     display: flex;
     justify-content: center;

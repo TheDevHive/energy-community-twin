@@ -6,21 +6,34 @@
                 <mat-panel-title>
                     <div class="d-flex align-items-center">
                         <i class="bi bi-graph-up me-2"></i>
-                        Energy Generation Reports
+                        Energy Generation and Reports
                     </div>
                 </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <!-- Date Range Picker -->
-            <mat-form-field class="w-full max-w-md center-date-picker" appearance="outline">
-                <mat-label>Select Date Range</mat-label>
-                <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker" [darkMode]="isDarkMode">
-                    <input matStartDate formControlName="start" placeholder="Start date">
-                    <input matEndDate formControlName="end" placeholder="End date">
-                </mat-date-range-input>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker [darkMode]="isDarkMode"></mat-date-range-picker>
-            </mat-form-field>
+            <!-- Date Range and Start Simulation Row -->
+            <div class="row g-3 align-items-center mb-3 border-margin">
+                <!-- Date Range Picker - Full Width on Small Screens -->
+                <div class="col-md-8 col-12">
+                    <div class="date-simulation-container">
+                        <mat-form-field class="date-range-field" appearance="outline">
+                            <mat-label>Select Date Range</mat-label>
+                            <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker" class="date-range-input">
+                                <input matStartDate formControlName="start" placeholder="Start date">
+                                <input matEndDate formControlName="end" placeholder="End date">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                        </mat-form-field>
+
+                        <!-- Start New Simulation Button - Consistent Height -->
+                        <button class="btn btn-primary simulation-btn" (click)="startNewSimulation()">
+                            <i class="bi bi-play-circle me-2"></i>
+                            Start New Simulation
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Quick Select Buttons -->
             <!--
@@ -33,7 +46,7 @@
 
             <!-- Chart Section -->
             <div class="chart-container mb-4">
-                <canvas id="timeSeriesChart"></canvas>
+                <canvas #timeSeriesChart id="timeSeriesChart"></canvas>
             </div>
 
             <!-- Reports Table -->
