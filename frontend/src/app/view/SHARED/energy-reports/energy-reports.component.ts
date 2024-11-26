@@ -134,7 +134,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     {
       id: 3,
       startDate: new Date('2024-11-06'),
-      endDate: new Date('2024-11-10'),
+      endDate: new Date('2024-11-06'),
       days: 1,
       devices: 12,
       totalProduction: 800,
@@ -179,6 +179,9 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   public isDarkMode = false;
 
   constructor() {
+    //Order the reports by id in descending order
+    this.reports.sort((a, b) => b.id - a.id);
+
     //Initialize with last report generated
     this.selectedReport = this.reports[0];
 
