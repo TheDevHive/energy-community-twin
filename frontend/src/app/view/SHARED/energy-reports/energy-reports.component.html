@@ -11,29 +11,142 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <!-- Date Range and Start Simulation Row -->
-            <div class="row g-3 align-items-center mb-3 border-margin">
-                <!-- Date Range Picker - Full Width on Small Screens -->
-                <div class="col-md-8 col-12">
-                    <div class="date-simulation-container">
-                        <mat-form-field class="date-range-field" appearance="outline">
-                            <mat-label>Select Date Range</mat-label>
-                            <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker" class="date-range-input">
-                                <input matStartDate formControlName="start" placeholder="Start date">
-                                <input matEndDate formControlName="end" placeholder="End date">
-                            </mat-date-range-input>
-                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-date-range-picker #picker></mat-date-range-picker>
-                        </mat-form-field>
+            <!-- Empty State -->
+            <div *ngIf="!reports.length" class="text-center py-5">
+                <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center"
+                    style="width: 80px; height: 80px;">
+                    <i class="bi bi-graph-up text-primary fs-1"></i>
+                </div>
+                <h5 class="text-muted mb-3">No Energy Simulations Yet</h5>
+                <p class="text-muted mb-4">
+                    Start tracking your energy production and consumption by running a simulation.
+                </p>
+                <button class="btn btn-primary" (click)="startNewSimulation()">
+                    <i class="bi bi-play-circle me-2"></i>Start Your First Simulation
+                </button>
+            </div>
 
-                        <!-- Start New Simulation Button - Consistent Height -->
-                        <button class="btn btn-primary simulation-btn" (click)="startNewSimulation()">
-                            <i class="bi bi-play-circle me-2"></i>
-                            Start New Simulation
-                        </button>
+            <!-- Existing content, show only when reports exist -->
+            <ng-container *ngIf="reports.length > 0">
+                <!-- Date Range and Start Simulation Row -->
+                <div class="row g-3 align-items-center mb-3 border-margin">
+                    <!-- Date Range Picker - Full Width on Small Screens -->
+                    <div class="col-md-8 col-12">
+                        <div class="date-simulation-container">
+                            <mat-form-field class="date-range-field" appearance="outline">
+                                <mat-label>Select Date Range</mat-label>
+                                <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker"
+                                    class="date-range-input">
+                                    <input matStartDate formControlName="start" placeholder="Start date">
+                                    <input matEndDate formControlName="end" placeholder="End date">
+                                </mat-date-range-input>
+                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-date-range-picker #picker></mat-date-range-picker>
+                            </mat-form-field>
+
+                            <!-- Start New Simulation Button - Consistent Height -->
+                            <button class="btn btn-primary simulation-btn" (click)="startNewSimulation()">
+                                <i class="bi bi-play-circle me-2"></i>
+                                Start New Simulation
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Chart Section -->
+                <div class="chart-container mb-4">
+                    <canvas #timeSeriesChart id="timeSeriesChart"></canvas>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="table-container">
+                    <table mat-table [dataSource]="dataSource" matSort class="w-100">
+                        <!-- ID Column -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                            <td mat-cell *matCellDef="let report"> {{report.id}} </td>
+                        </ng-container>
+
+                        <!-- Start Date Column -->
+                        <ng-container matColumnDef="startDate">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+                            <td mat-cell *matCellDef="let report"> {{report.startDate | date}} </td>
+                        </ng-container>
+
+                        <!-- End Date Column -->
+                        <ng-container matColumnDef="endDate">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+                            <td mat-cell *matCellDef="let report"> {{report.endDate | date}} </td>
+                        </ng-container>
+
+                        <!-- Days Column -->
+                        <ng-container matColumnDef="days">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Days </th>
+                            <td mat-cell *matCellDef="let report"> {{report.days}} </td>
+                        </ng-container>
+
+                        <!-- Devices Column -->
+                        <ng-container matColumnDef="devices">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Devices </th>
+                            <td mat-cell *matCellDef="let report"> {{report.devices}} </td>
+                        </ng-container>
+
+                        <!-- Total Production Column -->
+                        <ng-container matColumnDef="totalProduction">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Production </th>
+                            <td mat-cell *matCellDef="let report">
+                                <span class="text-success me-2">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </span> {{report.totalProduction}} W
+                            </td>
+                        </ng-container>
+
+                        <!-- Total Consumption Column -->
+                        <ng-container matColumnDef="totalConsumption">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Consumption </th>
+                            <td mat-cell *matCellDef="let report">
+                                <span class="text-danger me-2">
+                                    <i class="bi bi-arrow-down-right"></i>
+                                </span> {{report.totalConsumption}} W
+                            </td>
+                        </ng-container>
+
+                        <!-- Total Difference Column -->
+                        <ng-container matColumnDef="totalDifference">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Difference </th>
+                            <td mat-cell *matCellDef="let report"><span class="me-2">
+                                    <i class="bi" [ngClass]="energyDifferenceIcon(report)"></i>
+                                </span>
+                                {{report.totalDifference}} W </td>
+                        </ng-container>
+
+                        <!-- Actions Column -->
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef> Actions </th>
+                            <td mat-cell *matCellDef="let report">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm" (click)="onDetails(report)">
+                                        Details
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" (click)="onDownload(report)">
+                                        Download
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" (click)="onDelete(report)">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{
+                        'selected-report-row': row.id === selectedReport.id
+                    }"></tr>
+                    </table>
+
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                </div>
+            </ng-container>
 
             <!-- Quick Select Buttons -->
             <!--
@@ -44,100 +157,6 @@
             </div>
             -->
 
-            <!-- Chart Section -->
-            <div class="chart-container mb-4">
-                <canvas #timeSeriesChart id="timeSeriesChart"></canvas>
-            </div>
-
-            <!-- Reports Table -->
-            <div class="table-container">
-                <table mat-table [dataSource]="dataSource" matSort class="w-100">
-                    <!-- ID Column -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-                        <td mat-cell *matCellDef="let report"> {{report.id}} </td>
-                    </ng-container>
-
-                    <!-- Start Date Column -->
-                    <ng-container matColumnDef="startDate">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
-                        <td mat-cell *matCellDef="let report"> {{report.startDate | date}} </td>
-                    </ng-container>
-
-                    <!-- End Date Column -->
-                    <ng-container matColumnDef="endDate">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
-                        <td mat-cell *matCellDef="let report"> {{report.endDate | date}} </td>
-                    </ng-container>
-
-                    <!-- Days Column -->
-                    <ng-container matColumnDef="days">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Days </th>
-                        <td mat-cell *matCellDef="let report"> {{report.days}} </td>
-                    </ng-container>
-
-                    <!-- Devices Column -->
-                    <ng-container matColumnDef="devices">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Devices </th>
-                        <td mat-cell *matCellDef="let report"> {{report.devices}} </td>
-                    </ng-container>
-
-                    <!-- Total Production Column -->
-                    <ng-container matColumnDef="totalProduction">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Production </th>
-                        <td mat-cell *matCellDef="let report">
-                            <span class="text-success me-2">
-                                <i class="bi bi-arrow-up-right"></i>
-                            </span> {{report.totalProduction}} W
-                        </td>
-                    </ng-container>
-
-                    <!-- Total Consumption Column -->
-                    <ng-container matColumnDef="totalConsumption">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Consumption </th>
-                        <td mat-cell *matCellDef="let report">
-                            <span class="text-danger me-2">
-                                <i class="bi bi-arrow-down-right"></i>
-                            </span> {{report.totalConsumption}} W
-                        </td>
-                    </ng-container>
-
-                    <!-- Total Difference Column -->
-                    <ng-container matColumnDef="totalDifference">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Difference </th>
-                        <td mat-cell *matCellDef="let report"><span class="me-2">
-                                <i class="bi" [ngClass]="energyDifferenceIcon(report)"></i>
-                            </span>
-                            {{report.totalDifference}} W </td>
-                    </ng-container>
-
-                    <!-- Actions Column -->
-                    <ng-container matColumnDef="actions">
-                        <th mat-header-cell *matHeaderCellDef> Actions </th>
-                        <td mat-cell *matCellDef="let report">
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary btn-sm" (click)="onDetails(report)">
-                                    Details
-                                </button>
-                                <button class="btn btn-secondary btn-sm" (click)="onDownload(report)">
-                                    Download
-                                </button>
-                                <button class="btn btn-danger btn-sm" (click)="onDelete(report)">
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row 
-                    *matRowDef="let row; columns: displayedColumns;"
-                    [ngClass]="{
-                        'selected-report-row': row.id === selectedReport.id
-                    }"></tr>                </table>
-
-                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-            </div>
         </mat-expansion-panel>
     </mat-accordion>
 </div>

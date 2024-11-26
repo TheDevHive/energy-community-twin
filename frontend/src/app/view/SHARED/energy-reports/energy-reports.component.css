@@ -160,3 +160,33 @@ mat-expansion-panel-header {
 tr.mat-row:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
+
+.empty-state-icon {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-state-icon, h5, p, button {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@media (prefers-color-scheme: dark) {
+    .empty-state-icon {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+}

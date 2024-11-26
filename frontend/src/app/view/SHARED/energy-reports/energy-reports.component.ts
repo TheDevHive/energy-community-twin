@@ -179,16 +179,9 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   public isDarkMode = false;
 
   constructor() {
-    //Order the reports by id in descending order
-    this.reports.sort((a, b) => b.id - a.id);
-
-    //Initialize with last report generated
-    this.selectedReport = this.reports[0];
+    this.selectLastReport();
 
     this.dataSource = new MatTableDataSource(this.reports);
-
-    // Initialize with last week selected
-    this.setLastWeek();
 
     // Subscribe to date range changes
     this.dateRange.valueChanges.subscribe(() => {
@@ -200,6 +193,13 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
     // Listen for dark mode changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.checkDarkModePreference.bind(this));
+  }
+
+  selectLastReport() {
+    //Order the reports by id in descending order
+    this.reports.sort((a, b) => b.id - a.id);
+
+    this.selectedReport = this.reports[0];
   }
 
   private checkDarkModePreference() {
@@ -214,47 +214,21 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.setReportDateRange(this.selectedReport);
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    this.initializeChart();
+    this.selectLastReport();
+    this.setReportDateRange(this.selectedReport);
+    this.updateChartData();
+  }
+
   private setReportDateRange(report: EnergyReport) {
     // Ensure the start and end dates are exactly from the report
     this.dateRange.patchValue({
       start: report.startDate,
       end: report.endDate
-    });
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  // Quick select functions
-  setLastWeek() {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 7);
-    this.dateRange.patchValue({
-      start: start,
-      end: end
-    });
-  }
-
-  setLastMonth() {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 30);
-    this.dateRange.patchValue({
-      start: start,
-      end: end
-    });
-  }
-
-  setLastYear() {
-    const end = new Date();
-    const start = new Date();
-    start.setFullYear(end.getFullYear() - 1);
-    this.dateRange.patchValue({
-      start: start,
-      end: end
     });
   }
 
@@ -320,65 +294,6 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.updateChartData();
   }
 
-  private updateChartTheme() {
-    if (!this.timeSeriesChart) return;
-
-    // Update chart colors for dark/light mode
-    this.timeSeriesChart.data.datasets[0].borderColor = this.isDarkMode ? '#3498db' : '#2980b9';
-
-    this.timeSeriesChart.options.scales.y.grid.color = this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-    this.timeSeriesChart.options.scales.y.ticks.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
-
-    this.timeSeriesChart.options.scales.x.grid.color = this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-    this.timeSeriesChart.options.scales.x.ticks.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
-
-    this.timeSeriesChart.options.plugins.legend.labels.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
-
-    this.timeSeriesChart.options.backgroundColor = this.isDarkMode ? 'rgba(20,20,20,0.9)' : 'rgba(255,255,255,0.9)';
-
-    this.timeSeriesChart.update('none');
-  }
-
-  private aggregateDataByMonth(data: TimeSeriesData[]): TimeSeriesData[] {
-    const monthlyData = new Map<string, number>();
-
-    data.forEach(item => {
-      const date = new Date(item.date);
-      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-      const currentSum = monthlyData.get(monthKey) || 0;
-      monthlyData.set(monthKey, currentSum + item.production);
-    });
-
-    return Array.from(monthlyData.entries()).map(([monthKey, sum]) => {
-      const [year, month] = monthKey.split('-').map(Number);
-      return {
-        date: new Date(year, month - 1, 1),
-        production: sum
-      };
-    });
-  }
-
-  private generateDateTicks(startDate: Date, endDate: Date): Date[] {
-    const dates: Date[] = [];
-    let currentDate = new Date(startDate);
-    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-
-    // Determine appropriate tick interval based on date range
-    let tickInterval: number;
-    if (totalDays <= 30) {
-      tickInterval = 1; // Daily ticks for month or less
-    } else {
-      // Calculate tick interval based on division of total days
-      tickInterval = Math.ceil(totalDays / 30);
-    }
-
-    while (currentDate <= endDate) {
-      dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + tickInterval);
-    }
-    return dates;
-  }
-  
   updateChartData() {
     const startDate = this.dateRange.get('start')?.value;
     const originalEndDate = this.dateRange.get('end')?.value;
@@ -510,6 +425,66 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       }
     }
   }
+
+  private updateChartTheme() {
+    if (!this.timeSeriesChart) return;
+
+    // Update chart colors for dark/light mode
+    this.timeSeriesChart.data.datasets[0].borderColor = this.isDarkMode ? '#3498db' : '#2980b9';
+
+    this.timeSeriesChart.options.scales.y.grid.color = this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    this.timeSeriesChart.options.scales.y.ticks.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
+
+    this.timeSeriesChart.options.scales.x.grid.color = this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    this.timeSeriesChart.options.scales.x.ticks.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
+
+    this.timeSeriesChart.options.plugins.legend.labels.color = this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)';
+
+    this.timeSeriesChart.options.backgroundColor = this.isDarkMode ? 'rgba(20,20,20,0.9)' : 'rgba(255,255,255,0.9)';
+
+    this.timeSeriesChart.update('none');
+  }
+
+  private aggregateDataByMonth(data: TimeSeriesData[]): TimeSeriesData[] {
+    const monthlyData = new Map<string, number>();
+
+    data.forEach(item => {
+      const date = new Date(item.date);
+      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+      const currentSum = monthlyData.get(monthKey) || 0;
+      monthlyData.set(monthKey, currentSum + item.production);
+    });
+
+    return Array.from(monthlyData.entries()).map(([monthKey, sum]) => {
+      const [year, month] = monthKey.split('-').map(Number);
+      return {
+        date: new Date(year, month - 1, 1),
+        production: sum
+      };
+    });
+  }
+
+  private generateDateTicks(startDate: Date, endDate: Date): Date[] {
+    const dates: Date[] = [];
+    let currentDate = new Date(startDate);
+    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Determine appropriate tick interval based on date range
+    let tickInterval: number;
+    if (totalDays <= 30) {
+      tickInterval = 1; // Daily ticks for month or less
+    } else {
+      // Calculate tick interval based on division of total days
+      tickInterval = Math.ceil(totalDays / 30);
+    }
+
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + tickInterval);
+    }
+    return dates;
+  }
+  
   private generateHourlyTicks(date: Date): Date[] {
     const ticks: Date[] = [];
     const baseDate = new Date(date);
@@ -530,7 +505,6 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
     // Update date range to match the selected report
     this.setReportDateRange(report);
-
     this.updateChartData();
 
     // Scroll to the main div if the element exists
