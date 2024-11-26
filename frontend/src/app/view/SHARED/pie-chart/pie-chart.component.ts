@@ -53,7 +53,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
             '#28a745', // green for production
             '#dc3545'  // red for consumption
           ],
-          borderColor: [this.borderColor, this.borderColor],
+          borderColor: ["#1e7e34", "#a71d2a"], // Border color for each slice
           borderWidth: 3,
           hoverOffset: 20, // Extra offset when hovering
           offset: [15, 15] // Detach the slices

@@ -6,7 +6,7 @@
   
   .chart-container {
     position: relative;
-    height: 300px;
+    height: 280px;
     width: 100%;
     padding: 20px; /* Add padding around the chart */
   }

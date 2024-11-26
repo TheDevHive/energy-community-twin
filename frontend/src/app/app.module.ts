@@ -65,7 +65,7 @@ import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulat
     AddDeviceComponent,
     DeviceViewComponent,
     ApartmentComponent,
-    PieChartComponent
+    PieChartComponent,
     ApartmentComponent,
     EnergyReportsComponent,
     AddSimulationComponent
