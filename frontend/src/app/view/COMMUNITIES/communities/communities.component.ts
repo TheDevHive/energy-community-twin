@@ -14,8 +14,10 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { ViewChild } from '@angular/core';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
-import { id } from '@swimlane/ngx-datatable';
-import { AlertComponent } from '../../SHARED/alert/alert.component';
+
+import { EnergyReport } from '../../../models/energy-report';
+import { TimeSeriesData } from '../../../models/time-series-data';
+
 
 @Component({
   selector: 'app-communities',

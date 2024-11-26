@@ -64,6 +64,39 @@ body {
   background-color: white;
 }
 
+/* Accordion */
+mat-expansion-panel:hover {
+  transition: all 0.3s ease;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+mat-expansion-panel-header {
+  background-color: white;
+}
+
+mat-expansion-panel-header:hover {
+  background: white !important;
+}
+
+mat-expansion-panel-header:focus {
+  background: white !important;
+}
+
+.mat-expansion-panel-body {
+  background-color: white;
+}
+
+.mat-mdc-table {
+  background-color: white !important;
+}
+
+/* Range Picker */
+.mat-mdc-text-field-wrapper {
+  background-color: white !important;
+}
+
+
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
 
@@ -300,23 +333,60 @@ body {
   }
 
   /* Device Chart */
-  .chart-container{
+  .chart-container {
     color: var(--color-text) !important;
   }
 
-  .form-group{
+  .form-group {
     color: var(--color-text) !important;
   }
 
   .chart-container text {
-    fill: var(--color-text) ;
+    fill: var(--color-text);
   }
 
-  label{
+  /* Accordion */
+  mat-expansion-panel-header {
+    background-color: var(--color-background-light) !important;
+    border-radius: 0px !important;
+  }
+
+  mat-panel-title {
+    color: var(--color-text-muted) !important;
+  }
+
+  mat-expansion-panel-header:hover {
+    background: var(--color-background-light) !important;
+  }
+
+  mat-expansion-panel-header:focus {
+    background: var(--color-background-light) !important;
+  }
+
+  .mat-expansion-panel-body {
+    background-color: var(--color-background-light) !important;
+  }
+
+  .mat-mdc-table {
+    background-color: var(--color-background-light) !important;
     color: var(--color-text) !important;
   }
 
-  select{
+  /* Range Picker */
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--color-background-light) !important;
+  }
+
+  tr {
+    color: var(--color-text) !important;
+  }
+
+
+  label {
+    color: var(--color-text) !important;
+  }
+
+  select {
     color: var(--color-text) !important;
     background-color: var(--color-background-light) !important;
     border-color: var(--color-border) !important;
@@ -586,4 +656,12 @@ body {
 
 .checkbox-container:hover input[type="checkbox"] {
   border-color: var(--color-primary);
+}
+
+.cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+.mat-datepicker-popup {
+  z-index: 10000 !important;
 }

@@ -1,0 +1,192 @@
+/* energy-reports.component.css */
+.accordion-section {
+    .mat-expansion-panel {
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .date-range-controls {
+        display: flex;
+        justify-content: center;
+        /* Center the entire section horizontally */
+        align-items: center;
+        /* Center items vertically */
+        gap: 16px;
+        /* Space between toggle and date picker */
+        margin: 16px 0;
+
+        .mat-button-toggle-group {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+
+            mat-button-toggle {
+                text-transform: none;
+                /* Optional: prevent uppercase text */
+                font-size: 14px;
+                transition: background-color 0.3s ease;
+
+                &.mat-button-toggle-checked {
+                    background-color: #3498db;
+                    /* Active button color */
+                    color: white;
+                }
+            }
+        }
+
+        .date-picker-field {
+            min-width: 300px;
+            /* Ensure consistent width */
+        }
+    }
+
+    .chart-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 400px;
+    }
+
+
+
+    .table-container {
+        margin-top: 20px;
+
+        .mat-table {
+            width: 100%;
+        }
+
+        .mat-cell {
+            padding: 8px 16px;
+        }
+
+        .mat-header-cell {
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.87);
+        }
+    }
+
+    .actions-cell {
+        display: flex;
+        gap: 8px;
+
+        button {
+            min-width: 80px;
+        }
+    }
+}
+
+mat-expansion-panel-header {
+    height: 80px !important;
+}
+
+/* energy-reports.component.css */
+.border-margin {
+    margin-left: 1%;
+    margin-right: 0.3%;
+}
+
+.date-simulation-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.date-range-field {
+    flex-grow: 1;
+    height: 56px; /* Match Angular Material input height */
+}
+
+.date-range-input {
+    height: 100%;
+}
+
+.simulation-btn {
+    height: 56px; /* Match date picker height */
+    display: inline-flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .date-simulation-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .date-range-field,
+    .simulation-btn {
+        width: 100%;
+    }
+
+    .simulation-btn {
+        margin-top: 8px;
+    }
+}
+
+/* Ensure consistent input height for mat-form-field */
+.mat-mdc-form-field-subscript-wrapper {
+    height: 0;
+}
+
+/* Additional styling to align input text and icon */
+.mat-mdc-text-field-wrapper {
+    height: 100%;
+}
+
+.center-date-picker {
+    display: flex;
+    justify-content: center;
+    /*width: 50%; */
+    width: 300px;
+    margin: 0 auto;
+    /* Center the element */
+}
+
+.selected-report-row {
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+
+    @media (prefers-color-scheme: light) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    box-shadow: inset 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+tr.mat-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.empty-state-icon {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-state-icon, h5, p, button {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@media (prefers-color-scheme: dark) {
+    .empty-state-icon {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+}
