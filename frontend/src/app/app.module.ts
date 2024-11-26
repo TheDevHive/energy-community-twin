@@ -24,6 +24,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { MatLabel } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 import { ConfirmationDialogComponent } from './view/SHARED/confirmation-dialog/confirmation-dialog.component';
 import { AlertComponent } from './view/SHARED/alert/alert.component';
 import { EnergySimulatorComponent } from './view/energy-simulator/energy-simulator.component';
@@ -33,6 +41,9 @@ import { AddDeviceComponent } from './view/add-device/add-device.component';
 import { DeviceViewComponent } from './view/device-view/device-view.component';
 import { ApartmentComponent } from './view/apartment/apartment.component';
 import { PieChartComponent } from './view/SHARED/pie-chart/pie-chart.component';
+import { EnergyReportsComponent } from './view/SHARED/energy-reports/energy-reports.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulation.component';
 
 
 @NgModule({
@@ -55,6 +66,9 @@ import { PieChartComponent } from './view/SHARED/pie-chart/pie-chart.component';
     DeviceViewComponent,
     ApartmentComponent,
     PieChartComponent
+    ApartmentComponent,
+    EnergyReportsComponent,
+    AddSimulationComponent
   ],
   imports: [
     BrowserModule,
@@ -66,7 +80,15 @@ import { PieChartComponent } from './view/SHARED/pie-chart/pie-chart.component';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatDialogModule
+    MatDialogModule,
+    MatExpansionModule,
+    MatOption,
+    MatSelect,
+    MatLabel,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonToggleModule
   ],
   providers: [
     provideAnimationsAsync()

@@ -20,14 +20,14 @@ public class ApartmentDAO {
     }
 
     public boolean saveOrUpdate(Apartment apartment) {
-        if(findByPrimaryKey(apartment.getId()) == null) {
+        if (findByPrimaryKey(apartment.getId()) == null) {
             String sql = "INSERT INTO apartment (residents, square_footage, energy_class, building_id, user_id) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, apartment.getResidents());
                 pstmt.setInt(2, apartment.getSquareFootage());
                 pstmt.setString(3, apartment.getEnergyClass());
                 pstmt.setInt(4, apartment.getBuilding().getId());
-                if(apartment.getUser()==null)
+                if (apartment.getUser() == null)
                     pstmt.setNull(5, java.sql.Types.INTEGER);
                 else
                     pstmt.setInt(5, apartment.getUser().getId());
@@ -47,7 +47,7 @@ public class ApartmentDAO {
                 pstmt.setInt(2, apartment.getSquareFootage());
                 pstmt.setString(3, apartment.getEnergyClass());
                 pstmt.setInt(4, apartment.getBuilding().getId());
-                if(apartment.getUser()==null)
+                if (apartment.getUser() == null)
                     pstmt.setNull(5, java.sql.Types.INTEGER);
                 else
                     pstmt.setInt(5, apartment.getUser().getId());
@@ -70,15 +70,33 @@ public class ApartmentDAO {
             if (rs.next()) {
                 Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(rs.getInt("building_id"));
                 User user = DBManager.getInstance().getUserDAO().findByPrimaryKey(rs.getInt("user_id"));
-                if(building == null) {
+                if (building == null) {
                     return null;
                 }
-                apartment = new Apartment(rs.getInt("id"), building, rs.getInt("residents"), rs.getInt("square_footage"), rs.getString("energy_class"), user);
+                apartment = new Apartment(rs.getInt("id"), building, rs.getInt("residents"),
+                        rs.getInt("square_footage"), rs.getString("energy_class"), user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return apartment;
+    }
+
+    public List<Apartment> findByBuilding(Building building) {
+        String sql = "SELECT * FROM apartment WHERE building_id = ?";
+        List<Apartment> apartments = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, building.getId());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = DBManager.getInstance().getUserDAO().findByPrimaryKey(rs.getInt("user_id"));
+                apartments.add(new Apartment(rs.getInt("id"), building, rs.getInt("residents"),
+                        rs.getInt("square_footage"), rs.getString("energy_class"), user));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return apartments;
     }
 
     public List<Apartment> findAll() {
@@ -89,10 +107,11 @@ public class ApartmentDAO {
             while (rs.next()) {
                 Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(rs.getInt("building_id"));
                 User user = DBManager.getInstance().getUserDAO().findByPrimaryKey(rs.getInt("user_id"));
-                if(building == null) {
+                if (building == null) {
                     continue;
                 }
-                apartments.add(new Apartment(rs.getInt("id"), building, rs.getInt("residents"), rs.getInt("square_footage"), rs.getString("energy_class"), user));
+                apartments.add(new Apartment(rs.getInt("id"), building, rs.getInt("residents"),
+                        rs.getInt("square_footage"), rs.getString("energy_class"), user));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,4 +131,3 @@ public class ApartmentDAO {
         }
     }
 }
-

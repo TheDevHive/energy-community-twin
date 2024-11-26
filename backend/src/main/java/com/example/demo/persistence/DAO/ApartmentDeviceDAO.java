@@ -27,15 +27,18 @@ public class ApartmentDeviceDAO {
     public ApartmentDevice findByPrimaryKey(int id) {
         String sql = "SELECT * FROM apartment_device WHERE id = ?";
         ApartmentDevice apartmentDevice = null;
-        try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
-            if(rs.next()) {
-                Apartment apartment = DBManager.getInstance().getApartmentDAO().findByPrimaryKey(rs.getInt("apartment_id"));
-                if(apartment == null) {
+            if (rs.next()) {
+                Apartment apartment = DBManager.getInstance().getApartmentDAO()
+                        .findByPrimaryKey(rs.getInt("apartment_id"));
+                if (apartment == null) {
                     return null;
                 }
-                apartmentDevice = new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment);
+                apartmentDevice = new ApartmentDevice(rs.getInt("id"), rs.getString("name"),
+                        rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class),
+                        apartment);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,29 +48,48 @@ public class ApartmentDeviceDAO {
         return apartmentDevice;
     }
 
+    public List<ApartmentDevice> findByApartment(Apartment apartment) {
+        String sql = "SELECT * FROM apartment_device WHERE apartment_id = ?";
+        List<ApartmentDevice> apartmentDevices = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, apartment.getId());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                apartmentDevices.add(
+                        new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"),
+                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return apartmentDevices;
+    }
+
     public boolean saveOrUpdate(ApartmentDevice apartmentDevice) {
-        if(findByPrimaryKey(apartmentDevice.getId()) == null) {
-            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?)";
-            try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        if (findByPrimaryKey(apartmentDevice.getId()) == null) {
+            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
                 pstmt.setBoolean(2, apartmentDevice.getConsumesEnergy());
                 blobConverter.setBlob(pstmt, 3, apartmentDevice.getEnergyCurve());
                 pstmt.setInt(4, apartmentDevice.getApartment().getId());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
-                if(rs.next()) {
+                if (rs.next()) {
                     apartmentDevice.setId(rs.getInt(1));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
-            } catch (JsonProcessingException e){
+            } catch (JsonProcessingException e) {
                 e.printStackTrace();
                 return false;
             }
         } else {
-            String sql = "UPDATE apartment_device SET apartment_id = ?, name = ?, consumes_energy = ?, energy_curve = ?  WHERE id = ?";
-            try(PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            String sql = "UPDATE apartment_device SET apartment_id = ?, name = ?, consumes_energy = ?, energy_curve = ?,  WHERE id = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, apartmentDevice.getApartment().getId());
                 pstmt.setString(2, apartmentDevice.getName());
                 pstmt.setBoolean(3, apartmentDevice.getConsumesEnergy());
@@ -77,7 +99,7 @@ public class ApartmentDeviceDAO {
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
-            } catch (JsonProcessingException e){
+            } catch (JsonProcessingException e) {
                 e.printStackTrace();
                 return false;
             }
@@ -103,12 +125,15 @@ public class ApartmentDeviceDAO {
             ResultSet rs = pstmt.executeQuery();
             List<ApartmentDevice> apartmentDevices = new ArrayList<>();
             while (rs.next()) {
-                Apartment apartment = DBManager.getInstance().getApartmentDAO().findByPrimaryKey(rs.getInt("apartment_id"));
-                if(apartment == null) {
+                Apartment apartment = DBManager.getInstance().getApartmentDAO()
+                        .findByPrimaryKey(rs.getInt("apartment_id"));
+                if (apartment == null) {
                     continue;
                 }
-                apartmentDevices.add(new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment));
-                
+                apartmentDevices.add(
+                        new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"),
+                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment));
+
             }
             return apartmentDevices;
         } catch (SQLException e) {
