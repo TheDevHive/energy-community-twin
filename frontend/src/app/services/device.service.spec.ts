@@ -112,7 +112,7 @@ describe('DeviceService', () => {
     const deviceUuid = '123';
     const result = true;
 
-    service.generateMeasurements(deviceUuid).subscribe(response => {
+    service.generateMeasurements(deviceUuid, "01-01-2024", "31-12-2024").subscribe(response => {
       expect(response).toBe(result);
     });
 

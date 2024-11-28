@@ -178,9 +178,6 @@ public class BuildingController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        if (timeRange == null || !timeRange.validate()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         Building building = DBManager.getInstance().getBuildingDAO().findByPrimaryKey(buildingId);
         if (building == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -190,12 +187,14 @@ public class BuildingController {
         if (devices.isEmpty() && apartments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<String> uuids = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd());
+        // TODO: aggiungere generazione del report
+        int reportId = 0;
+        List<String> uuids = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd(), reportId);
         for (Apartment apartment : apartments) {
             List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO()
                     .findByApartment(apartment);
             uuids.addAll(
-                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd()));
+                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd(), reportId));
         }
         if (uuids.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

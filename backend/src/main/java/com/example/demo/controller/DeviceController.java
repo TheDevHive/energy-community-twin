@@ -39,7 +39,7 @@ public class DeviceController {
             } else {
                 if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -76,14 +76,14 @@ public class DeviceController {
             } else {
                 if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                     return new ResponseEntity<>(device.getEnergyCurve(), HttpStatus.OK);
                 } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -109,7 +109,7 @@ public class DeviceController {
             } else {
                 if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -118,7 +118,7 @@ public class DeviceController {
                     return new ResponseEntity<>(energyCurve, HttpStatus.OK);
                 } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -145,7 +145,7 @@ public class DeviceController {
             } else {
                 if (uuid.startsWith("A")) {
                     ApartmentDeviceDAO dao = DBManager.getInstance().getApartmentDeviceDAO();
-                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    ApartmentDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -154,7 +154,7 @@ public class DeviceController {
                     return new ResponseEntity<>(HttpStatus.OK);
                 } else if (uuid.startsWith("B")) {
                     BuildingDeviceDAO dao = DBManager.getInstance().getBuildingDeviceDAO();
-                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length() - 2, 10));
+                    BuildingDevice device = dao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                     if (device == null) {
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
@@ -218,14 +218,13 @@ public class DeviceController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        if (timeRange == null || !timeRange.validate()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         try {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd());
+                // TODO: aggiungere generazione del report
+                int reportId = 0;
+                GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd(), reportId);
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         } catch (Exception e) {

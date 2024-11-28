@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +39,7 @@ public class TS_MeasurementDAOTest {
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         measurementDAO = new TS_MeasurementDAO(mockConnection);
-        measurement = new TS_Measurement(1, 1, "2024-01-01 12:00:00", 42.5);
+        measurement = new TS_Measurement(1, 1, LocalDateTime, 42.5);
         spyMeasurementDAO = Mockito.spy(measurementDAO);
     }
 
@@ -57,7 +59,7 @@ public class TS_MeasurementDAOTest {
 
         // Assert
         verify(mockPreparedStatement).setInt(1, measurement.getDeviceId());
-        verify(mockPreparedStatement).setString(2, measurement.getTimestamp());
+        verify(mockPreparedStatement).setTimestamp(2, Timestamp.valueOf(measurement.getTimestamp()));
         verify(mockPreparedStatement).setDouble(3, measurement.getValue());
         verify(mockPreparedStatement).executeUpdate();
     }
@@ -75,7 +77,7 @@ public class TS_MeasurementDAOTest {
 
         // Assert
         verify(mockPreparedStatement).setInt(1, measurement.getDeviceId());
-        verify(mockPreparedStatement).setString(2, measurement.getTimestamp());
+        verify(mockPreparedStatement).setTimestamp(2, Timestamp.valueOf(measurement.getTimestamp()));
         verify(mockPreparedStatement).setDouble(3, measurement.getValue());
         verify(mockPreparedStatement).setInt(4, measurement.getId());
         verify(mockPreparedStatement).executeUpdate();

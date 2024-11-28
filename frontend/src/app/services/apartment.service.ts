@@ -75,4 +75,12 @@ export class ApartmentService {
       })
     );
   }
+
+  generateMeasurements(apartment_id: String, dateStart: String, dateEnd:String): Observable<boolean> {
+    return this.http.post<boolean>(
+      `${this.apiUrl}/${apartment_id}/generate-measurements`,
+      {dateStart: dateStart, dateEnd: dateEnd}, // body: TODO: non so se funziona
+      { headers: this.auth.getHeaders() }
+    );
+  }
 }

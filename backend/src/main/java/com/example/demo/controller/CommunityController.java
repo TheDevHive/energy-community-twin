@@ -193,25 +193,13 @@ public class CommunityController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        if (timeRange == null || !timeRange.validate()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(commId);
         if (community == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
-        List<String> uuids = new ArrayList<>();
-        for (Building building : buildings) {
-            List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findByBuilding(building);
-            uuids.addAll(GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd()));
-            List<Apartment> apartments = DBManager.getInstance().getApartmentDAO().findByBuilding(building);
-            for (Apartment apartment : apartments) {
-                List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO()
-                        .findByApartment(apartment);
-                uuids.addAll(
-                        GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd()));
-            }
-        }
+        // TODO: aggiungere generazione del report
+        int reportId = 0;
+        List<String> uuids = GenerateData.generateDataCommunity(buildings, timeRange.getStart(), timeRange.getEnd(), reportId);
         if (uuids.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

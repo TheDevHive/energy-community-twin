@@ -1,23 +1,21 @@
 package com.example.demo.model.generation;
 
-public class TimeRange {
-    private String start;
-    private String end;
+import java.time.LocalDateTime;
 
-    public TimeRange(String start, String end) {
+public class TimeRange {
+    private LocalDateTime start;
+    private LocalDateTime end;
+
+    public TimeRange(LocalDateTime start, LocalDateTime end) {
         this.start = start;
         this.end = end;
     }
 
-    public String getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public String getEnd() {
+    public LocalDateTime getEnd() {
         return end;
-    }
-
-    public boolean validate() {
-        return CalculateDate.validate(start) && CalculateDate.validate(end);
     }
 }

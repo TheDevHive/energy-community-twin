@@ -63,10 +63,10 @@ export class DeviceService {
   }
   */
 
-  generateMeasurements(deviceUuid: String): Observable<boolean> {
+  generateMeasurements(deviceUuid: String, dateStart: String, dateEnd:String): Observable<boolean> {
     return this.http.post<boolean>(
       `${this.apiUrl}/${deviceUuid}/generate-measurements`,
-      {dateStart: "2024-01-01", dateEnd: "2024-12-31"}, // body: TODO: non so se funziona
+      {dateStart: dateStart, dateEnd: dateEnd}, // body: TODO: non so se funziona
       { headers: this.authService.getHeaders() }
     );
   }
