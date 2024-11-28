@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
 import { CommunityStats } from '../models/community';
+import { TimeRange } from '../models/time_range';
 
 @Injectable({
   providedIn: 'root'
@@ -119,10 +120,10 @@ export class CommunityService {
     );
   }
 
-  generateMeasurements(community_id: String, dateStart: String, dateEnd:String): Observable<boolean> {
+  generateMeasurements(community_id: String, timeRange: TimeRange): Observable<boolean> {
     return this.http.post<boolean>(
       `${this.apiUrl}/${community_id}/generate-measurements`,
-      {dateStart: dateStart, dateEnd: dateEnd}, // body: TODO: non so se funziona
+      { timeRange },
       { headers: this.auth.getHeaders() }
     );
   }

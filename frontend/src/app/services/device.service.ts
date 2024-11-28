@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { EnergyCurve } from '../models/energy_curve';
 import { Measurement } from '../models/measurements';
+import { TimeRange } from '../models/time_range';
 
 @Injectable({
   providedIn: 'root'
@@ -63,10 +64,10 @@ export class DeviceService {
   }
   */
 
-  generateMeasurements(deviceUuid: String, dateStart: String, dateEnd:String): Observable<boolean> {
+  generateMeasurements(deviceUuid: String, timeRange: TimeRange): Observable<boolean> {
     return this.http.post<boolean>(
       `${this.apiUrl}/${deviceUuid}/generate-measurements`,
-      {dateStart: dateStart, dateEnd: dateEnd}, // body: TODO: non so se funziona
+      { timeRange },
       { headers: this.authService.getHeaders() }
     );
   }

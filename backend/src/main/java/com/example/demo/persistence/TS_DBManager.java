@@ -93,7 +93,6 @@ public class TS_DBManager {
                         CREATE INDEX IF NOT EXISTS idx_measurement_timestamp
                         ON measurement(timestamp)
                     """);
-            System.out.println("CIAO Database creato con successo");
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

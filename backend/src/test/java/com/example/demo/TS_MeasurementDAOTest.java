@@ -39,7 +39,7 @@ public class TS_MeasurementDAOTest {
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         measurementDAO = new TS_MeasurementDAO(mockConnection);
-        measurement = new TS_Measurement(1, 1, LocalDateTime, 42.5);
+        //measurement = new TS_Measurement(1, 1, new LocalDateTime(), 42.5);
         spyMeasurementDAO = Mockito.spy(measurementDAO);
     }
 

@@ -5,6 +5,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { EnergyCurve } from '../models/energy_curve';
+import { TimeRange } from '../models/time_range';
 import { HttpHeaders } from '@angular/common/http';
 
 
@@ -112,7 +113,12 @@ describe('DeviceService', () => {
     const deviceUuid = '123';
     const result = true;
 
-    service.generateMeasurements(deviceUuid, "01-01-2024", "31-12-2024").subscribe(response => {
+    var timeRange : TimeRange = {
+      start: new Date(Date.UTC(2021, 1, 1)),
+      end: new Date(Date.UTC(2023, 1, 1))
+    };
+
+    service.generateMeasurements(deviceUuid, timeRange).subscribe(response => {
       expect(response).toBe(result);
     });
 
