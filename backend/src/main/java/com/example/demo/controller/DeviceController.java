@@ -4,6 +4,7 @@ import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.BuildingDevice;
 import com.example.demo.model.EnergyCurve;
+import com.example.demo.model.EnergyReport;
 import com.example.demo.model.TS_Device;
 import com.example.demo.model.TS_Measurement;
 import com.example.demo.model.generation.GenerateData;
@@ -17,6 +18,7 @@ import com.example.demo.persistence.TS_DBManager;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -222,10 +224,14 @@ public class DeviceController {
             if (uuid == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-                // TODO: aggiungere generazione del report
-                int reportId = 0;
-                GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd(), reportId);
-                return new ResponseEntity<>(true, HttpStatus.OK);
+                EnergyReport report = new EnergyReport();
+                DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
+                boolean result = GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd(), report.getId());
+                if (result && GenerateData.generateReport(report, Arrays.asList(new String[]{uuid}), timeRange.getStart(), timeRange.getEnd(), "D"+uuid)){
+                    return new ResponseEntity<>(true, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

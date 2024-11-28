@@ -187,19 +187,23 @@ public class BuildingController {
         if (devices.isEmpty() && apartments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        // TODO: aggiungere generazione del report
-        int reportId = 0;
-        List<String> uuids = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd(), reportId);
+        EnergyReport report = new EnergyReport();
+        DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
+        List<String> deviceList = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd(), report.getId());
         for (Apartment apartment : apartments) {
             List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO()
                     .findByApartment(apartment);
-            uuids.addAll(
-                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd(), reportId));
+                    deviceList.addAll(
+                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd(), report.getId()));
         }
-        if (uuids.isEmpty()) {
+        if (deviceList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(uuids, HttpStatus.OK);
+        if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "B"+buildingId)) {
+            return new ResponseEntity<>(deviceList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public BuildingStats extractStats(Building building) {

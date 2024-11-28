@@ -197,13 +197,14 @@ public class CommunityController {
         if (community == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
-        // TODO: aggiungere generazione del report
-        int reportId = 0;
-        List<String> uuids = GenerateData.generateDataCommunity(buildings, timeRange.getStart(), timeRange.getEnd(), reportId);
-        if (uuids.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        EnergyReport report = new EnergyReport();
+        DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
+        List<String> deviceList = GenerateData.generateDataCommunity(buildings, timeRange.getStart(), timeRange.getEnd(), report.getId());
+        if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "C"+commId)){
+            return new ResponseEntity<>(deviceList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(uuids, HttpStatus.OK);
     }
 
     public CommunityStats extractStats(Community community) {
