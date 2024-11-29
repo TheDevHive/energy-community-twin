@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TimeRange } from '../../../models/time_range';
+import { EnergyReportService } from '../../../services/energy-report.service';
 
 @Component({
   selector: 'app-add-simulation',
@@ -11,11 +12,14 @@ import { TimeRange } from '../../../models/time_range';
 export class AddSimulationComponent implements OnInit {
   simulationForm: FormGroup;
   loading = false;
+  @Input() refUUID?: string;
 
   constructor(
     private fb: FormBuilder,
-    public activeModal: NgbActiveModal
+    public activeModal: NgbActiveModal,
+    private energyReportService: EnergyReportService
   ) {
+    console.log('ciaooooooo refUUID: ' + this.refUUID);
     this.simulationForm = this.fb.group({
       startDate: [null, [Validators.required]],
       endDate: [null, [Validators.required]]
@@ -29,11 +33,10 @@ export class AddSimulationComponent implements OnInit {
       this.loading = true;
 
       const simulationData: TimeRange = {
-        start: this.simulationForm.get('startDate')?.value,
-        end: this.simulationForm.get('endDate')?.value
+        start: this.simulationForm.get('startDate')?.value.toISOString(),
+        end: this.simulationForm.get('endDate')?.value.toISOString()
       };
-
-      /* this.communitiesService.generateMeasurements(simulationData).subscribe(
+      this.energyReportService.generateReport(this.refUUID, simulationData).subscribe(
         () => {
           this.activeModal.close(simulationData);
           this.loading = false;
@@ -41,10 +44,7 @@ export class AddSimulationComponent implements OnInit {
         () => {
           this.loading = false;
         }
-      ); */
-
-      this.activeModal.close(simulationData);
-      this.loading = false;
+      );
     } else {
       this.markAllControlsAsTouched();
     }

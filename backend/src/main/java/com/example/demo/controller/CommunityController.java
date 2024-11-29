@@ -13,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -191,6 +193,14 @@ public class CommunityController {
     @PostMapping("/{commId}/generate-measurements")
     public ResponseEntity<List<String>> generateMeasurements(HttpServletRequest req, @PathVariable int commId,
             @RequestBody TimeRange timeRange) {
+        //try {
+            //System.out.println("Raw request body: " + req.getReader().lines().collect(Collectors.joining())); // Add this
+        // } catch (IOException e) {
+        //    e.printStackTrace();
+        //}
+        System.out.println("Received TimeRange object: " + timeRange);
+        System.out.println("Start time: " + timeRange.getStart());
+        System.out.println("End time: " + timeRange.getEnd());
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(commId);
@@ -198,6 +208,8 @@ public class CommunityController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
         EnergyReport report = new EnergyReport();
+        report.setStartDate(timeRange.getStart());
+        report.setEndDate(timeRange.getEnd());
         DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
         List<String> deviceList = GenerateData.generateDataCommunity(buildings, timeRange.getStart(), timeRange.getEnd(), report.getId());
         if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "C"+commId)){

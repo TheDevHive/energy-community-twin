@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnergyReport {
@@ -18,6 +19,15 @@ public class EnergyReport {
     // Default constructor
     public EnergyReport() {
         this.id = 0;
+        this.refUUID = "";
+        this.startDate = LocalDateTime.now();
+        this.endDate = LocalDateTime.now();
+        this.days = 0;
+        this.devices = 0;
+        this.totalProduction = 0.0;
+        this.totalConsumption = 0.0;
+        this.totalDifference = 0.0;
+        this.timeSeriesData = new ArrayList<>();
     }
 
     // Full constructor

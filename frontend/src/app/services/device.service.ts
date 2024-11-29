@@ -67,7 +67,7 @@ export class DeviceService {
   generateMeasurements(deviceUuid: String, timeRange: TimeRange): Observable<boolean> {
     return this.http.post<boolean>(
       `${this.apiUrl}/${deviceUuid}/generate-measurements`,
-      { timeRange },
+      timeRange,
       { headers: this.authService.getHeaders() }
     );
   }

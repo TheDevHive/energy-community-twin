@@ -116,16 +116,14 @@ public class DBManager {
             
             statement.execute("CREATE TABLE IF NOT EXISTS energy_report (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "refUUID VARCHAR NOT NULL, " +
+                    "ref_uuid VARCHAR NOT NULL, " +
                     "start_date TIMESTAMP NOT NULL, " +
                     "end_date TIMESTAMP NOT NULL, " +
                     "days INTEGER NOT NULL, " +
                     "devices INTEGER NOT NULL, " +
                     "total_production DOUBLE NOT NULL, " +
                     "total_consumption DOUBLE NOT NULL, " +
-                    "total_difference DOUBLE NOT NULL, " +
-                    "apartment_id INTEGER NOT NULL, " +
-                    "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
+                    "total_difference DOUBLE NOT NULL);");
         } catch (SQLException ignored) {
             return false;
         } finally {

@@ -101,12 +101,12 @@ public class TS_MeasurementDAO {
 
     public boolean saveOrUpdate(TS_Measurement measurement) {
         if (measurement.getId() == -1 || findByPrimaryKey(measurement.getId()) == null) {
-            String sql = "INSERT INTO measurement (device_id, timestamp, value) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO measurement (device_id, report_id, timestamp, value) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, measurement.getDeviceId());
                 pstmt.setInt(2, measurement.getReportId());
-                pstmt.setTimestamp(2, Timestamp.valueOf(measurement.getTimestamp()));
-                pstmt.setDouble(3, measurement.getValue());
+                pstmt.setTimestamp(3, Timestamp.valueOf(measurement.getTimestamp()));
+                pstmt.setDouble(4, measurement.getValue());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -126,9 +126,9 @@ public class TS_MeasurementDAO {
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, measurement.getDeviceId());
                 pstmt.setInt(2, measurement.getReportId());
-                pstmt.setTimestamp(2, Timestamp.valueOf(measurement.getTimestamp()));
-                pstmt.setDouble(3, measurement.getValue());
-                pstmt.setInt(4, measurement.getId());
+                pstmt.setTimestamp(3, Timestamp.valueOf(measurement.getTimestamp()));
+                pstmt.setDouble(4, measurement.getValue());
+                pstmt.setInt(5, measurement.getId());
                 pstmt.executeUpdate();
                 return true;
             } catch (SQLException e) {

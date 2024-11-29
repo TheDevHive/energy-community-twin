@@ -39,125 +39,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   });
 
   @Input() reports: EnergyReport[] = [];
-
-  // Sample data - replace with actual data service
-  /*
-  reports: EnergyReport[] = [
-    {
-      id: 1,
-      startDate: new Date('2024-11-20'),
-      endDate: new Date('2024-11-27'),
-      days: 7,
-      devices: 12,
-      totalProduction: 1200,
-      totalConsumption: 900,
-      totalDifference: 300,
-      timeSeriesData: [{
-        date: new Date('2024-11-20T00:00:00'),
-        production: 100
-      },
-      {
-        date: new Date('2024-11-21T00:00:00'),
-        production: 200
-      },
-      {
-        date: new Date('2024-11-22T00:00:00'),
-        production: 150
-      },
-      {
-        date: new Date('2024-11-23T00:00:00'),
-        production: 100
-      },
-      {
-        date: new Date('2024-11-24T00:00:00'),
-        production: 200
-      },
-      {
-        date: new Date('2024-11-25T00:00:00'),
-        production: 150
-      },
-      {
-        date: new Date('2024-11-26T00:00:00'),
-        production: 300
-      }
-      ]
-    },
-    {
-      id: 2,
-      startDate: new Date('2024-11-13'),
-      endDate: new Date('2024-11-19'),
-      days: 7,
-      devices: 12,
-      totalProduction: 1400,
-      totalConsumption: 1100,
-      totalDifference: 300,
-      timeSeriesData: [{
-        date: new Date('2024-11-13T00:00:00'),
-        production: 100
-      },
-      {
-        date: new Date('2024-11-14T00:00:00'),
-        production: 200
-      },
-      {
-        date: new Date('2024-11-15T00:00:00'),
-        production: 150
-      },
-      {
-        date: new Date('2024-11-16T00:00:00'),
-        production: 100
-      },
-      {
-        date: new Date('2024-11-17T00:00:00'),
-        production: 200
-      },
-      {
-        date: new Date('2024-11-18T00:00:00'),
-        production: 150
-      },
-      {
-        date: new Date('2024-11-19T00:00:00'),
-        production: 300
-      }
-      ]
-    },
-    {
-      id: 3,
-      startDate: new Date('2024-11-06'),
-      endDate: new Date('2024-11-06'),
-      days: 1,
-      devices: 12,
-      totalProduction: 800,
-      totalConsumption: 700,
-      totalDifference: 100,
-      timeSeriesData: [{
-        date: new Date('2024-11-06T00:00:00'),
-        production: 100
-      },
-      {
-        date: new Date('2024-11-06T01:00:00'),
-        production: 200
-      },
-      {
-        date: new Date('2024-11-06T10:00:00'),
-        production: 150
-      },
-      {
-        date: new Date('2024-11-06T12:00:00'),
-        production: 100
-      },
-      {
-        date: new Date('2024-11-06T13:00:00'),
-        production: 250
-      },
-      ]
-    }
-  ];
-  */
-  
+  @Input() refUUID: string = '';
 
   selectedReport: EnergyReport = {
     id: 0,
+    refUUID: '',
     startDate: new Date(),
     endDate: new Date(),
     days: 0,
@@ -197,6 +83,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    console.log('refUUID: '+ this.refUUID);
     this.initializeChart();
     this.setReportDateRange(this.selectedReport);
     this.updateChartData();
@@ -547,11 +434,20 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   }
 
   startNewSimulation() {
+    /* if (!this.selectedReport.refUUID) {
+      this.selectLastReport();
+    } */
+    console.log('csasdashjbdasjhdjasbdkasjhd refUUID: '+ this.refUUID);
+
     const modalRef = this.modalService.open(AddSimulationComponent, {
       centered: true,
       backdrop: 'static',
-      windowClass: 'building-modal'
+      windowClass: 'building-modal',
     });
+
+    console.log('csasdashjbdasjhdjasbdkasjhd refUUID: '+ this.refUUID);
+
+    modalRef.componentInstance.refUUID = this.refUUID;
 
     modalRef.result.then(
       (result) => {

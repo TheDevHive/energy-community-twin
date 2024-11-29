@@ -112,7 +112,7 @@ export class BuildingService {
   generateMeasurements(building_id: String, timeRange: TimeRange): Observable<boolean> {
     return this.http.post<boolean>(
       `${this.apiUrl}/${building_id}/generate-measurements`,
-      { timeRange },
+      timeRange,
       { headers: this.auth.getHeaders() }
     );
   }
