@@ -2,6 +2,7 @@ import { TimeSeriesData } from './time-series-data';
 
 export interface EnergyReport {
     id: number;
+    refUUID: string;
     startDate: Date;
     endDate: Date;
     days: number;

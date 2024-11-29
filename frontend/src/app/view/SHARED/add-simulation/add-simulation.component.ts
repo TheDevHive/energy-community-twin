@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TimeRange } from '../../../models/time_range';
 
 @Component({
   selector: 'app-add-simulation',
@@ -27,10 +28,20 @@ export class AddSimulationComponent implements OnInit {
     if (this.simulationForm.valid && !this.loading) {
       this.loading = true;
 
-      const simulationData = {
-        startDate: this.simulationForm.get('startDate')?.value,
-        endDate: this.simulationForm.get('endDate')?.value
+      const simulationData: TimeRange = {
+        start: this.simulationForm.get('startDate')?.value,
+        end: this.simulationForm.get('endDate')?.value
       };
+
+      /* this.communitiesService.generateMeasurements(simulationData).subscribe(
+        () => {
+          this.activeModal.close(simulationData);
+          this.loading = false;
+        },
+        () => {
+          this.loading = false;
+        }
+      ); */
 
       this.activeModal.close(simulationData);
       this.loading = false;

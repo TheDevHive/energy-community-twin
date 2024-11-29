@@ -126,8 +126,6 @@ public class DBManager {
                     "total_difference DOUBLE NOT NULL, " +
                     "apartment_id INTEGER NOT NULL, " +
                     "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
-                
-
         } catch (SQLException ignored) {
             return false;
         } finally {
