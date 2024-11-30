@@ -146,6 +146,8 @@ startNewSimulation() {
   modalRef.result.then(
     (result) => {
       if (result) {
+        console.log('Simulation data:', result);
+
         // Fetch new reports and update the UI
         this.reportService.getReports(this.refUUID).subscribe({
           next: (reports) => {

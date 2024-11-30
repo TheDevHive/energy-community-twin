@@ -115,7 +115,7 @@ public class GenerateData {
         report = DBManager.getInstance().getEnergyReportDAO().findByPrimaryKey(report.getId());
         List<TimeSeriesData> ltsd = report.getTimeSeriesData();
         double production = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
-        double consumption = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
+        double consumption = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num <= 0).mapToDouble(Double::doubleValue).sum();
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
