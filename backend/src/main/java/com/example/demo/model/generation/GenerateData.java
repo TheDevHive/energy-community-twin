@@ -116,8 +116,6 @@ public class GenerateData {
         List<TimeSeriesData> ltsd = report.getTimeSeriesData();
         double production = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
         double consumption = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num <= 0).mapToDouble(Double::doubleValue).sum();
-        System.out.println("Production: " + production);
-        System.out.println("Consumption: " + consumption);
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
