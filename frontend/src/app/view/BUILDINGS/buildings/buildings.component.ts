@@ -20,7 +20,6 @@ import { ActivatedRoute } from '@angular/router';
 
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
-import { EnergyReportService } from '../../../services/energy-report.service';
 
 @Component({
   selector: 'app-buildings',
@@ -45,7 +44,6 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private communityService: CommunityService,
-    private reportService: EnergyReportService,
     private buildingService: BuildingService,
     private modalService: NgbModal,
     private router: Router,
@@ -63,20 +61,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
         this.communityId = +communityID;
         this.setCommunityName(+communityID);
         this.loadBuildings(+communityID);
-        this.loadReports('C' + communityID);
       } else {
         // Handle error
-      }
-    });
-  }
-
-  loadReports(refUUID: string): void {
-    this.reportService.getReports(refUUID).subscribe({
-      next: (reports) => {
-        this.reports = reports;
-      },
-      error: (error) => {
-        this.error = error;
       }
     });
   }

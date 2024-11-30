@@ -10,6 +10,7 @@ import { AddSimulationComponent } from '../add-simulation/add-simulation.compone
 
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
+import { EnergyReportService } from '../../../services/energy-report.service';
 
 
 // This is important! Register Chart.js components
@@ -27,7 +28,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   // Table configuration
   displayedColumns: string[] = ['id', 'startDate', 'endDate', 'days', 'devices', 'totalProduction', 'totalConsumption', 'totalDifference', 'actions'];
-  dataSource: MatTableDataSource<EnergyReport>;
+  dataSource: MatTableDataSource<EnergyReport> = new MatTableDataSource<EnergyReport>();
 
   // Chart configuration
   timeSeriesChart: any;
@@ -38,7 +39,9 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     end: new FormControl<Date | null>(null),
   });
 
-  @Input() reports: EnergyReport[] = [];
+  loading = true;
+
+  reports: EnergyReport[] = [];
   @Input() refUUID: string = '';
 
   selectedReport: EnergyReport = {
@@ -58,16 +61,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private modalService: NgbModal,
+    private reportService: EnergyReportService,
   ) {
-    this.selectLastReport();
-
-    this.dataSource = new MatTableDataSource(this.reports);
-
-    // Subscribe to date range changes
-    this.dateRange.valueChanges.subscribe(() => {
-      this.updateChartData();
-    });
-
     // Check initial dark mode preference
     this.checkDarkModePreference();
 
@@ -83,17 +78,43 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    console.log('refUUID: '+ this.refUUID);
-    this.initializeChart();
-    this.setReportDateRange(this.selectedReport);
-    this.updateChartData();
+    console.log('refUUID: ' + this.refUUID);
+    this.selectLastReport();
   }
 
   selectLastReport() {
-    //Order the reports by id in descending order
-    this.reports.sort((a, b) => b.id - a.id);
+    // Check if reports are already loaded
+    if (this.reports.length === 0) {
+      // If no reports, load them first
+      this.reportService.getReports(this.refUUID).subscribe({
+        next: (reports) => {
+          this.reports = reports;
 
-    this.selectedReport = this.reports[0];
+          // Update data source after loading
+          this.dataSource = new MatTableDataSource(this.reports);
+
+          // Sort and select the last report after loading
+          this.reports.sort((a, b) => b.id - a.id);
+
+          // Select the last report if available
+          if (this.reports.length > 0) {
+            this.selectedReport = this.reports[0];
+          }
+        },
+        error: (error) => {
+          console.error('Error loading reports:', error);
+          // Ensure reports is an empty array in case of an error
+          this.reports = [];
+        }
+      });
+    } else {
+      // If reports are already loaded, just sort and select
+      this.reports.sort((a, b) => b.id - a.id);
+
+      if (this.reports.length > 0) {
+        this.selectedReport = this.reports[0];
+      }
+    }
   }
 
   private updateDataSource() {
@@ -102,7 +123,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       this.reports.sort((a, b) => b.id - a.id);
 
       this.dataSource.data = this.reports;
-      
+
       // Re-apply paginator and sort after updating data
       if (this.paginator) {
         this.dataSource.paginator = this.paginator;
@@ -117,12 +138,22 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.updateDataSource();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
 
-    this.initializeChart();
-    this.selectLastReport();
-    this.setReportDateRange(this.selectedReport);
-    this.updateChartData();
+    setTimeout(() => {
+      this.setReportDateRange(this.selectedReport);
+
+      this.initializeChart();
+      this.updateChartData();
+
+      // Subscribe to date range changes
+      this.dateRange.valueChanges.subscribe(() => {
+        this.updateChartData();
+      });
+      this.updateDataSource();
+
+    });
   }
 
   private setReportDateRange(report: EnergyReport) {
@@ -134,7 +165,16 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   }
 
   initializeChart() {
+    
     const ctx = document.getElementById('timeSeriesChart') as HTMLCanvasElement;
+  
+    // Add null check
+    if (!ctx) {
+      console.error('Chart canvas element not found');
+      this.retryChartInitialization();
+      return;
+    }
+
     const chartConfig: ChartConfiguration = {
       type: 'line',
       data: {
@@ -195,40 +235,94 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.updateChartData();
   }
 
+  private retryChartInitialization(attempts: number = 3) {
+    console.log('Retry initialization attempts:', attempts);
+    if (attempts <= 0) {
+      console.error('Failed to initialize chart after multiple attempts');
+      return;
+    }
+  
+    // Wait a short time before retrying
+    setTimeout(() => {
+      try {
+        // Attempt to find the canvas again
+        const retryCtx = document.getElementById('timeSeriesChart') as HTMLCanvasElement;
+        
+        if (retryCtx) {
+          this.setReportDateRange(this.selectedReport);
+          this.initializeChart();
+        } else {
+          // If canvas still not found, retry with fewer attempts
+          this.retryChartInitialization(attempts - 1);
+        }
+      } catch (retryError) {
+        console.error('Retry initialization error:', retryError);
+        this.retryChartInitialization(attempts - 1);
+      }
+    }, 500); // 500ms delay between attempts
+  }
+
   updateChartData() {
-    const startDate = this.dateRange.get('start')?.value;
-    const originalEndDate = this.dateRange.get('end')?.value;
-  
-    if (!startDate || !originalEndDate) return;
-  
+    const startDateValue = this.dateRange.get('start')?.value;
+    const originalEndDateValue = this.dateRange.get('end')?.value;
+
+    // Convert to Date object if it's not already one
+    const startDate = startDateValue instanceof Date
+      ? startDateValue
+      : startDateValue
+        ? new Date(startDateValue)
+        : null;
+
+    const endDate = originalEndDateValue instanceof Date
+      ? originalEndDateValue
+      : originalEndDateValue
+        ? new Date(originalEndDateValue)
+        : null;
+
+    if (!startDate || !endDate) {
+      console.warn('Invalid date range');
+      return;
+    }
+
     // Ensure end date is set to the end of the day
-    const endDate = new Date(originalEndDate);
     endDate.setHours(23, 59, 59, 999);
-  
+
     // Precise single day check
-    const isSingleDay = 
+    const isSingleDay =
       startDate.getFullYear() === endDate.getFullYear() &&
       startDate.getMonth() === endDate.getMonth() &&
       startDate.getDate() === endDate.getDate();
-  
+
     if (isSingleDay) {
       // Single day logic
       const ticks = this.generateHourlyTicks(startDate);
-  
+
       // Filter and map data for the specific day
       const filteredData = this.selectedReport.timeSeriesData
         .filter(d => {
-          const date = new Date(d.date);
-          return date >= startDate && date <= endDate;
+          // Ensure date is converted to a proper Date object
+          const date = d.date instanceof Date
+            ? d.date
+            : typeof d.date === 'string'
+              ? new Date(d.date)
+              : null;
+
+          return date && date >= startDate && date <= endDate;
         })
+        .map(d => ({
+          ...d,
+          date: d.date instanceof Date
+            ? d.date
+            : new Date(d.date)
+        }))
         .sort((a, b) => a.date.getTime() - b.date.getTime());
-  
+
       const hourlyFormatter = new Intl.DateTimeFormat('en-US', {
         hour: 'numeric',
         minute: 'numeric',
         hour12: false
       });
-  
+
       // Create data points for all 2-hour intervals
       const chartData = ticks.map(tickDate => {
         // Find production data closest to each 2-hour tick
@@ -238,33 +332,33 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           const tickTime = tickDate.getTime();
           const currentTime = currentDate.getTime();
           const closestTime = closestDate.getTime();
-  
+
           // Find the data point closest to the current 2-hour tick
-          return Math.abs(currentTime - tickTime) < Math.abs(closestTime - tickTime) 
-            ? current 
+          return Math.abs(currentTime - tickTime) < Math.abs(closestTime - tickTime)
+            ? current
             : closest;
         }, filteredData[0] || { date: tickDate, production: 0 });
-  
+
         return {
           date: tickDate,
           production: matchingData?.production || 0
         };
       });
-  
+
       // Update chart
       if (this.timeSeriesChart) {
         this.timeSeriesChart.data.labels = chartData.map(d => hourlyFormatter.format(d.date));
         this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
-  
+
         // Customize x-axis for hourly view
         this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit = 12;
-  
+
         this.timeSeriesChart.update('none');
       }
     } else {
       // Multi-day logic
       const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  
+
       let dateFormatter: Intl.DateTimeFormat;
       if (totalDays <= 31) {
         dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -279,23 +373,35 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           year: 'numeric'
         });
       }
-  
+
       // Filter data within the date range
-      let filteredData = [...this.selectedReport.timeSeriesData]
+      let filteredData = this.selectedReport.timeSeriesData
         .filter(d => {
-          const date = new Date(d.date);
-          return date >= startDate && date <= endDate;
+          // Ensure date is converted to a proper Date object
+          const date = d.date instanceof Date
+            ? d.date
+            : typeof d.date === 'string'
+              ? new Date(d.date)
+              : null;
+
+          return date && date >= startDate && date <= endDate;
         })
+        .map(d => ({
+          ...d,
+          date: d.date instanceof Date
+            ? d.date
+            : new Date(d.date)
+        }))
         .sort((a, b) => a.date.getTime() - b.date.getTime());
-  
+
       // Aggregate data if range is more than 31 days
       if (totalDays > 31) {
         filteredData = this.aggregateDataByMonth(filteredData);
       }
-  
+
       // Generate regular tick marks
       const ticks = this.generateDateTicks(startDate, endDate);
-  
+
       // Create data points for all ticks, using 0 for missing data
       const chartData = ticks.map(tickDate => {
         const matchingData = filteredData.find(d => {
@@ -312,16 +418,16 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           production: matchingData?.production || 0
         };
       });
-  
+
       // Update chart
       if (this.timeSeriesChart) {
         this.timeSeriesChart.data.labels = chartData.map(d => dateFormatter.format(d.date));
         this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
-  
+
         // Update tick settings based on data range
         this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit =
           totalDays > 7 && totalDays <= 31 ? 10 : undefined;
-  
+
         this.timeSeriesChart.update('none');
       }
     }
@@ -385,23 +491,22 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     }
     return dates;
   }
-  
+
   private generateHourlyTicks(date: Date): Date[] {
     const ticks: Date[] = [];
     const baseDate = new Date(date);
     baseDate.setHours(0, 0, 0, 0); // Start of the day
-  
+
     for (let hour = 0; hour < 24; hour += 2) {
       const tickDate = new Date(baseDate);
       tickDate.setHours(hour);
       ticks.push(tickDate);
     }
-  
+
     return ticks;
   }
 
   onDetails(report: EnergyReport) {
-    console.log('View details for report:', report);
     this.selectedReport = report;
 
     // Update date range to match the selected report
@@ -411,9 +516,9 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     // Scroll to the main div if the element exists
     const mainDiv = document.querySelector('.accordion-section');
     if (mainDiv) {
-        mainDiv.scrollIntoView({ behavior: 'smooth' });
+      mainDiv.scrollIntoView({ behavior: 'smooth' });
     }
-}
+  }
 
   onDownload(report: EnergyReport) {
     console.log('Download report:', report);
@@ -437,15 +542,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     /* if (!this.selectedReport.refUUID) {
       this.selectLastReport();
     } */
-    console.log('csasdashjbdasjhdjasbdkasjhd refUUID: '+ this.refUUID);
-
     const modalRef = this.modalService.open(AddSimulationComponent, {
       centered: true,
       backdrop: 'static',
       windowClass: 'building-modal',
     });
-
-    console.log('csasdashjbdasjhdjasbdkasjhd refUUID: '+ this.refUUID);
 
     modalRef.componentInstance.refUUID = this.refUUID;
 
