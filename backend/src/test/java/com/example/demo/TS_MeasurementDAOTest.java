@@ -59,8 +59,9 @@ public class TS_MeasurementDAOTest {
 
         // Assert
         verify(mockPreparedStatement).setInt(1, measurement.getDeviceId());
-        verify(mockPreparedStatement).setTimestamp(2, Timestamp.valueOf(measurement.getTimestamp()));
-        verify(mockPreparedStatement).setDouble(3, measurement.getValue());
+        verify(mockPreparedStatement).setInt(2, measurement.getReportId());
+        verify(mockPreparedStatement).setTimestamp(3, Timestamp.valueOf(measurement.getTimestamp()));
+        verify(mockPreparedStatement).setDouble(4, measurement.getValue());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -77,9 +78,10 @@ public class TS_MeasurementDAOTest {
 
         // Assert
         verify(mockPreparedStatement).setInt(1, measurement.getDeviceId());
-        verify(mockPreparedStatement).setTimestamp(2, Timestamp.valueOf(measurement.getTimestamp()));
-        verify(mockPreparedStatement).setDouble(3, measurement.getValue());
-        verify(mockPreparedStatement).setInt(4, measurement.getId());
+        verify(mockPreparedStatement).setInt(2, measurement.getReportId());
+        verify(mockPreparedStatement).setTimestamp(3, Timestamp.valueOf(measurement.getTimestamp()));
+        verify(mockPreparedStatement).setDouble(4, measurement.getValue());
+        verify(mockPreparedStatement).setInt(5, measurement.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
 

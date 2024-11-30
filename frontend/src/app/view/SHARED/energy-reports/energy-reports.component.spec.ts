@@ -7,12 +7,14 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, DateAdapter, MAT_NATIVE_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { Chart } from 'chart.js';
 
 // Your component imports
 import { EnergyReportsComponent } from './energy-reports.component';
+import { CommonModule } from '@angular/common';
 
 describe('EnergyReportsComponent', () => {
   let component: EnergyReportsComponent;
@@ -48,7 +50,9 @@ describe('EnergyReportsComponent', () => {
     } as unknown as HTMLElement);
 
     await TestBed.configureTestingModule({
-      declarations: [EnergyReportsComponent],
+      declarations: [
+        EnergyReportsComponent
+      ],
       imports: [
         MatFormFieldModule,
         MatInputModule,
@@ -57,7 +61,9 @@ describe('EnergyReportsComponent', () => {
         MatPaginatorModule,
         ReactiveFormsModule,
         MatTableModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        HttpClientTestingModule,
+        CommonModule
       ],
       providers: [
         { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -73,6 +79,7 @@ describe('EnergyReportsComponent', () => {
     // Explicitly set initial reports to prevent undefined errors
     component.reports = [{
       id: 1,
+      refUUID: 'C1',
       startDate: new Date(),
       endDate: new Date(),
       days: 7,

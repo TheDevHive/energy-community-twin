@@ -114,8 +114,8 @@ describe('DeviceService', () => {
     const result = true;
 
     var timeRange : TimeRange = {
-      start: new Date(Date.UTC(2021, 1, 1)),
-      end: new Date(Date.UTC(2023, 1, 1))
+      start: new Date(Date.UTC(2021, 1, 1)).toISOString(),
+      end: new Date(Date.UTC(2023, 1, 1)).toISOString()
     };
 
     service.generateMeasurements(deviceUuid, timeRange).subscribe(response => {
