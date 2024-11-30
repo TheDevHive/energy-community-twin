@@ -574,7 +574,6 @@ mat-expansion-panel-header:focus {
   }
 
   .submit-btn {
-    background-color: var(--color-primary);
     border: none;
     color: var(--color-text);
 
