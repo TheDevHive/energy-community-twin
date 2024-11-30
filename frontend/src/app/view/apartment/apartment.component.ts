@@ -23,6 +23,7 @@ import { ConfirmationDialogComponent } from '../SHARED/confirmation-dialog/confi
 })
 export class ApartmentComponent implements OnInit, AfterViewInit {
   apartment?: Apartment;
+  apartmentId: number=0;
   communityId?: number;
   communityName?: string;
   loading = false;
@@ -52,6 +53,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const apartmentId = params.get('id');
+      this.apartmentId = apartmentId ? parseInt(apartmentId!) : 0;
       if (apartmentId) {
         this.loadApartmentDetails(+apartmentId);
       }

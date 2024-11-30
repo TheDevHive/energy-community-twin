@@ -27,11 +27,9 @@ export class EnergyReportService {
   ) { }
 
   generateReport(refUUID: string | undefined, simulationData: TimeRange): Observable<boolean> {
-    console.log("sono qui: refUUID: " + refUUID + " simulationData: " + simulationData);
     if (!refUUID) {
       return new Observable<boolean>();
     }
-    console.log("data inizio: " + simulationData.start + " data fine: " + simulationData.end);
     let uuid = refUUID.substring(1, refUUID.length);
     switch (refUUID.at(0)) {
       case 'A':

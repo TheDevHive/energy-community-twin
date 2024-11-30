@@ -138,4 +138,9 @@ export class AlertService {
     this.alertApartmentDevice = { show: false, type: '', message: '' };
     this.alertDevice = { show: false, type: '', message: '' };
   }
+
+  clearAlertNewSimulation() {
+    console.log('clearAlertNewSimulation');
+    this.alertNewSimulation = { show: false, type: '', message: '' };
+  }
 }

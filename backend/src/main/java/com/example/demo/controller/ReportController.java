@@ -2,8 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.EnergyReport;
+import com.example.demo.model.TS_Measurement;
 import com.example.demo.persistence.DAO.EnergyReportDAO;
+import com.example.demo.persistence.DAO.TS_MeasurementDAO;
 import com.example.demo.persistence.DBManager;
+import com.example.demo.persistence.TS_DBManager;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -80,7 +83,12 @@ public class ReportController {
             if (report == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            
+            // delete all time series data:
+            TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
+            List<TS_Measurement> tsms = tsmd.findByReportId(reportId);
+            for (TS_Measurement tsm : tsms) {
+                tsmd.delete(tsm);
+            }
             dao.delete(report);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {

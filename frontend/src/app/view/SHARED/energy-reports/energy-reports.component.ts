@@ -82,6 +82,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     console.log('refUUID: ' + this.refUUID);
+    this.alertService.clearAlertNewSimulation();
     this.selectLastReport();
   }
 

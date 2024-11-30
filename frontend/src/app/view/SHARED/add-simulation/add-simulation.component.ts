@@ -19,7 +19,6 @@ export class AddSimulationComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private energyReportService: EnergyReportService
   ) {
-    console.log('ciaooooooo refUUID: ' + this.refUUID);
     this.simulationForm = this.fb.group({
       startDate: [null, [Validators.required]],
       endDate: [null, [Validators.required]]

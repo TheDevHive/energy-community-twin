@@ -58,7 +58,7 @@ public class EnergyReportDAO {
         pstmt.setString(1, report.getRefUUID());
         pstmt.setTimestamp(2, Timestamp.valueOf(report.getStartDate()));
         pstmt.setTimestamp(3, Timestamp.valueOf(report.getEndDate()));
-        pstmt.setInt(4, report.getDays());
+        pstmt.setInt(4, report.getDays() + 1);
         pstmt.setInt(5, report.getDevices());
         pstmt.setDouble(6, report.getTotalProduction());
         pstmt.setDouble(7, report.getTotalConsumption());

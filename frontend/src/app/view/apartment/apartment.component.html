@@ -8,7 +8,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h3 class="text-primary mb-2">
-                                    <i class="bi bi-building me-2"></i>{{ apartment?.id }} - Apartment Details
+                                    <i class="bi bi-people me-2"></i>{{ apartment?.id }} - Apartment Details
                                 </h3>
                             </div>
                         </div>
@@ -17,6 +17,7 @@
             </div>
         </div>
 
+        <app-energy-reports [refUUID]="'A'+this.apartmentId"></app-energy-reports>
 
         <!-- Quick Stats (Three Cards in a Row) -->
         <div class="row g-4 mb-4">

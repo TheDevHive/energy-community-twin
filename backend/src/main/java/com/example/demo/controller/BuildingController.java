@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -214,8 +215,18 @@ public class BuildingController {
         int totApartments = apartments.size();
         int totMembers = apartments.stream().mapToInt(Apartment::getResidents).sum();
 
-        int energyProduction = getEnergyProduction(building.getId());
-        int energyConsumption = getEnergyConsumption(building.getId());
+        double energyProduction = getEnergyProduction(building.getId());
+        double energyConsumption = getEnergyConsumption(building.getId());
+
+        ApartmentController controller = new ApartmentController();
+        List<ApartmentStats> apartmentStats= new ArrayList<>();
+        apartments.forEach(apartment -> {
+            apartmentStats.add(controller.extractStats(apartment));
+        });
+        for(ApartmentStats stats : apartmentStats) {
+            energyConsumption += stats.getEnergyConsumption();
+            energyProduction += stats.getEnergyProduction();
+        }
 
         return new BuildingStats(
                 building.getId(),
@@ -225,7 +236,7 @@ public class BuildingController {
                 energyConsumption);
     }
 
-    public static int getEnergyProduction(int buildingId) {
+    public static double getEnergyProduction(int buildingId) {
         int energyProduction = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
                 .filter(device -> (device.getBuilding().getId() == buildingId && !device.getConsumesEnergy())).toList();
@@ -238,8 +249,8 @@ public class BuildingController {
         return energyProduction;
     }
 
-    public static int getEnergyConsumption(int buildingId) {
-        int energyConsumption = 0;
+    public static double getEnergyConsumption(int buildingId) {
+        double energyConsumption = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
                 .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy())).toList();
         for (BuildingDevice device : devices) {
