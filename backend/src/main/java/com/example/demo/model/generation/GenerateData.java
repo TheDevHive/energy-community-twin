@@ -39,7 +39,6 @@ public class GenerateData {
             throw new IllegalArgumentException("EnergyCurve is not valid");
         }
         Random random = new Random();
-        System.out.println("sto generando...");
         return random.nextGaussian(energyCurve.getEnergyCurve().get(hour),
                 energyCurve.getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
     }
@@ -113,13 +112,8 @@ public class GenerateData {
 
     public static boolean generateReport(EnergyReport report, List<String> deviceList, LocalDateTime start,
             LocalDateTime end, String resUUID) {
-        System.out.println("A");
         report = DBManager.getInstance().getEnergyReportDAO().findByPrimaryKey(report.getId());
         List<TimeSeriesData> ltsd = report.getTimeSeriesData();
-        System.out.println("ciao " + ltsd.size());
-        for (TimeSeriesData tsd : ltsd) {
-            System.out.println("ciao " + tsd.getDate() + " " + tsd.getProduction());
-        }
         double production = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
         double consumption = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
         report.setTotalProduction(production);
@@ -130,9 +124,6 @@ public class GenerateData {
         report.setStartDate(start);
         report.setEndDate(end);
         report.setDays(CalculateDate.dateDifferenceHours(end, start)/24);
-        System.out.println("total production: " + production);
-        System.out.println("total consumption: " + consumption);
-        System.out.println("total difference: " + (production + consumption));
         return DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
     }
 

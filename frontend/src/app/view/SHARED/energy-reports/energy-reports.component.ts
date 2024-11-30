@@ -11,6 +11,7 @@ import { AddSimulationComponent } from '../add-simulation/add-simulation.compone
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
 import { EnergyReportService } from '../../../services/energy-report.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 
 // This is important! Register Chart.js components
@@ -526,6 +527,35 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   onDelete(report: EnergyReport) {
     console.log('Delete report:', report);
+    // Open confirmation modal before deleting
+    const modalRef = this.modalService.open(ConfirmationDialogComponent, {
+      centered: true,
+      backdrop: 'static',
+      windowClass: 'confirmation-modal',
+    });
+
+    modalRef.componentInstance.message = 'Are you sure you want to delete this report?';
+    modalRef.componentInstance.title = 'Delete Report';
+    modalRef.componentInstance.color = 'red';
+
+    modalRef.result.then(
+      (result) => {
+      if (result === true) {
+        this.reportService.deleteReport(report.id.toString()).subscribe(
+        () => {
+          this.reports = this.reports.filter(r => r.id !== report.id);
+          this.updateDataSource();
+        },
+        (error) => {
+          console.error('Error deleting report:', error);
+        }
+        );
+      }
+      },
+      (reason) => {
+      // Modal dismissed
+      }
+    );
   }
 
   energyDifferenceIcon(report: EnergyReport): string {
@@ -555,6 +585,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         if (result) {
           console.log('Simulation data:', result);
         }
+        // update reports list
+        this.selectLastReport();
       },
       (reason) => {
         // Modal dismissed

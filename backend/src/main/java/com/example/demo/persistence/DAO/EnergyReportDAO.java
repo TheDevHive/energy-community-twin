@@ -56,7 +56,6 @@ public class EnergyReportDAO {
 
     private void setStatementParameters(PreparedStatement pstmt, EnergyReport report) throws SQLException {
         pstmt.setString(1, report.getRefUUID());
-        System.out.println(report.getStartDate());
         pstmt.setTimestamp(2, Timestamp.valueOf(report.getStartDate()));
         pstmt.setTimestamp(3, Timestamp.valueOf(report.getEndDate()));
         pstmt.setInt(4, report.getDays());
@@ -75,7 +74,6 @@ public class EnergyReportDAO {
                 EnergyReport report = mapResultSetToEnergyReport(rs);
                 // Load associated time series data
                 report.setTimeSeriesData(loadTimeSeriesData(id));
-                System.out.println("length 1: " + report.getTimeSeriesData().size());
                 return report;
             }
         } catch (SQLException e) {
@@ -93,9 +91,6 @@ public class EnergyReportDAO {
             while (rs.next()) {
                 EnergyReport report = mapResultSetToEnergyReport(rs);
                 report.setTimeSeriesData(loadTimeSeriesData(report.getId()));
-                for (TimeSeriesData tsd : report.getTimeSeriesData()) {
-                    System.out.println(tsd.getDate() + " " + tsd.getProduction());
-                }
                 reports.add(report);
             }
             return reports;
@@ -167,8 +162,6 @@ public class EnergyReportDAO {
         TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
         List<TimeSeriesData> timeSeriesDataList = new ArrayList<>();
         for (TS_Measurement measurement : tsmd.findByReportId(reportId)) {
-            //System.out.println("report id: " + reportId + " measurement report id: " + measurement.getReportId());
-            //System.out.println("funziona");
             TimeSeriesData tsd = new TimeSeriesData(
                 measurement.getTimestamp(),
                 measurement.getValue()

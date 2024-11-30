@@ -193,14 +193,6 @@ public class CommunityController {
     @PostMapping("/{commId}/generate-measurements")
     public ResponseEntity<List<String>> generateMeasurements(HttpServletRequest req, @PathVariable int commId,
             @RequestBody TimeRange timeRange) {
-        //try {
-            //System.out.println("Raw request body: " + req.getReader().lines().collect(Collectors.joining())); // Add this
-        // } catch (IOException e) {
-        //    e.printStackTrace();
-        //}
-        System.out.println("Received TimeRange object: " + timeRange);
-        System.out.println("Start time: " + timeRange.getStart());
-        System.out.println("End time: " + timeRange.getEnd());
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(commId);
