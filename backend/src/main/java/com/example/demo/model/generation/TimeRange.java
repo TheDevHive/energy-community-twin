@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TimeRange {
-    
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime start;
 
@@ -18,7 +18,7 @@ public class TimeRange {
     }
 
     public LocalDateTime getStart() {
-        return start;
+        return start.withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
     public LocalDateTime getEnd() {

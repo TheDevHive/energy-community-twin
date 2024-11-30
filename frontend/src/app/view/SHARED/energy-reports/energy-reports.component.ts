@@ -565,13 +565,18 @@ startNewSimulation() {
     const ticks: Date[] = [];
     const baseDate = new Date(date);
     baseDate.setHours(0, 0, 0, 0); // Start of the day
-
+  
     for (let hour = 0; hour < 24; hour += 2) {
       const tickDate = new Date(baseDate);
       tickDate.setHours(hour);
       ticks.push(tickDate);
     }
-
+  
+    // Add the last tick at 23:59
+    const lastTickDate = new Date(baseDate);
+    lastTickDate.setHours(23, 59, 0, 0);
+    ticks.push(lastTickDate);
+  
     return ticks;
   }
 
