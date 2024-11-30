@@ -27,3 +27,11 @@
     <div [innerHTML]="alert.alertDevice.message"></div>
     <button type="button" class="btn-close" (click)="alert.alertDevice.show=false" aria-label="Close"></button>
 </div>
+
+<!-- Alert New Simulation -->
+<div *ngIf="page == 'Reports' && alert.alertNewSimulation.show" 
+     [ngClass]="['alert', 'alert-' + alert.alertNewSimulation.type, 'alert-dismissible', 'fade', 'show']" 
+     role="alert">
+    <div [innerHTML]="alert.alertNewSimulation.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertNewSimulation.show=false" aria-label="Close"></button>
+</div>

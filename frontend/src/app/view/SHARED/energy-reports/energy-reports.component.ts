@@ -12,6 +12,7 @@ import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
 import { EnergyReportService } from '../../../services/energy-report.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { AlertService } from '../../../services/alert.service';
 
 
 // This is important! Register Chart.js components
@@ -63,6 +64,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   constructor(
     private modalService: NgbModal,
     private reportService: EnergyReportService,
+    private alertService: AlertService
   ) {
     // Check initial dark mode preference
     this.checkDarkModePreference();
@@ -83,41 +85,104 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.selectLastReport();
   }
 
-  selectLastReport() {
-    // Check if reports are already loaded
-    if (this.reports.length === 0) {
-      // If no reports, load them first
-      this.reportService.getReports(this.refUUID).subscribe({
-        next: (reports) => {
-          this.reports = reports;
+  // Modify selectLastReport() to handle chart updates
+selectLastReport() {
+  // Check if reports are already loaded
+  if (this.reports.length === 0) {
+    // If no reports, load them first
+    this.reportService.getReports(this.refUUID).subscribe({
+      next: (reports) => {
+        this.reports = reports;
 
-          // Update data source after loading
-          this.dataSource = new MatTableDataSource(this.reports);
+        // Update data source after loading
+        this.dataSource = new MatTableDataSource(this.reports);
 
-          // Sort and select the last report after loading
-          this.reports.sort((a, b) => b.id - a.id);
+        // Sort and select the last report after loading
+        this.reports.sort((a, b) => b.id - a.id);
 
-          // Select the last report if available
-          if (this.reports.length > 0) {
-            this.selectedReport = this.reports[0];
+        // Select the last report if available
+        if (this.reports.length > 0) {
+          this.selectedReport = this.reports[0];
+          // Update the date range and chart after selecting new report
+          this.setReportDateRange(this.selectedReport);
+          
+          // Initialize or update chart based on whether it exists
+          if (this.timeSeriesChart) {
+            this.updateChartData();
+          } else {
+            this.initializeChart();
           }
-        },
-        error: (error) => {
-          console.error('Error loading reports:', error);
-          // Ensure reports is an empty array in case of an error
-          this.reports = [];
         }
-      });
-    } else {
-      // If reports are already loaded, just sort and select
-      this.reports.sort((a, b) => b.id - a.id);
+      },
+      error: (error) => {
+        console.error('Error loading reports:', error);
+        this.reports = [];
+      }
+    });
+  } else {
+    // If reports are already loaded, just sort and select
+    this.reports.sort((a, b) => b.id - a.id);
 
-      if (this.reports.length > 0) {
-        this.selectedReport = this.reports[0];
+    if (this.reports.length > 0) {
+      this.selectedReport = this.reports[0];
+      // Update the date range and chart for existing reports
+      this.setReportDateRange(this.selectedReport);
+      if (this.timeSeriesChart) {
+        this.updateChartData();
       }
     }
   }
+}
 
+startNewSimulation() {
+  const modalRef = this.modalService.open(AddSimulationComponent, {
+    centered: true,
+    backdrop: 'static',
+    windowClass: 'building-modal',
+  });
+
+  modalRef.componentInstance.refUUID = this.refUUID;
+
+  modalRef.result.then(
+    (result) => {
+      if (result) {
+        console.log('Simulation data:', result);
+
+        // Fetch new reports and update the UI
+        this.reportService.getReports(this.refUUID).subscribe({
+          next: (reports) => {
+            this.reports = reports;
+            this.updateDataSource();
+            this.selectLastReport();
+
+            if (this.reports.length === 1)
+              this.initializeChart();
+            
+            // Notify user about the new simulation
+            this.alertService.setAlertNewSimulation(
+              'success',
+              'Simulation started successfully!'
+            );
+          },
+          error: (error) => {
+            console.error('Error reloading reports:', error);
+
+            // Notify user about the error
+            this.alertService.setAlertNewSimulation(
+              'danger',
+              'Failed to start the simulation. Please try again.'
+            );
+          }
+        });
+      }
+    },
+    (reason) => {
+      console.log('Modal dismissed:', reason);
+    }
+  );
+}
+
+  // Modify updateDataSource() to ensure chart updates
   private updateDataSource() {
     if (this.dataSource && this.reports.length > 0) {
       // Reorder reports by ID in descending order
@@ -133,8 +198,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         this.dataSource.sort = this.sort;
       }
 
-      // Select the last report after updating
-      this.selectLastReport();
+      // Update the chart when data source is updated
+      if (this.timeSeriesChart) {
+        this.setReportDateRange(this.reports[0]);
+        this.updateChartData();
+      }
     }
   }
 
@@ -545,6 +613,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         () => {
           this.reports = this.reports.filter(r => r.id !== report.id);
           this.updateDataSource();
+
+          this.alertService.setAlertNewSimulation(
+            'success',
+            'Simulation deleted successfully!'
+          );
         },
         (error) => {
           console.error('Error deleting report:', error);
@@ -566,31 +639,5 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     } else {
       return 'bi-arrow-right text-info';
     }
-  }
-
-  startNewSimulation() {
-    /* if (!this.selectedReport.refUUID) {
-      this.selectLastReport();
-    } */
-    const modalRef = this.modalService.open(AddSimulationComponent, {
-      centered: true,
-      backdrop: 'static',
-      windowClass: 'building-modal',
-    });
-
-    modalRef.componentInstance.refUUID = this.refUUID;
-
-    modalRef.result.then(
-      (result) => {
-        if (result) {
-          console.log('Simulation data:', result);
-        }
-        // update reports list
-        this.selectLastReport();
-      },
-      (reason) => {
-        // Modal dismissed
-      }
-    );
   }
 }

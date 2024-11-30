@@ -15,43 +15,16 @@ import { Chart } from 'chart.js';
 // Your component imports
 import { EnergyReportsComponent } from './energy-reports.component';
 import { CommonModule } from '@angular/common';
-
+import { AlertComponent } from '../alert/alert.component';
 describe('EnergyReportsComponent', () => {
   let component: EnergyReportsComponent;
   let fixture: ComponentFixture<EnergyReportsComponent>;
-  let mockModalService: jasmine.SpyObj<NgbModal>;
 
   beforeEach(async () => {
-    // Create a mock NgbModal service
-    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-
-    // More comprehensive mock of MediaQueryList
-    const matchMediaMock = {
-      matches: false,
-      media: '(prefers-color-scheme: dark)',
-      onchange: null,
-      addListener: jasmine.createSpy('addListener'),
-      removeListener: jasmine.createSpy('removeListener'),
-      addEventListener: jasmine.createSpy('addEventListener'),
-      removeEventListener: jasmine.createSpy('removeEventListener'),
-      dispatchEvent: jasmine.createSpy('dispatchEvent')
-    } as MediaQueryList;
-
-    spyOn(window, 'matchMedia').and.returnValue(matchMediaMock);
-
-    // Mock Chart.js initialization to prevent canvas-related errors
-    spyOn(Chart.prototype, 'update');
-
-    // Mock document.getElementById to prevent canvas errors
-    spyOn(document, 'getElementById').and.returnValue({
-      getContext: () => ({
-        canvas: { width: 300, height: 150 }
-      })
-    } as unknown as HTMLElement);
-
     await TestBed.configureTestingModule({
       declarations: [
-        EnergyReportsComponent
+        EnergyReportsComponent,
+        AlertComponent, // Aggiungi qui
       ],
       imports: [
         MatFormFieldModule,
@@ -69,30 +42,12 @@ describe('EnergyReportsComponent', () => {
         { provide: DateAdapter, useClass: NativeDateAdapter },
         { provide: MAT_DATE_LOCALE, useValue: 'en-US' },
         { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
-        { provide: NgbModal, useValue: mockModalService }
+        { provide: NgbModal, useValue: jasmine.createSpyObj('NgbModal', ['open']) }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EnergyReportsComponent);
     component = fixture.componentInstance;
-
-    // Explicitly set initial reports to prevent undefined errors
-    component.reports = [{
-      id: 1,
-      refUUID: 'C1',
-      startDate: new Date(),
-      endDate: new Date(),
-      days: 7,
-      devices: 5,
-      totalProduction: 1000,
-      totalConsumption: 800,
-      totalDifference: 200,
-      timeSeriesData: []
-    }];
-
-    // Explicitly select the first report
-    component.selectedReport = component.reports[0];
-
     fixture.detectChanges();
   });
 
