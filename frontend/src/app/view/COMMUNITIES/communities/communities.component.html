@@ -1,9 +1,10 @@
 <div class="container-fluid p-0 vh-100 d-flex flex-column">
   <div class="content-area p-4">
     <!-- Top Section: Two Columns -->
+    <!-- Top Section: Two Columns -->
     <div class="row g-4 mb-4">
       <!-- Left Column: Welcome + Stats -->
-      <div class="col-md-6">
+      <div class="col-md-6" [class.col-md-12]="totalEnergyProduction() === 0 && totalEnergyConsumption() === 0">
         <!-- Welcome Card -->
         <div class="card border shadow-sm mb-4">
           <div class="card-body p-4">
@@ -23,7 +24,7 @@
               </div>
               <div>
                 <h6 class="text-muted mb-1">Total Communities</h6>
-                <h4 class="mb-0">{{communities.length}}</h4>
+                <h4 class="mb-0">{{ communities.length }}</h4>
               </div>
             </div>
           </div>
@@ -38,7 +39,7 @@
               </div>
               <div>
                 <h6 class="text-muted mb-1">Total Members</h6>
-                <h4 class="mb-0">{{totalMembers()}}</h4>
+                <h4 class="mb-0">{{ totalMembers() }}</h4>
               </div>
             </div>
           </div>
@@ -46,18 +47,17 @@
       </div>
 
       <!-- Right Column: Energy Chart -->
-<div class="col-md-6">
-  <div class="card border shadow-sm h-100">
-    <div class="card-body">
-      <h6 class="text-muted mb-3 text-center">Energy Summary</h6>
-      <div class="chart-container">
-        <app-pie-chart [production]="totalEnergyProduction()" [consumption]="totalEnergyConsumption()">
-        </app-pie-chart>
+      <div *ngIf="!(totalEnergyProduction() === 0 && totalEnergyConsumption() === 0)" class="col-md-6">
+        <div class="card border shadow-sm h-100">
+          <div class="card-body">
+            <h6 class="text-muted mb-3 text-center">Energy Summary</h6>
+            <div class="chart-container">
+              <app-pie-chart [production]="totalEnergyProduction()" [consumption]="totalEnergyConsumption()">
+              </app-pie-chart>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-
     </div>
 
     <!-- Communities Section Header -->
