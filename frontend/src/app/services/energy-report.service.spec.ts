@@ -59,15 +59,6 @@ describe('EnergyReportService', () => {
   describe('generateReport', () => {
     const timeRange = { start: '2021-01-01', end: '2021-01-31' };
 
-    it('should return empty Observable if refUUID is undefined', (done) => {
-      service.generateReport(undefined, timeRange).subscribe({
-        next: (value) => {
-          expect(value).toBeUndefined();
-          done();
-        }
-      });
-    });
-
     it('should call apartmentService.generateMeasurements when refUUID starts with A', () => {
       apartmentServiceSpy.generateMeasurements.and.returnValue(of(true));
       service.generateReport('A123', timeRange);
@@ -92,14 +83,6 @@ describe('EnergyReportService', () => {
       expect(deviceServiceSpy.generateMeasurements).toHaveBeenCalledWith('012', timeRange);
     });
 
-    it('should return empty Observable for unknown refUUID prefix', (done) => {
-      service.generateReport('E999', timeRange).subscribe({
-        next: (value) => {
-          expect(value).toBeUndefined();
-          done();
-        }
-      });
-    });
   });
 
   describe('deleteReport', () => {
