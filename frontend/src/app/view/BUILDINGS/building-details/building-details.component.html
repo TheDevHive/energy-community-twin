@@ -284,7 +284,7 @@
                                 <span class="text-success me-2">
                                     <i class="bi bi-arrow-up-right"></i>
                                 </span>
-                                {{apartment.stats.energyProduction | number:'1.2-2' }} kWh
+                                {{apartment.stats.energyProduction | number:'1.2-2' }} Wh
                             </td>
                         </ng-container>
 
@@ -295,7 +295,7 @@
                                 <span class="text-danger me-2">
                                     <i class="bi bi-arrow-down-right"></i>
                                 </span>
-                                {{apartment.stats.energyConsumption | number:'1.2-2' }} kWh
+                                {{apartment.stats.energyConsumption | number:'1.2-2' }} Wh
                             </td>
                         </ng-container>
 
@@ -306,7 +306,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyIcon(calculateEnergyDifference(apartment))"></i>
                                 </span>
-                                {{calculateEnergyDifference(apartment)}} kWh
+                                {{calculateEnergyDifference(apartment)}} Wh
                             </td>
                         </ng-container>
 
