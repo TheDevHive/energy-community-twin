@@ -32,10 +32,19 @@ export class AddSimulationComponent implements OnInit {
     if (this.simulationForm.valid && !this.loading) {
       this.loading = true;
 
+      // Get the start and end dates from the form
+      const startDate = new Date(this.simulationForm.get('startDate')?.value);
+      const endDate = new Date(this.simulationForm.get('endDate')?.value);
+
+      // Add one day to both dates
+      startDate.setDate(startDate.getDate() + 1);
+      endDate.setDate(endDate.getDate() + 1);
+
       const simulationData: TimeRange = {
-        start: this.simulationForm.get('startDate')?.value.toISOString(),
-        end: this.simulationForm.get('endDate')?.value.toISOString()
+        start: startDate.toISOString(),
+        end: endDate.toISOString()
       };
+
       this.energyReportService.generateReport(this.refUUID, simulationData).subscribe(
         () => {
           this.activeModal.close(simulationData);
