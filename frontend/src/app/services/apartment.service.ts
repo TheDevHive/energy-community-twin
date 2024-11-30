@@ -6,7 +6,7 @@ import { ResponseEntity } from '../models/response-entity';
 import { ApiResponseService } from './api-response.service';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-
+import { TimeRange } from '../models/time_range';
 import { ApartmentStats } from '../models/apartment';
 import { ApartmentDevice } from '../models/apartment_device';
 
@@ -73,6 +73,14 @@ export class ApartmentService {
         headers: this.auth.getHeaders(),
         observe: 'response'
       })
+    );
+  }
+
+  generateMeasurements(apartment_id: String, timeRange: TimeRange): Observable<boolean> {
+    return this.http.post<boolean>(
+      `${this.apiUrl}/${apartment_id}/generate-measurements`,
+      timeRange,
+      { headers: this.auth.getHeaders() }
     );
   }
 }

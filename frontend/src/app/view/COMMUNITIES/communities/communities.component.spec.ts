@@ -21,6 +21,7 @@ import { AlertComponent } from '../../SHARED/alert/alert.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { PieChartComponent } from '../../SHARED/pie-chart/pie-chart.component';
 
 describe('CommunitiesComponent', () => {
   let component: CommunitiesComponent;
@@ -103,7 +104,8 @@ describe('CommunitiesComponent', () => {
       declarations: [
         CommunitiesComponent,
         ChunkPipe,
-        AddCommunityComponent,
+        AlertComponent,
+        PieChartComponent,
         AlertComponent
       ],
       imports: [

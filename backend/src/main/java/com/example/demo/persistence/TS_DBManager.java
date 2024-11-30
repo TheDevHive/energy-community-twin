@@ -71,6 +71,7 @@ public class TS_DBManager {
                         CREATE TABLE IF NOT EXISTS measurement (
                             measurement_id INTEGER PRIMARY KEY AUTOINCREMENT,
                             device_id INTEGER NOT NULL,
+                            report_id INTEGER NOT NULL,
                             timestamp TIMESTAMP NOT NULL,
                             value REAL NOT NULL,
                             FOREIGN KEY (device_id) REFERENCES device(device_id)
@@ -92,7 +93,6 @@ public class TS_DBManager {
                         CREATE INDEX IF NOT EXISTS idx_measurement_timestamp
                         ON measurement(timestamp)
                     """);
-            System.out.println("CIAO Database creato con successo");
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

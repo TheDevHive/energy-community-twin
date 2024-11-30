@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TimeRange } from '../../../models/time_range';
+import { EnergyReportService } from '../../../services/energy-report.service';
 
 @Component({
   selector: 'app-add-simulation',
@@ -10,11 +12,14 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class AddSimulationComponent implements OnInit {
   simulationForm: FormGroup;
   loading = false;
+  @Input() refUUID?: string;
 
   constructor(
     private fb: FormBuilder,
-    public activeModal: NgbActiveModal
+    public activeModal: NgbActiveModal,
+    private energyReportService: EnergyReportService
   ) {
+    console.log('ciaooooooo refUUID: ' + this.refUUID);
     this.simulationForm = this.fb.group({
       startDate: [null, [Validators.required]],
       endDate: [null, [Validators.required]]
@@ -27,13 +32,28 @@ export class AddSimulationComponent implements OnInit {
     if (this.simulationForm.valid && !this.loading) {
       this.loading = true;
 
-      const simulationData = {
-        startDate: this.simulationForm.get('startDate')?.value,
-        endDate: this.simulationForm.get('endDate')?.value
+      // Get the start and end dates from the form
+      const startDate = new Date(this.simulationForm.get('startDate')?.value);
+      const endDate = new Date(this.simulationForm.get('endDate')?.value);
+
+      // Add one day to both dates
+      startDate.setDate(startDate.getDate() + 1);
+      endDate.setDate(endDate.getDate() + 1);
+
+      const simulationData: TimeRange = {
+        start: startDate.toISOString(),
+        end: endDate.toISOString()
       };
 
-      this.activeModal.close(simulationData);
-      this.loading = false;
+      this.energyReportService.generateReport(this.refUUID, simulationData).subscribe(
+        () => {
+          this.activeModal.close(simulationData);
+          this.loading = false;
+        },
+        () => {
+          this.loading = false;
+        }
+      );
     } else {
       this.markAllControlsAsTouched();
     }

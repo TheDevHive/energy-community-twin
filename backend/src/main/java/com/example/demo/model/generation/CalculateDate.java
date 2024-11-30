@@ -8,10 +8,8 @@ import java.time.temporal.ChronoUnit;
 
 public final class CalculateDate {
 
-    public static int dateDifferenceHours(String dateEnd, String dateStart) {
-        LocalDateTime start = parseDateTime(dateStart, true);
-        LocalDateTime end = parseDateTime(dateEnd, false);
-        return (int) ChronoUnit.HOURS.between(start, end);
+    public static int dateDifferenceHours(LocalDateTime dateEnd, LocalDateTime dateStart) {
+        return (int) ChronoUnit.HOURS.between(dateStart, dateEnd);
     }
 
     public static LocalDateTime parseDateTime(String date, boolean isStart) {
@@ -25,9 +23,8 @@ public final class CalculateDate {
         }
     }
 
-    public static String hoursAdd(String date, int hours) {
-        LocalDateTime dateTime = parseDateTime(date, true);
-        return dateTime.plusHours(hours).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    public static LocalDateTime hoursAdd(LocalDateTime date, int hours) {
+        return date.plusHours(hours);
     }
 
     public static boolean validate(String date) {

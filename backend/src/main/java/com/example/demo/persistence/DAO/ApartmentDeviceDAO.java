@@ -69,7 +69,7 @@ public class ApartmentDeviceDAO {
 
     public boolean saveOrUpdate(ApartmentDevice apartmentDevice) {
         if (findByPrimaryKey(apartmentDevice.getId()) == null) {
-            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
                 pstmt.setBoolean(2, apartmentDevice.getConsumesEnergy());
@@ -88,12 +88,12 @@ public class ApartmentDeviceDAO {
                 return false;
             }
         } else {
-            String sql = "UPDATE apartment_device SET apartment_id = ?, name = ?, consumes_energy = ?, energy_curve = ?,  WHERE id = ?";
+            String sql = "UPDATE apartment_device SET name = ?, consumes_energy = ?, energy_curve = ?, apartment_id = ? WHERE id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setInt(1, apartmentDevice.getApartment().getId());
-                pstmt.setString(2, apartmentDevice.getName());
-                pstmt.setBoolean(3, apartmentDevice.getConsumesEnergy());
-                blobConverter.setBlob(pstmt, 4, apartmentDevice.getEnergyCurve());
+                pstmt.setString(1, apartmentDevice.getName());
+                pstmt.setBoolean(2, apartmentDevice.getConsumesEnergy());
+                blobConverter.setBlob(pstmt, 3, apartmentDevice.getEnergyCurve());
+                pstmt.setInt(4, apartmentDevice.getApartment().getId());
                 pstmt.setInt(5, apartmentDevice.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {

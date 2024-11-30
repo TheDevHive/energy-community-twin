@@ -113,7 +113,17 @@ public class DBManager {
                     "apartment_id INTEGER NOT NULL, "+
                     "energy_curve BLOB, "+
                     "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
-
+            
+            statement.execute("CREATE TABLE IF NOT EXISTS energy_report (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "ref_uuid VARCHAR NOT NULL, " +
+                    "start_date TIMESTAMP NOT NULL, " +
+                    "end_date TIMESTAMP NOT NULL, " +
+                    "days INTEGER NOT NULL, " +
+                    "devices INTEGER NOT NULL, " +
+                    "total_production DOUBLE NOT NULL, " +
+                    "total_consumption DOUBLE NOT NULL, " +
+                    "total_difference DOUBLE NOT NULL);");
         } catch (SQLException ignored) {
             return false;
         } finally {
@@ -157,5 +167,9 @@ public class DBManager {
 
     public ApartmentDeviceDAO getApartmentDeviceDAO() {
         return new ApartmentDeviceDAO(getConnection());
+    }
+
+    public EnergyReportDAO getEnergyReportDAO() {
+        return new EnergyReportDAO(getConnection());
     }
 }

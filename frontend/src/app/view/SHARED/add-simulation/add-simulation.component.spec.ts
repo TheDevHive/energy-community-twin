@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import BrowserAnimationsModule
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AddSimulationComponent } from './add-simulation.component';
 
 describe('AddSimulationComponent', () => {
@@ -20,8 +21,10 @@ describe('AddSimulationComponent', () => {
         MatFormFieldModule,
         MatInputModule,
         MatDatepickerModule,
-        MatNativeDateModule,
-        BrowserAnimationsModule // Add BrowserAnimationsModule here
+        BrowserAnimationsModule, // Add BrowserAnimationsModule here
+        HttpClientTestingModule,
+        BrowserAnimationsModule, // Add BrowserAnimationsModule here
+        MatNativeDateModule // Add MatNativeDateModule here
       ],
       providers: [NgbActiveModal]
     })

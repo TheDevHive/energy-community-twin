@@ -29,6 +29,20 @@ export class AlertService {
     }, this.timeout);
   }
 
+  alertNewSimulation = { show: false, type: '', message: '' };
+
+  setAlertNewSimulation(type: string, message: string) {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    this.alertNewSimulation = { show: true, type: type, message: message };
+
+    this.timeoutId = setTimeout(() => {
+      this.alertNewSimulation = { show: false, type: '', message: '' };
+    }, this.timeout);
+  }
+
   // Alert Page Buildings
   alertBuildings = { show: false, type: '', message: '' };
 

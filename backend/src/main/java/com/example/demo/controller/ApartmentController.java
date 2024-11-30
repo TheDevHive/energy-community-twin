@@ -4,10 +4,12 @@ import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.ApartmentStats;
+import com.example.demo.model.EnergyReport;
 import com.example.demo.model.generation.GenerateData;
 import com.example.demo.model.generation.TimeRange;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DBManager;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,9 +140,6 @@ public class ApartmentController {
             @RequestBody TimeRange timeRange) {
         if (!AuthUtility.isAuthorized(req))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        if (timeRange == null || !timeRange.validate()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         Apartment apartment = DBManager.getInstance().getApartmentDAO().findByPrimaryKey(ApartmentId);
         if (apartment == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -149,10 +148,16 @@ public class ApartmentController {
         if (devices.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(
-                GenerateData.generateDataApartment(devices, timeRange.getStart(), timeRange.getEnd()), HttpStatus.OK);
+        EnergyReport report = new EnergyReport();
+        DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
+        List<String> deviceList = GenerateData.generateDataApartment(devices, timeRange.getStart(), timeRange.getEnd(), report.getId());
+        if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "A"+ApartmentId)){
+            return new ResponseEntity<>(deviceList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
+    
     public ApartmentStats extractStats(Apartment apartment) {
         double energyProduction = getEnergyProduction(apartment.getId());
         double energyConsumption = getEnergyConsumption(apartment.getId());

@@ -40,6 +40,7 @@ import { AddApartmentComponent } from './view/add-apartment/add-apartment.compon
 import { AddDeviceComponent } from './view/add-device/add-device.component';
 import { DeviceViewComponent } from './view/device-view/device-view.component';
 import { ApartmentComponent } from './view/apartment/apartment.component';
+import { PieChartComponent } from './view/SHARED/pie-chart/pie-chart.component';
 import { EnergyReportsComponent } from './view/SHARED/energy-reports/energy-reports.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulation.component';
@@ -63,6 +64,8 @@ import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulat
     AddApartmentComponent,
     AddDeviceComponent,
     DeviceViewComponent,
+    ApartmentComponent,
+    PieChartComponent,
     ApartmentComponent,
     EnergyReportsComponent,
     AddSimulationComponent

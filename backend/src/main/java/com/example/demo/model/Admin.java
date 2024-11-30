@@ -1,8 +1,5 @@
 package com.example.demo.model;
 
-import com.example.demo.controller.CommunityController;
-import org.springframework.http.ResponseEntity;
-
 public class Admin extends Credentials {
     private int id;
     private Credentials credentials;

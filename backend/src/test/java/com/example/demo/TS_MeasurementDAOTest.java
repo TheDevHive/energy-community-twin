@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +39,7 @@ public class TS_MeasurementDAOTest {
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         measurementDAO = new TS_MeasurementDAO(mockConnection);
-        measurement = new TS_Measurement(1, 1, "2024-01-01 12:00:00", 42.5);
+        measurement = new TS_Measurement(1, 1, 100, LocalDateTime.of(2024, 1, 1, 13, 0), 42.5); // Added reportId
         spyMeasurementDAO = Mockito.spy(measurementDAO);
     }
 
@@ -57,8 +59,9 @@ public class TS_MeasurementDAOTest {
 
         // Assert
         verify(mockPreparedStatement).setInt(1, measurement.getDeviceId());
-        verify(mockPreparedStatement).setString(2, measurement.getTimestamp());
-        verify(mockPreparedStatement).setDouble(3, measurement.getValue());
+        verify(mockPreparedStatement).setInt(2, measurement.getReportId());
+        verify(mockPreparedStatement).setTimestamp(3, Timestamp.valueOf(measurement.getTimestamp()));
+        verify(mockPreparedStatement).setDouble(4, measurement.getValue());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -75,9 +78,10 @@ public class TS_MeasurementDAOTest {
 
         // Assert
         verify(mockPreparedStatement).setInt(1, measurement.getDeviceId());
-        verify(mockPreparedStatement).setString(2, measurement.getTimestamp());
-        verify(mockPreparedStatement).setDouble(3, measurement.getValue());
-        verify(mockPreparedStatement).setInt(4, measurement.getId());
+        verify(mockPreparedStatement).setInt(2, measurement.getReportId());
+        verify(mockPreparedStatement).setTimestamp(3, Timestamp.valueOf(measurement.getTimestamp()));
+        verify(mockPreparedStatement).setDouble(4, measurement.getValue());
+        verify(mockPreparedStatement).setInt(5, measurement.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -89,7 +93,8 @@ public class TS_MeasurementDAOTest {
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("measurement_id")).thenReturn(1, 2);
         when(mockResultSet.getInt("device_id")).thenReturn(1, 1);
-        when(mockResultSet.getString("timestamp")).thenReturn("2024-01-01 12:00:00", "2024-01-01 13:00:00");
+        when(mockResultSet.getTimestamp("timestamp"))
+                .thenReturn(Timestamp.valueOf("2024-01-01 12:00:00"), Timestamp.valueOf("2024-01-01 13:00:00"));
         when(mockResultSet.getDouble("value")).thenReturn(42.5, 43.5);
 
         // Execute
@@ -98,9 +103,10 @@ public class TS_MeasurementDAOTest {
         // Assert
         assertNotNull(measurements);
         assertEquals(2, measurements.size());
-        assertEquals("2024-01-01 12:00:00", measurements.get(0).getTimestamp());
-        assertEquals(42.5, measurements.get(0).getValue());
+        assertEquals(LocalDateTime.of(2024, 1, 1, 12, 0), measurements.get(0).getTimestamp());
+        assertEquals(42.5, measurements.get(0).getValue(), 0.001);
     }
+
 
     @Test
     public void testFindByDeviceIdAndTimeRange() throws SQLException {
@@ -113,7 +119,8 @@ public class TS_MeasurementDAOTest {
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getInt("measurement_id")).thenReturn(1);
         when(mockResultSet.getInt("device_id")).thenReturn(1);
-        when(mockResultSet.getString("timestamp")).thenReturn("2024-01-01 13:00:00");
+        when(mockResultSet.getTimestamp("timestamp"))
+                .thenReturn(Timestamp.valueOf("2024-01-01 13:00:00"));
         when(mockResultSet.getDouble("value")).thenReturn(42.5);
 
         // Execute
@@ -122,13 +129,14 @@ public class TS_MeasurementDAOTest {
         // Assert
         assertNotNull(measurements);
         assertEquals(1, measurements.size());
-        assertEquals("2024-01-01 13:00:00", measurements.get(0).getTimestamp());
-        assertEquals(42.5, measurements.get(0).getValue());
+        assertEquals(LocalDateTime.of(2024, 1, 1, 13, 0), measurements.get(0).getTimestamp());
+        assertEquals(42.5, measurements.get(0).getValue(), 0.001);
 
         verify(mockPreparedStatement).setInt(1, 1);
         verify(mockPreparedStatement).setString(2, startTime);
         verify(mockPreparedStatement).setString(3, endTime);
     }
+
 
     @Test
     public void testDeleteByDeviceId() throws SQLException {
@@ -147,20 +155,19 @@ public class TS_MeasurementDAOTest {
 
     @Test
     public void testFindAll() throws SQLException {
-        // Set up
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("measurement_id")).thenReturn(1, 2);
         when(mockResultSet.getInt("device_id")).thenReturn(1, 2);
-        when(mockResultSet.getString("timestamp")).thenReturn("2024-01-01 12:00:00", "2024-01-01 13:00:00");
+        when(mockResultSet.getTimestamp("timestamp"))
+                .thenReturn(Timestamp.valueOf("2024-01-01 12:00:00"), Timestamp.valueOf("2024-01-01 13:00:00"));
         when(mockResultSet.getDouble("value")).thenReturn(42.5, 43.5);
 
-        // Execute
         List<TS_Measurement> measurements = measurementDAO.findAll();
 
-        // Assert
         assertNotNull(measurements);
         assertEquals(2, measurements.size());
     }
+
 }

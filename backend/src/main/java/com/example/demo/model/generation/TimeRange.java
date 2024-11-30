@@ -1,23 +1,27 @@
 package com.example.demo.model.generation;
 
-public class TimeRange {
-    private String start;
-    private String end;
+import java.time.LocalDateTime;
 
-    public TimeRange(String start, String end) {
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+public class TimeRange {
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    private LocalDateTime start;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    private LocalDateTime end;
+
+    public TimeRange(LocalDateTime start, LocalDateTime end) {
         this.start = start;
         this.end = end;
     }
 
-    public String getStart() {
-        return start;
+    public LocalDateTime getStart() {
+        return start.withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
-    public String getEnd() {
+    public LocalDateTime getEnd() {
         return end;
-    }
-
-    public boolean validate() {
-        return CalculateDate.validate(start) && CalculateDate.validate(end);
     }
 }

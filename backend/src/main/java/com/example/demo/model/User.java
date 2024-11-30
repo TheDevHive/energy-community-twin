@@ -1,9 +1,5 @@
 package com.example.demo.model;
 
-import com.example.demo.controller.CommunityController;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.sql.Date;
 
 public class User extends Credentials {
