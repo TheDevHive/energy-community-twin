@@ -162,7 +162,7 @@ startNewSimulation() {
             // Notify user about the new simulation
             this.alertService.setAlertNewSimulation(
               'success',
-              'Simulation started successfully!'
+              'Simulation added successfully!'
             );
           },
           error: (error) => {

@@ -211,6 +211,30 @@ public class CommunityController {
         }
     }
 
+    @GetMapping("/{id}/deviceCount")
+    public ResponseEntity<Integer> deviceCount(HttpServletRequest req, @PathVariable int id) {
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(id);
+        if (community == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
+        int totalDeviceCount = 0;
+
+        for (Building building : buildings) {
+            List<BuildingDevice> buildingDevices = DBManager.getInstance().getBuildingDeviceDAO().findByBuilding(building);
+            totalDeviceCount += buildingDevices.size();
+            List<Apartment> apartments = DBManager.getInstance().getApartmentDAO().findByBuilding(building);
+            for (Apartment apartment : apartments) {
+                List<ApartmentDevice> devices = DBManager.getInstance().getApartmentDeviceDAO().findByApartment(apartment);
+                totalDeviceCount += devices.size();
+            }
+        }
+        return new ResponseEntity<>(totalDeviceCount, HttpStatus.OK);
+    }
+
     public CommunityStats extractStats(Community community) {
         BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
         List<Building> buildings = buildingDAO.findAll().stream()

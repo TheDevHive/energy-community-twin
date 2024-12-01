@@ -129,4 +129,10 @@ export class CommunityService {
     );
   }
 
+  getDeviceCount(commId: number): Observable<number> {
+    return this.http.get<number>(
+      `${this.apiUrl}/${commId}/deviceCount`,
+      { headers: this.auth.getHeaders() }
+    );
+  }
 }
