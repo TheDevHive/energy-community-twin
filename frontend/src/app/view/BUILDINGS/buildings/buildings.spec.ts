@@ -39,7 +39,12 @@ class MockCommunityService {
   getBuildings(communityId: number) {
     return of(BUILDINGS.filter(building => building.community.id === communityId));
   }
+  getDeviceCount(communityId: number) {
+    // Modificato per restituire direttamente un numero
+    return of(50);
+  }
 }
+
 
 class MockAlertService {
   setAlertBuildings(type: string, message: string) {}
@@ -109,5 +114,12 @@ describe('BuildingsComponent', () => {
     expect(component.dataSource.data).toEqual(BUILDINGS.filter(building => building.community.id === 1));
   });
 
-  // Additional tests using BUILDINGS and COMMUNITIES mocks...
+  it('should load device count on initialization', () => {
+    spyOn(component['communityService'], 'getDeviceCount').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(component['communityService'].getDeviceCount).toHaveBeenCalledWith(1);
+    expect(component.deviceCount).toBe(50);
+  });
+
 });
