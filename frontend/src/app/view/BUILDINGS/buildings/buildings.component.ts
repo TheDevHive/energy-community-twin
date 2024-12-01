@@ -20,6 +20,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
+import { BuildingDeviceService } from '../../../services/building-device.service';
+import { ApartmentDeviceService } from '../../../services/apartment-device.service';
 
 @Component({
   selector: 'app-buildings',
@@ -30,6 +32,9 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   buildings: Building[] = [];
   loading = false;
   error?: { type: ErrorType; message: string };
+
+  deviceCount!: number;
+
 
   communityId = 0;
   communityName = 'Community Name';
@@ -65,6 +70,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
         // Handle error
       }
     });
+    this.loadDeviceCount();
   }
 
   setCommunityName(communityId: number): void {
@@ -333,4 +339,17 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   private compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
+
+  loadDeviceCount() {
+    this.communityService.getDeviceCount(this.communityId).subscribe(
+      (deviceCount: number) => {
+        this.deviceCount = deviceCount;
+      },
+      (error) => {
+        console.error('Errore nel recupero del conteggio dei dispositivi:', error);
+      }
+    );
+  }
+  
+  
 }

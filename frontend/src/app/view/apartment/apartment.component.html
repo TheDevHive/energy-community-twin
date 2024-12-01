@@ -17,7 +17,9 @@
             </div>
         </div>
 
-        <app-energy-reports [refUUID]="'A'+this.apartmentId"></app-energy-reports>
+        <ng-container *ngIf="this.deviceDataSource.data.length >= 1">
+            <app-energy-reports [refUUID]="'A'+this.apartmentId"></app-energy-reports>
+        </ng-container>
 
         <!-- Quick Stats (Three Cards in a Row) -->
         <div class="row g-4 mb-4">
