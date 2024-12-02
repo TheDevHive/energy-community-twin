@@ -59,4 +59,29 @@ export class EnergyReportService {
     );
   }
 
+  downloadReport(id: number): void {
+    const url = `${this.apiUrl}/${id}/download`;
+
+    const headers = this.authService.getHeaders();
+
+    this.http.get(url, { headers, responseType: 'blob' }).subscribe({
+      next: (response: Blob) => {
+        this.saveFile(response, `energy_report_${id}.csv`);
+      },
+      error: (error) => {
+        console.error('Errore durante il download del report:', error);
+      },
+    });
+  }
+
+
+  private saveFile(data: Blob, filename: string): void {
+    const blob = new Blob([data], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(link.href); // Libera la memoria
+  }
+
 }
