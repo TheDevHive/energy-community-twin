@@ -619,6 +619,8 @@ startNewSimulation() {
         () => {
           this.reports = this.reports.filter(r => r.id !== report.id);
           this.updateDataSource();
+          this.selectLastReport();
+          this.updateChartData();
 
           this.alertService.setAlertNewSimulation(
             'success',

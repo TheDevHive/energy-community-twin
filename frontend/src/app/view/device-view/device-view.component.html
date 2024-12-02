@@ -54,6 +54,9 @@
       </ol>
     </div>
 
+    <app-energy-reports *ngIf="isBuildingDevice" [refUUID]="'DB'+deviceId"></app-energy-reports>
+    <app-energy-reports *ngIf="!isBuildingDevice" [refUUID]="'DA'+deviceId"></app-energy-reports>
+
     <app-alert [page]="'Device'"></app-alert>
 
     <!-- Main Content Section -->
