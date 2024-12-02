@@ -596,7 +596,7 @@ startNewSimulation() {
   }
 
   onDownload(report: EnergyReport) {
-    console.log('Download report:', report);
+    this.reportService.downloadReport(report.id);    
   }
 
   onDelete(report: EnergyReport) {
