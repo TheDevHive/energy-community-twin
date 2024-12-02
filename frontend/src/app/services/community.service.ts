@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
 import { CommunityStats } from '../models/community';
+import { TimeRange } from '../models/time_range';
 
 @Injectable({
   providedIn: 'root'
@@ -119,4 +120,19 @@ export class CommunityService {
     );
   }
 
+  generateMeasurements(community_id: String, timeRange: TimeRange): Observable<boolean> {
+    console.log('Sending TimeRange:', JSON.stringify(timeRange)); // Add this line
+    return this.http.post<boolean>(
+      `${this.apiUrl}/${community_id}/generate-measurements`,
+      timeRange,
+      { headers: this.auth.getHeaders() }
+    );
+  }
+
+  getDeviceCount(commId: number): Observable<number> {
+    return this.http.get<number>(
+      `${this.apiUrl}/${commId}/deviceCount`,
+      { headers: this.auth.getHeaders() }
+    );
+  }
 }

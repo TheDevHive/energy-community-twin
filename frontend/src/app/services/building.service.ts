@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 import { BuildingStats } from '../models/building';
 import { BuildingDevice } from '../models/building_device';
+import { TimeRange } from '../models/time_range';
 
 @Injectable({
   providedIn: 'root'
@@ -105,6 +106,14 @@ export class BuildingService {
         headers: this.auth.getHeaders(),
         observe: 'response'
       })
+    );
+  }
+
+  generateMeasurements(building_id: String, timeRange: TimeRange): Observable<boolean> {
+    return this.http.post<boolean>(
+      `${this.apiUrl}/${building_id}/generate-measurements`,
+      timeRange,
+      { headers: this.auth.getHeaders() }
     );
   }
 }

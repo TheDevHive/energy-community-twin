@@ -37,13 +37,11 @@ export class ApartmentDeviceService {
     );
   }
 
-  removeApartmentDevice(deviceId: number): Observable<ApartmentDevice> {
-    return this.apiResponseService.extractBody(
-      this.http.delete<ResponseEntity<ApartmentDevice>>(`${this.apiUrl}/${deviceId}`, {
+  removeApartmentDevice(deviceId: number): Observable<void> {
+      return this.http.delete<void>(`${this.apiUrl}/${deviceId}`, {
         headers : this.auth.getHeaders(),
-        observe: 'response'
+        observe: 'body'
       })
-    );
   }
 
   updateApartmentDevice(device: ApartmentDevice): Observable<ApartmentDevice> {

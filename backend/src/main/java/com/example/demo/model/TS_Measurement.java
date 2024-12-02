@@ -1,14 +1,18 @@
 package com.example.demo.model;
 
+import java.time.LocalDateTime;
+
 public class TS_Measurement {
     private int id;
     private int deviceId;
-    private String timestamp;
+    private int reportId;
+    private LocalDateTime timestamp;
     private double value;
 
-    public TS_Measurement(int id, int deviceId, String timestamp, double value) {
+    public TS_Measurement(int id, int deviceId, int reportId, LocalDateTime timestamp, double value) {
         this.id = id;
         this.deviceId = deviceId;
+        this.reportId = reportId;
         this.timestamp = timestamp;
         this.value = value;
     }
@@ -21,7 +25,11 @@ public class TS_Measurement {
         return deviceId;
     }
 
-    public String getTimestamp() {
+    public int getReportId() {
+        return reportId;
+    }
+
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
@@ -33,6 +41,7 @@ public class TS_Measurement {
         return "TS_Measurement{" +
                 "id=" + id +
                 ", deviceId=" + deviceId +
+                ", reportId=" + reportId +
                 ", timestamp='" + timestamp + '\'' +
                 ", value=" + value +
                 '}';
@@ -47,6 +56,8 @@ public class TS_Measurement {
         if (id != ts_measurement.id)
             return false;
         if (deviceId != ts_measurement.deviceId)
+            return false;
+        if (reportId != ts_measurement.reportId)
             return false;
         if (Double.compare(ts_measurement.value, value) != 0)
             return false;

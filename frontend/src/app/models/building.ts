@@ -18,4 +18,5 @@ export interface BuildingStats
     members: number;
     energyProduction: number;
     energyConsumption: number;
+    energyClass: string;
 }

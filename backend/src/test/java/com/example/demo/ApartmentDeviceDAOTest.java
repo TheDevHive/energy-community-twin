@@ -6,6 +6,9 @@ import com.example.demo.model.EnergyCurve;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DBManager;
+import com.example.demo.utility.JSONBlobConverter;
+import com.example.demo.utility.SQLiteBlobConverter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -50,9 +53,12 @@ public class ApartmentDeviceDAOTest {
     }
 
     @Test
-    public void testSaveOrUpdate_InsertNewApartment() throws SQLException {
+    public void testSaveOrUpdate_InsertNewApartment() throws SQLException, JsonProcessingException {
         // Set up
         when(mockApartment.getId()).thenReturn(1);
+        SQLiteBlobConverter spyBlobConverter = Mockito.spy(new SQLiteBlobConverter());
+        ApartmentDeviceDAO spyApartmentDeviceDAO = Mockito.spy(new ApartmentDeviceDAO(mockConnection));
+        spyApartmentDeviceDAO.blobConverter = spyBlobConverter;
 
         doReturn(null).when(spyApartmentDeviceDAO).findByPrimaryKey(apartmentDevice.getId());
 
@@ -68,31 +74,42 @@ public class ApartmentDeviceDAOTest {
         // Verify
         verify(mockPreparedStatement).setString(1, apartmentDevice.getName());
         verify(mockPreparedStatement).setBoolean(2, apartmentDevice.getConsumesEnergy());
-        // verify(mockPreparedStatement).setBinaryStream(3,  new ByteArrayInputStream(new SQLiteBlobConverter().toBytes(apartmentDevice.getEnergyCurve())), new SQLiteBlobConverter().toBytes(apartmentDevice.getEnergyCurve()).length);
+        verify(spyBlobConverter).setBlob(mockPreparedStatement, 3, apartmentDevice.getEnergyCurve());
         verify(mockPreparedStatement).setInt(4, apartmentDevice.getApartment().getId());
         verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, apartmentDevice.getId());
     }
 
     @Test
-    public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
-        // Set up
-        when(mockApartment.getId()).thenReturn(1);
-        doReturn(apartmentDevice).when(spyApartmentDeviceDAO).findByPrimaryKey(apartmentDevice.getId());
+    public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException, JsonProcessingException {
+        ApartmentDevice mockApartmentDevice = Mockito.mock(ApartmentDevice.class);
+        Apartment mockApartment = Mockito.mock(Apartment.class);
+        SQLiteBlobConverter spyBlobConverter = Mockito.spy(new SQLiteBlobConverter());
+        ApartmentDeviceDAO spyApartmentDeviceDAO = Mockito.spy(new ApartmentDeviceDAO(mockConnection));
+        spyApartmentDeviceDAO.blobConverter = spyBlobConverter;
 
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+        Mockito.doReturn(mockApartmentDevice).when(spyApartmentDeviceDAO).findByPrimaryKey(1);
+        Mockito.when(mockApartmentDevice.getId()).thenReturn(1);
+        Mockito.when(mockApartmentDevice.getName()).thenReturn("Test Device");
+        Mockito.when(mockApartmentDevice.getConsumesEnergy()).thenReturn(true);
+        Mockito.when(mockApartmentDevice.getApartment()).thenReturn(mockApartment);
+        Mockito.when(mockApartment.getId()).thenReturn(1);
 
-        // Execute
-        spyApartmentDeviceDAO.saveOrUpdate(apartmentDevice);
+        EnergyCurve mockEnergyCurve = new EnergyCurve();
+        Mockito.when(mockApartmentDevice.getEnergyCurve()).thenReturn(mockEnergyCurve);
 
-        // Verify
-        verify(mockPreparedStatement).setInt(1, apartmentDevice.getApartment().getId());
-        verify(mockPreparedStatement).setString(2, apartmentDevice.getName());
-        verify(mockPreparedStatement).setBoolean(3, apartmentDevice.getConsumesEnergy());
-        // verify(mockPreparedStatement).setObject(4, apartmentDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
-        verify(mockPreparedStatement).setInt(5, apartmentDevice.getId());
-        verify(mockPreparedStatement).executeUpdate();
+        Mockito.when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockPreparedStatement);
+        Mockito.when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        boolean result = spyApartmentDeviceDAO.saveOrUpdate(mockApartmentDevice);
+
+        assertTrue(result);
+        Mockito.verify(mockPreparedStatement).setString(1, "Test Device");
+        Mockito.verify(mockPreparedStatement).setBoolean(2, true);
+        Mockito.verify(spyBlobConverter).setBlob(mockPreparedStatement, 3, mockEnergyCurve);
+        Mockito.verify(mockPreparedStatement).setInt(4, 1);
+        Mockito.verify(mockPreparedStatement).setInt(5, 1);
+        Mockito.verify(mockPreparedStatement).executeUpdate();
     }
 
     @Test

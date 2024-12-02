@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.*;
+import com.example.demo.model.generation.GenerateData;
+import com.example.demo.model.generation.TimeRange;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.CommunityDAO;
@@ -11,37 +13,41 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/communities")
 public class CommunityController {
 
-    private BuildingController buildingController;
-
     @PostMapping
     public ResponseEntity<Community> addCommunity(HttpServletRequest req, @RequestBody Community community) {
         Credentials creds = AuthUtility.getRequestCredential(req);
-        if (creds == null || creds instanceof User) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (creds == null || creds instanceof User)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         if (community == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
         community.setAdmin((Admin) creds);
-        if(dao.saveOrUpdate(community)) {
+        if (dao.saveOrUpdate(community)) {
             return new ResponseEntity<>(community, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @GetMapping
     public ResponseEntity<List<Community>> getAllCommunities(HttpServletRequest req) {
         Credentials creds = AuthUtility.getRequestCredential(req);
-        if (creds == null || creds instanceof User) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        Admin admin= (Admin) creds;
+        if (creds == null || creds instanceof User)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        Admin admin = (Admin) creds;
         CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
-        List<Community> communities = dao.findAll().stream().filter(community -> community.getAdmin().getId() == admin.getId()).toList();
+        List<Community> communities = dao.findAll().stream()
+                .filter(community -> community.getAdmin().getId() == admin.getId()).toList();
         if (communities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -50,7 +56,7 @@ public class CommunityController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Community> getCommunity(HttpServletRequest req, @PathVariable int id) {
-        if(AuthUtility.isAuthorized(req)) {
+        if (AuthUtility.isAuthorized(req)) {
             CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
             Community community = dao.findByPrimaryKey(id);
             if (community == null) {
@@ -62,15 +68,16 @@ public class CommunityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Community> updateCommunity(HttpServletRequest req, @PathVariable int id, @RequestBody Community community) {
-        if(AuthUtility.isAuthorized(req)) {
+    public ResponseEntity<Community> updateCommunity(HttpServletRequest req, @PathVariable int id,
+            @RequestBody Community community) {
+        if (AuthUtility.isAuthorized(req)) {
             CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
             Community oldCommunity = dao.findByPrimaryKey(id);
             if (oldCommunity == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             oldCommunity.setName(community.getName());
-            if(dao.saveOrUpdate(oldCommunity)) {
+            if (dao.saveOrUpdate(oldCommunity)) {
                 return new ResponseEntity<>(oldCommunity, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -78,17 +85,17 @@ public class CommunityController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-
     @PostMapping("/{commId}/buildings/{buildingId}")
-    public ResponseEntity<Community> addBuilding(HttpServletRequest req, @PathVariable int commId, @PathVariable int buildingId, @RequestBody int id) {
-        if(AuthUtility.isAuthorized(req)) {
+    public ResponseEntity<Community> addBuilding(HttpServletRequest req, @PathVariable int commId,
+            @PathVariable int buildingId, @RequestBody int id) {
+        if (AuthUtility.isAuthorized(req)) {
             CommunityDAO communityDAO = DBManager.getInstance().getCommunityDAO();
             BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
             Community community = communityDAO.findByPrimaryKey(commId);
             Building building = buildingDAO.findByPrimaryKey(buildingId);
             if (community != null && building != null) {
                 building.setCommunity(community);
-                if(buildingDAO.saveOrUpdate(building))
+                if (buildingDAO.saveOrUpdate(building))
                     return new ResponseEntity<>(community, HttpStatus.CREATED);
                 else
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -99,8 +106,8 @@ public class CommunityController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Community> deleteCommunity(HttpServletRequest req,@PathVariable int id) {
-        if(AuthUtility.isAuthorized(req)) {
+    public ResponseEntity<Community> deleteCommunity(HttpServletRequest req, @PathVariable int id) {
+        if (AuthUtility.isAuthorized(req)) {
             CommunityDAO dao = DBManager.getInstance().getCommunityDAO();
             Community community = dao.findByPrimaryKey(id);
             if (community == null) {
@@ -114,7 +121,7 @@ public class CommunityController {
                     .toList();
             BuildingController buildingController = new BuildingController();
             for (Building building : buildings) {
-                if(buildingController.deleteBuilding(req, building.getId()).getStatusCode() != HttpStatus.OK)
+                if (buildingController.deleteBuilding(req, building.getId()).getStatusCode() != HttpStatus.OK)
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             return new ResponseEntity<>(community, HttpStatus.OK);
@@ -123,12 +130,13 @@ public class CommunityController {
     }
 
     @DeleteMapping("/{commId}/buildings/{buildingId}")
-    public ResponseEntity<Community> removeBuilding(HttpServletRequest req, @PathVariable int commId, @PathVariable int buildingId) {
-        if(AuthUtility.isAuthorized(req)) {
+    public ResponseEntity<Community> removeBuilding(HttpServletRequest req, @PathVariable int commId,
+            @PathVariable int buildingId) {
+        if (AuthUtility.isAuthorized(req)) {
             BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
             Building building = buildingDAO.findByPrimaryKey(buildingId);
             if (building != null && building.getCommunity().getId() == commId) {
-                if(!buildingDAO.delete(building))
+                if (!buildingDAO.delete(building))
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 return new ResponseEntity<>(building.getCommunity(), HttpStatus.OK);
             }
@@ -139,7 +147,7 @@ public class CommunityController {
 
     @GetMapping("/{commId}/buildings")
     public ResponseEntity<List<Building>> getBuildings(HttpServletRequest req, @PathVariable int commId) {
-        if(AuthUtility.isAuthorized(req)) {
+        if (AuthUtility.isAuthorized(req)) {
             BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
             List<Building> buildings = buildingDAO.findAll().stream()
                     .filter(building -> building.getCommunity().getId() == commId)
@@ -182,6 +190,51 @@ public class CommunityController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    @PostMapping("/{commId}/generate-measurements")
+    public ResponseEntity<List<String>> generateMeasurements(HttpServletRequest req, @PathVariable int commId,
+            @RequestBody TimeRange timeRange) {
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(commId);
+        if (community == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
+        EnergyReport report = new EnergyReport();
+        report.setStartDate(timeRange.getStart());
+        report.setEndDate(timeRange.getEnd());
+        DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
+        List<String> deviceList = GenerateData.generateDataCommunity(buildings, timeRange.getStart(), timeRange.getEnd(), report.getId());
+        if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "C"+commId)){
+            return new ResponseEntity<>(deviceList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}/deviceCount")
+    public ResponseEntity<Integer> deviceCount(HttpServletRequest req, @PathVariable int id) {
+        if (!AuthUtility.isAuthorized(req))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(id);
+        if (community == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
+        int totalDeviceCount = 0;
+
+        for (Building building : buildings) {
+            List<BuildingDevice> buildingDevices = DBManager.getInstance().getBuildingDeviceDAO().findByBuilding(building);
+            totalDeviceCount += buildingDevices.size();
+            List<Apartment> apartments = DBManager.getInstance().getApartmentDAO().findByBuilding(building);
+            for (Apartment apartment : apartments) {
+                List<ApartmentDevice> devices = DBManager.getInstance().getApartmentDeviceDAO().findByApartment(apartment);
+                totalDeviceCount += devices.size();
+            }
+        }
+        return new ResponseEntity<>(totalDeviceCount, HttpStatus.OK);
+    }
+
     public CommunityStats extractStats(Community community) {
         BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
         List<Building> buildings = buildingDAO.findAll().stream()
@@ -194,8 +247,8 @@ public class CommunityController {
 
         ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
 
-        int energyProduction = 0;
-        int energyConsumption = 0;
+        double energyProduction = 0;
+        double energyConsumption = 0;
 
         for (Building building : buildings) {
             energyProduction += BuildingController.getEnergyProduction(building.getId());
@@ -205,6 +258,15 @@ public class CommunityController {
                     .toList();
             totApartments += tempApartments.size();
             apartments.add(tempApartments);
+        }
+
+        for (List<Apartment> apartmentList : apartments)
+        {
+            for (Apartment apartment : apartmentList)
+            {
+                energyConsumption += ApartmentController.getEnergyConsumption(apartment.getId());
+                energyProduction += ApartmentController.getEnergyProduction(apartment.getId());
+            }
         }
 
         int totMembers = apartments.stream()
@@ -219,8 +281,7 @@ public class CommunityController {
                 totApartments,
                 totMembers,
                 energyProduction,
-                energyConsumption
-        );
+                energyConsumption);
     }
 
 }

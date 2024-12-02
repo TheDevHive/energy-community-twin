@@ -10,9 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/buildingDevices")
@@ -34,7 +31,6 @@ public class BuildingDeviceController {
         if(device == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        System.out.println(device.toString());
         if(DBManager.getInstance().getBuildingDeviceDAO().saveOrUpdate(device)){
             if(TS_DBManager.getInstance().getTS_DeviceDAO().saveOrUpdate(new TS_Device(0, "B" + Integer.toString(device.getId())))){
                 return new ResponseEntity<>(device, HttpStatus.CREATED);

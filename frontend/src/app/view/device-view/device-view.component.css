@@ -6,19 +6,6 @@
     padding-bottom: 5%;
   }
   
-  /* Icons: Make them slightly wider */
-  .stats-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px; /* Wider */
-    height: 60px; /* Taller */
-  }
-  
-  .stats-icon i {
-    font-size: 2rem; /* Icon size adjustment */
-  }
-  
   /* Responsive layout */
   @media (max-width: 768px) {
     .col-lg-4 {

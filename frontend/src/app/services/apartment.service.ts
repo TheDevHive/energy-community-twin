@@ -6,8 +6,9 @@ import { ResponseEntity } from '../models/response-entity';
 import { ApiResponseService } from './api-response.service';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-
+import { TimeRange } from '../models/time_range';
 import { ApartmentStats } from '../models/apartment';
+import { ApartmentDevice } from '../models/apartment_device';
 
 @Injectable({
   providedIn: 'root'
@@ -57,12 +58,29 @@ export class ApartmentService {
     );
   }
 
+  getApartmentDevices(apartmentId: number): Observable<ApartmentDevice[]> {
+    return this.apiResponseService.extractBody(
+      this.http.get<ResponseEntity<ApartmentDevice[]>>(`${this.apiUrl}/${apartmentId}/devices`, {
+        headers: this.auth.getHeaders(),
+        observe: 'response'
+      })
+    );
+  }
+
   getStats(): Observable<ApartmentStats[]> {
     return this.apiResponseService.extractBody(
       this.http.get<ResponseEntity<ApartmentStats[]>>(`${this.apiUrl}/stats`, {
         headers: this.auth.getHeaders(),
         observe: 'response'
       })
+    );
+  }
+
+  generateMeasurements(apartment_id: String, timeRange: TimeRange): Observable<boolean> {
+    return this.http.post<boolean>(
+      `${this.apiUrl}/${apartment_id}/generate-measurements`,
+      timeRange,
+      { headers: this.auth.getHeaders() }
     );
   }
 }

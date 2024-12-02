@@ -19,7 +19,7 @@ public class BuildingDAO {
     }
 
     public boolean saveOrUpdate(Building building) {
-        if(findByPrimaryKey(building.getId()) == null) {
+        if (findByPrimaryKey(building.getId()) == null) {
             String sql = "INSERT INTO building (community_id, address, floors) VALUES (?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, building.getCommunity().getId());
@@ -57,8 +57,9 @@ public class BuildingDAO {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(rs.getInt("community_id"));
-                if(community == null) {
+                Community community = DBManager.getInstance().getCommunityDAO()
+                        .findByPrimaryKey(rs.getInt("community_id"));
+                if (community == null) {
                     return null;
                 }
                 building = new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors"));
@@ -67,6 +68,22 @@ public class BuildingDAO {
             e.printStackTrace();
         }
         return building;
+    }
+
+    public List<Building> findByCommunity(Community community) {
+        String sql = "SELECT * FROM building WHERE community_id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, community.getId());
+            ResultSet rs = pstmt.executeQuery();
+            List<Building> buildings = new ArrayList<>();
+            while (rs.next()) {
+                buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors")));
+            }
+            return buildings;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean delete(Building building) {
@@ -87,8 +104,9 @@ public class BuildingDAO {
             ResultSet rs = pstmt.executeQuery();
             List<Building> buildings = new ArrayList<>();
             while (rs.next()) {
-                Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(rs.getInt("community_id"));
-                if(community == null) {
+                Community community = DBManager.getInstance().getCommunityDAO()
+                        .findByPrimaryKey(rs.getInt("community_id"));
+                if (community == null) {
                     continue;
                 }
                 buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors")));

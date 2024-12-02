@@ -14,8 +14,10 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { ViewChild } from '@angular/core';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/confirmation-dialog.component';
-import { id } from '@swimlane/ngx-datatable';
-import { AlertComponent } from '../../SHARED/alert/alert.component';
+
+import { EnergyReport } from '../../../models/energy-report';
+import { TimeSeriesData } from '../../../models/time-series-data';
+
 
 @Component({
   selector: 'app-communities',
@@ -244,11 +246,11 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   totalEnergyProduction(): number {
-    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyProduction, 0);
+    return Math.round((this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyProduction, 0)) * 100) / 100;
   }
 
   totalEnergyConsumption(): number {
-    return this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyConsumption, 0);
+    return Math.round((this.dataSource.filteredData.reduce((sum, community) => sum + community.stats.energyConsumption, 0)) * 100) / 100;
   }  
   
   totalMembers(): number {
@@ -256,7 +258,7 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(community: Community): number {
-    return community.stats.energyProduction - community.stats.energyConsumption;
+    return Math.round((community.stats.energyProduction - community.stats.energyConsumption) * 100) / 100;
   }
 
   energyDifferenceIcon(community: Community): string {

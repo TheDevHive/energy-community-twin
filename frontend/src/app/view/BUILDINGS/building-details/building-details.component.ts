@@ -207,7 +207,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     
     modalRef.componentInstance.isEdit = true;
     modalRef.componentInstance.isBuildingDevice = true;
-    modalRef.componentInstance.buildingDevice = device;
+    modalRef.componentInstance.device = device;
     modalRef.componentInstance.building = this.building;
 
     modalRef.result.then(
@@ -233,7 +233,6 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
-          console.log(device.id);
           this.deleteDevice(device.id);
         }
       }
@@ -407,14 +406,12 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
     this.apartmentService.deleteApartment(id).subscribe({
       next: () => {
-        console.log(this.apartments+ "nnjn");
         this.apartments = this.apartments.filter(apartment => apartment.id !== id);
         this.apartmentDataSource.data = this.apartments;
         this.loading = false;
         this.alert.setAlertApartments('success', 'Apartment deleted successfully');
       },
       error: (error) => {
-        console.log(error + "erroreeeeeee");
         this.error = error;
         this.loading = false;
         this.alert.setAlertApartments('danger', `Failed to delete apartment: ${error.message}`);
@@ -440,7 +437,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   calculateEnergyDifference(apartment: Apartment): number {
-    return apartment.stats.energyProduction - apartment.stats.energyConsumption;
+    return Math.round((apartment.stats.energyProduction - apartment.stats.energyConsumption) * 100) / 100;
   }
 
   getEnergyClassColor(energyClass: string): string {
@@ -540,10 +537,10 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   navigateToDevice(id: number): void {
-    this.router.navigate(['/devices', id]);
+    this.router.navigate(['/devices', 'B' + id.toString()]);
   }
 
   navigateToApartment(id: number): void {
-    //this.router.navigate(['/apartments', id]);
+    this.router.navigate(['/apartments', id]);
   }
 }

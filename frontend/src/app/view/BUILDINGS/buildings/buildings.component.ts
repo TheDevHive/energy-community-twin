@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BuildingService } from '../../../services/building.service';
 import { Building } from '../../../models/building';
@@ -18,7 +18,10 @@ import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/co
 import { AlertComponent } from '../../SHARED/alert/alert.component';
 import { ActivatedRoute } from '@angular/router';
 
-import { BUILDINGS } from '../../../MOCKS/BUILDINGS';
+import { EnergyReport } from '../../../models/energy-report';
+import { TimeSeriesData } from '../../../models/time-series-data';
+import { BuildingDeviceService } from '../../../services/building-device.service';
+import { ApartmentDeviceService } from '../../../services/apartment-device.service';
 
 @Component({
   selector: 'app-buildings',
@@ -30,6 +33,9 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   loading = false;
   error?: { type: ErrorType; message: string };
 
+  deviceCount!: number;
+
+
   communityId = 0;
   communityName = 'Community Name';
 
@@ -38,6 +44,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
+  reports: EnergyReport[] = [];
 
   constructor(
     private communityService: CommunityService,
@@ -53,6 +61,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const communityID = params.get('id');
+      this.communityId = communityID ? parseInt(communityID!) : 0;
       if (communityID !== null) {
         this.communityId = +communityID;
         this.setCommunityName(+communityID);
@@ -61,6 +70,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
         // Handle error
       }
     });
+    this.loadDeviceCount();
   }
 
   setCommunityName(communityId: number): void {
@@ -203,7 +213,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
           apartments: 0,
           members: 0,
           energyProduction: 0,
-          energyConsumption: 0
+          energyConsumption: 0,
+          energyClass: ''
         };
         this.buildings = [...this.buildings, newBuilding];
         this.dataSource.data = this.buildings;
@@ -269,11 +280,11 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   totalEnergyProduction(): number {
-    return this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyProduction, 0);
+    return Math.round(this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyProduction, 0) * 100) / 100;
   }
 
   totalEnergyConsumption(): number {
-    return this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyConsumption, 0);
+    return Math.round(this.dataSource.filteredData.reduce((sum, building) => sum + building.stats.energyConsumption, 0) * 100) / 100;
   }  
   
   totalMembers(): number {
@@ -285,7 +296,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(building: Building): number {
-    return building.stats.energyProduction - building.stats.energyConsumption;
+    return Math.floor((building.stats.energyProduction - building.stats.energyConsumption) * 100) / 100;
   }
 
   energyDifferenceIcon(building: Building): string {
@@ -328,4 +339,17 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   private compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
+
+  loadDeviceCount() {
+    this.communityService.getDeviceCount(this.communityId).subscribe(
+      (deviceCount: number) => {
+        this.deviceCount = deviceCount;
+      },
+      (error) => {
+        console.error('Errore nel recupero del conteggio dei dispositivi:', error);
+      }
+    );
+  }
+  
+  
 }
