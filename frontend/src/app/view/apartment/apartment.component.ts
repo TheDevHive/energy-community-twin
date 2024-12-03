@@ -227,7 +227,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
   // Utility methods
   getEnergyDeviceIcon(device: ApartmentDevice): string {
-    if (device.consumesEnergy) {
+    if (device.consumesEnergy==0) {
       return 'bi-arrow-down-right text-danger';
     }
     return 'bi-arrow-up-right text-success';

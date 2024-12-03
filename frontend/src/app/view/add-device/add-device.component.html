@@ -23,14 +23,14 @@
 
       <!-- Checkbox for Consumes energy -->
       <div class="checkbox-container">
-        <input 
-          type="checkbox" 
-          id="customCheckbox" 
-          formControlName="consumesEnergy"
-          [checked]="deviceForm.get('consumesEnergy')?.value"
+        <input
+          type="checkbox"
+          id="customCheckbox"
+          (change)="onCheckboxChange($event)"
         />
         <label for="customCheckbox">Consumes energy</label>
       </div>
+      
       
       
     </div>

@@ -239,7 +239,7 @@ public class BuildingController {
     public static double getEnergyProduction(int buildingId) {
         int energyProduction = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
-                .filter(device -> (device.getBuilding().getId() == buildingId && !device.getConsumesEnergy())).toList();
+                .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy()==1)).toList();
         for (BuildingDevice device : devices) {
             int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum()
                     / device.getEnergyCurve().getEnergyCurve().size();
@@ -252,7 +252,7 @@ public class BuildingController {
     public static double getEnergyConsumption(int buildingId) {
         double energyConsumption = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
-                .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy())).toList();
+                .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy()==0)).toList();
         for (BuildingDevice device : devices) {
             int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum()
                     / device.getEnergyCurve().getEnergyCurve().size();

@@ -28,7 +28,7 @@ export class AddDeviceComponent implements OnInit {
     this.deviceForm = this.fb.group({
       id: [''],
       name: ['', [Validators.required, this.noWhitespaceValidator]],
-      consumesEnergy: [false]
+      consumesEnergy: [1]
     });
   }
 
@@ -64,6 +64,7 @@ export class AddDeviceComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log( this.deviceForm.get('consumesEnergy')?.value)
     if (this.deviceForm.valid && !this.loading) {
       this.loading = true;
 
@@ -107,6 +108,7 @@ export class AddDeviceComponent implements OnInit {
     }
   }
 
+
   private markAllControlsAsTouched(): void {
     Object.keys(this.deviceForm.controls).forEach(controlName => {
       this.deviceForm.get(controlName)?.markAsTouched();
@@ -116,4 +118,11 @@ export class AddDeviceComponent implements OnInit {
   dismiss(): void {
     this.activeModal.dismiss();
   }
+
+  
+  onCheckboxChange(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.deviceForm.get('consumesEnergy')?.setValue(isChecked ? 0 : 1);
+  }
 }
+

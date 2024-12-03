@@ -93,7 +93,7 @@ export class DeviceViewComponent {
                 value,
               })
             );
-            this.energySimulator.type = (deviceData.consumesEnergy)? 'Consumption' : 'Production';
+            this.energySimulator.type = (deviceData.consumesEnergy==0)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
           this.deviceLoaded = true;
@@ -121,7 +121,7 @@ export class DeviceViewComponent {
                 value,
               })
             );
-            this.energySimulator.type = (deviceData?.consumesEnergy)? 'Consumption' : 'Production';
+            this.energySimulator.type = (deviceData?.consumesEnergy==0)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
           this.deviceLoaded = true;

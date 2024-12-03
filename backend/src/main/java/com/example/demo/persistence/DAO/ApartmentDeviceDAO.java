@@ -37,8 +37,8 @@ public class ApartmentDeviceDAO {
                     return null;
                 }
                 apartmentDevice = new ApartmentDevice(rs.getInt("id"), rs.getString("name"),
-                        rs.getBoolean("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class),
-                        apartment);
+                        rs.getInt("consumes_energy"), blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class),
+                        apartment, rs.getFloat("wind_sensitivity"), rs.getFloat("light_sensitivity"), rs.getFloat("temperature_sensitivity"), rs.getFloat("precipitation_sensitivity"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,8 +56,8 @@ public class ApartmentDeviceDAO {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 apartmentDevices.add(
-                        new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"),
-                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment));
+                        new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getInt("consumes_energy"),
+                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment, rs.getFloat("wind_sensitivity"), rs.getFloat("light_sensitivity"), rs.getFloat("temperature_sensitivity"), rs.getFloat("precipitation_sensitivity")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,12 +69,16 @@ public class ApartmentDeviceDAO {
 
     public boolean saveOrUpdate(ApartmentDevice apartmentDevice) {
         if (findByPrimaryKey(apartmentDevice.getId()) == null) {
-            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO apartment_device (name, consumes_energy, energy_curve, apartment_id,  wind_sensitivity, light_sensitivity, temperature_sensitivity, precipitation_sensitivity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
-                pstmt.setBoolean(2, apartmentDevice.getConsumesEnergy());
+                pstmt.setInt(2, apartmentDevice.getConsumesEnergy());
                 blobConverter.setBlob(pstmt, 3, apartmentDevice.getEnergyCurve());
                 pstmt.setInt(4, apartmentDevice.getApartment().getId());
+                pstmt.setFloat(5, apartmentDevice.getWindSensitivity());
+                pstmt.setFloat(6, apartmentDevice.getLightSensitivity());
+                pstmt.setFloat(7, apartmentDevice.getTemperatureSensitivity());
+                pstmt.setFloat(8, apartmentDevice.getPrecipitationSensitivity());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -88,13 +92,17 @@ public class ApartmentDeviceDAO {
                 return false;
             }
         } else {
-            String sql = "UPDATE apartment_device SET name = ?, consumes_energy = ?, energy_curve = ?, apartment_id = ? WHERE id = ?";
+            String sql = "UPDATE apartment_device SET name = ?, consumes_energy = ?, energy_curve = ?, apartment_id = ?,  wind_sensitivity = ?, light_sensitivity = ?, temperature_sensitivity = ?, precipitation_sensitivity = ? WHERE id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, apartmentDevice.getName());
-                pstmt.setBoolean(2, apartmentDevice.getConsumesEnergy());
+                pstmt.setInt(2, apartmentDevice.getConsumesEnergy());
                 blobConverter.setBlob(pstmt, 3, apartmentDevice.getEnergyCurve());
                 pstmt.setInt(4, apartmentDevice.getApartment().getId());
-                pstmt.setInt(5, apartmentDevice.getId());
+                pstmt.setFloat(5, apartmentDevice.getWindSensitivity());
+                pstmt.setFloat(6, apartmentDevice.getLightSensitivity());
+                pstmt.setFloat(7, apartmentDevice.getTemperatureSensitivity());
+                pstmt.setFloat(8, apartmentDevice.getPrecipitationSensitivity());
+                pstmt.setInt(9, apartmentDevice.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -131,8 +139,8 @@ public class ApartmentDeviceDAO {
                     continue;
                 }
                 apartmentDevices.add(
-                        new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getBoolean("consumes_energy"),
-                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment));
+                        new ApartmentDevice(rs.getInt("id"), rs.getString("name"), rs.getInt("consumes_energy"),
+                                blobConverter.getBlob(rs, "energy_curve", EnergyCurve.class), apartment, rs.getFloat("wind_sensitivity"), rs.getFloat("light_sensitivity"), rs.getFloat("temperature_sensitivity"), rs.getFloat("precipitation_sensitivity")));
 
             }
             return apartmentDevices;

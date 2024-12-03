@@ -91,9 +91,13 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS building_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
-                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
+                    "consumes_energy INTEGER NOT NULL, " + // Flag for consumption vs. production
                     "building_id INTEGER NOT NULL, "+
                     "energy_curve BLOB, "+
+                    "wind_sensitivity FLOAT NOT NULL, "+
+                    "light_sensitivity FLOAT NOT NULL, "+
+                    "temperature_sensitivity FLOAT NOT NULL, "+
+                    "precipitation_sensitivity FLOAT NOT NULL, "+
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
             statement.execute("CREATE TABLE IF NOT EXISTS apartment ("+
@@ -109,9 +113,13 @@ public class DBManager {
             statement.execute("CREATE TABLE IF NOT EXISTS apartment_device ("+
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     "name VARCHAR NOT NULL, "+
-                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
+                    "consumes_energy INTEGER NOT NULL, " + // Flag for consumption vs. production
                     "apartment_id INTEGER NOT NULL, "+
                     "energy_curve BLOB, "+
+                    "wind_sensitivity FLOAT NOT NULL, "+
+                    "light_sensitivity FLOAT NOT NULL, "+
+                    "temperature_sensitivity FLOAT NOT NULL, "+
+                    "precipitation_sensitivity FLOAT NOT NULL, "+
                     "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
             
             statement.execute("CREATE TABLE IF NOT EXISTS energy_report (" +

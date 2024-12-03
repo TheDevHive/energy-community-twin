@@ -60,7 +60,7 @@ public class GenerateData {
         }
 
         int hours = CalculateDate.dateDifferenceHours(dateEnd, dateStart);
-        int prodOrCons = device.getConsumesEnergy() ? -1 : 1;
+        int prodOrCons = device.getConsumesEnergy()==0 ? -1 : 1;
         for (int i = 0; i < hours; i++) {
             LocalDateTime date = CalculateDate.hoursAdd(dateStart, i);
             double energy = GenerateData.generate(date, date.getHour(),
