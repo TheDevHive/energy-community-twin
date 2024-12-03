@@ -18,6 +18,7 @@ export class AddDeviceComponent implements OnInit {
   @Input() building!: Building;
   @Input() apartment!: Apartment;
   @Input() isBuildingDevice!: boolean;
+  @Input() battery: boolean =false;
   deviceForm: FormGroup;
   loading = false;
 

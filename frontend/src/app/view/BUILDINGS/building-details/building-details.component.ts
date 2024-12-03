@@ -18,6 +18,7 @@ import { ConfirmationDialogComponent } from '../../SHARED/confirmation-dialog/co
 import { CommunityService } from '../../../services/community.service';
 import { AddApartmentComponent } from '../../add-apartment/add-apartment.component';
 import { AddDeviceComponent } from '../../add-device/add-device.component';
+import { ApartmentDevice } from '../../../models/apartment_device';
 
 @Component({
   selector: 'app-building-details',
@@ -39,10 +40,18 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   apartmentColumns: string[] = ['id', 'residents', 'squareFootage', 'energyClass', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
   apartmentDataSource: MatTableDataSource<Apartment>;
 
+  batteries:BuildingDevice[] = [];
+  batteryColumns: string[] = ['id', 'name', 'energy', 'energyClass', 'actions'];
+  batteryDataSource: MatTableDataSource<BuildingDevice>;
+
+
   @ViewChild('devicePaginator') devicePaginator!: MatPaginator;
   @ViewChild('deviceSort') deviceSort!: MatSort;
   @ViewChild('apartmentPaginator') apartmentPaginator!: MatPaginator;
   @ViewChild('apartmentSort') apartmentSort!: MatSort;
+  @ViewChild('batteryPaginator') batteryPaginator!: MatPaginator;
+  @ViewChild('batterySort') batterySort!: MatSort;
+
 
 
   constructor(
@@ -57,9 +66,11 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   ) {
     this.deviceDataSource = new MatTableDataSource();
     this.apartmentDataSource = new MatTableDataSource();
+    this.batteryDataSource = new MatTableDataSource();
   }
 
   ngOnInit(): void {
+    this.alert.clearAlertBuildingDetails();
     this.route.paramMap.subscribe(params => {
       const buildingId = params.get('buildingId');
       if (buildingId) {
@@ -76,12 +87,22 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     // Device table sorting
     this.deviceDataSource.paginator = this.devicePaginator;
     this.deviceDataSource.sort = this.deviceSort;
+    this.batteryDataSource.paginator = this.batteryPaginator;
+    this.batteryDataSource.sort = this.batterySort;
     this.deviceDataSource.sortingDataAccessor = (item: any, property: string) => {
       switch (property) {
         case 'energy': return item.energy;
         case 'energyClass': return item.energyClass;
         default: return item[property];
       }
+    };
+
+    this.batteryDataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'energy': return item.energy;
+        case 'energyClass': return item.energyClass;
+        default: return item[property];
+      };
     };
 
     // Apartment table sorting
@@ -132,12 +153,15 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
     this.buildingService.getDevices(buildingId).subscribe({
       next: (devices) => {
-        this.devices = devices;
-        this.deviceDataSource.data = devices;
+        this.devices=devices.filter(device => device.consumesEnergy!=-1);
+        this.batteries=devices.filter(device => device.consumesEnergy==-1);
+        this.deviceDataSource.data = this.devices;
+        this.batteryDataSource.data = this.batteries;
 
         // Reassign paginator after data is loaded
         setTimeout(() => {
-        this.deviceDataSource.paginator = this.devicePaginator;
+          this.batteryDataSource.paginator = this.devicePaginator;
+          this.deviceDataSource.paginator = this.devicePaginator;
         });
     
         this.loading = false;
@@ -184,6 +208,22 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  openAddBatteryDialog() {
+    const modalRef = this.modalService.open(AddDeviceComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    modalRef.componentInstance.isBuildingDevice = true;
+    modalRef.componentInstance.building = this.building;
+    modalRef.componentInstance.battery=true;
+
+    modalRef.result.then(result => {
+      this.createBattery(result)
+    }
+    );
+  }
+
   openAddDeviceDialog(): void {
     const modalRef = this.modalService.open(AddDeviceComponent, {
       centered: true,
@@ -196,6 +236,27 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     modalRef.result.then(result => {
       this.createDevice(result)
     }
+    );
+  }
+
+  openEditBatteryDialog(device: ApartmentDevice): void {
+    const modalRef = this.modalService.open(AddDeviceComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    
+    modalRef.componentInstance.isEdit = true;
+    modalRef.componentInstance.isBuildingDevice = true;
+    modalRef.componentInstance.device = device;
+    modalRef.componentInstance.building = this.building;
+    modalRef.componentInstance.battery=true;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.editBattery(result);
+        }
+      }
     );
   }
 
@@ -234,6 +295,26 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       (confirmed) => {
         if (confirmed) {
           this.deleteDevice(device.id);
+        }
+      }
+    );
+  }
+
+  openDeleteBatteryDialog(device: ApartmentDevice): void {
+    const modalRef = this.modalService.open(ConfirmationDialogComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.title = 'Delete Device';
+    modalRef.componentInstance.message = `Are you sure you want to delete device "${device.name}"?`;
+    modalRef.componentInstance.confirmText = 'Delete';
+    modalRef.componentInstance.cancelText = 'Cancel';
+    modalRef.componentInstance.color = 'red';
+
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed) {
+          this.deleteBattery(device.id);
         }
       }
     );
@@ -320,6 +401,21 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  private createBattery(deviceData: any): void {
+    deviceData.building = this.building;
+    deviceData.consumesEnergy = -1;
+    this.buildingDeviceService.createDevice(deviceData).subscribe({
+      next: (newDevice: BuildingDevice) => {
+        this.batteryDataSource.data = [...this.batteryDataSource.data, newDevice];
+        this.alert.setAlertBuildingBattery('success', `Device <strong>${newDevice.id}</strong> created successfully`);
+     },
+      error: (error) => {
+        this.error = error;
+        this.alert.setAlertBuildingBattery('danger', `Failed to create device: ${error.message}`);
+      }
+    });
+  }
+
   private editDevice(deviceData: any): void {
     this.buildingDeviceService.updateDevice(deviceData).subscribe({
       next: (updatedDevice) => {
@@ -335,6 +431,20 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private editBattery(deviceData: any): void {
+    this.buildingDeviceService.updateDevice(deviceData).subscribe({
+      next: (updatedDevice) => {
+        this.batteryDataSource.data = this.batteryDataSource.data.map(
+          device => device.id === updatedDevice.id ? updatedDevice : device);
+          this.alert.setAlertBuildingBattery('success', `Device <strong>${updatedDevice.id}</strong> updated successfully`);
+        },
+      error: (error) => {
+        this.error = error;
+        this.alert.setAlertBuildingBattery('danger', `Failed to update device: ${error.message}`);
+      }
+    });
+  }
+
   private deleteDevice(id: number): void {
     this.buildingDeviceService.removeDevice(id).subscribe({
       next: () => {
@@ -344,6 +454,19 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
       error: (error) => {
         this.error = error;
         this.alert.setAlertBuildingDevices('danger', `Failed to delete device: ${error.message}`);
+      }
+    });
+  }
+
+  private deleteBattery(id: number): void {
+    this.buildingDeviceService.removeDevice(id).subscribe({
+      next: () => {
+        this.batteryDataSource.data = [...this.batteryDataSource.data.filter(device => device.id !== id)];
+        this.alert.setAlertBuildingBattery('success', 'Device deleted successfully');
+      },
+      error: (error) => {
+        this.error = error;
+        this.alert.setAlertBuildingBattery('danger', `Failed to delete device: ${error.message}`);
       }
     });
   }
@@ -478,6 +601,31 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         };
       }
     });
+  }
+
+  onBatterySortChange(sort: Sort) {
+    const data2 = this.batteryDataSource.data.slice();
+    if (!sort.active || sort.direction === '') {
+      this.batteryDataSource.data = this.batteries;
+      return;
+    }
+
+    this.batteryDataSource.data = data2.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'energy': return this.compare(this.energy(a), this.energy(b), isAsc);
+        case 'energyClass': return this.compare(this.energy(a), this.energy(b), isAsc);
+        default: {
+          const aValue = a[sort.active as keyof BuildingDevice];
+          const bValue = b[sort.active as keyof BuildingDevice];
+          if (typeof aValue === 'string' || typeof aValue === 'number') {
+            return this.compare(aValue, bValue as string | number, isAsc);
+          }
+          return 0;
+        };
+      }
+    });
+
   }
 
   energy(device: BuildingDevice): number {

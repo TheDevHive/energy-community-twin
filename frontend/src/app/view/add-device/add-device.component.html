@@ -22,7 +22,7 @@
       </div>
 
       <!-- Checkbox for Consumes energy -->
-      <div class="checkbox-container">
+      <div *ngIf="!battery" class="checkbox-container">
         <input
           type="checkbox"
           id="customCheckbox"

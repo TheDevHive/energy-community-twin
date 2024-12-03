@@ -28,6 +28,25 @@
     <button type="button" class="btn-close" (click)="alert.alertDevice.show=false" aria-label="Close"></button>
 </div>
 
+<!-- Alert Page Apartment Battery -->
+<div *ngIf="alert.alertApartmentBattery.show && page == 'ApartmentBattery'" [ngClass]="['alert', 'alert-' + alert.alertApartmentBattery.type, 'alert-dismissible', 'fade', 'show']" role="alert">
+    <div [innerHTML]="alert.alertApartmentBattery.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertApartmentBattery.show=false" aria-label="Close"></button>
+</div>
+
+
+<!-- Alert Page Apartment Device -->
+<div *ngIf="alert.alertApartmentDevice.show && page == 'ApartmentDevice'" [ngClass]="['alert', 'alert-' + alert.alertApartmentDevice.type, 'alert-dismissible', 'fade', 'show']" role="alert">
+    <div [innerHTML]="alert.alertApartmentDevice.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertApartmentDevice.show=false" aria-label="Close"></button>
+</div>
+
+<!-- Alert Page Building Battery -->
+<div *ngIf="alert.alertBuildingBattery.show && page == 'BuildingBattery'" [ngClass]="['alert', 'alert-' + alert.alertBuildingBattery.type, 'alert-dismissible', 'fade', 'show']" role="alert">
+    <div [innerHTML]="alert.alertBuildingBattery.message"></div>
+    <button type="button" class="btn-close" (click)="alert.alertBuildingBattery.show=false" aria-label="Close"></button>
+</div>
+
 <!-- Alert New Simulation -->
 <div *ngIf="page == 'Reports' && alert.alertNewSimulation.show" 
      [ngClass]="['alert', 'alert-' + alert.alertNewSimulation.type, 'alert-dismissible', 'fade', 'show']" 
