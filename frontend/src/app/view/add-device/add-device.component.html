@@ -26,6 +26,7 @@
         <input
           type="checkbox"
           id="customCheckbox"
+          [checked]="deviceForm.get('consumesEnergy')?.value==0"
           (change)="onCheckboxChange($event)"
         />
         <label for="customCheckbox">Consumes energy</label>

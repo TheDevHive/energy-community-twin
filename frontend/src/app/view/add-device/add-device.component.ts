@@ -28,7 +28,7 @@ export class AddDeviceComponent implements OnInit {
     this.deviceForm = this.fb.group({
       id: [''],
       name: ['', [Validators.required, this.noWhitespaceValidator]],
-      consumesEnergy: [1]
+      consumesEnergy: [1, Validators.required],
     });
   }
 
