@@ -4,6 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+**/MailSettings.java
+
 ### STS ###
 .apt_generated
 .classpath
