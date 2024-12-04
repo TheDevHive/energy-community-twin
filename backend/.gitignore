@@ -36,4 +36,4 @@ build/
 *.db
 
 ### Exclude Email Settings ###
-backend/src/main/java/com/example/demo/mail/MailSettings.java
+src/main/java/com/example/demo/mail/MailSettings.java
