@@ -45,6 +45,7 @@ import { EnergyReportsComponent } from './view/SHARED/energy-reports/energy-repo
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulation.component';
 import { RegisterComponent } from './view/register/register.component';
+import { ChangePasswordComponent } from './view/change-password/change-password.component';
 
 
 @NgModule({
@@ -71,6 +72,7 @@ import { RegisterComponent } from './view/register/register.component';
     EnergyReportsComponent,
     AddSimulationComponent,
     RegisterComponent,
+    ChangePasswordComponent,
   ],
   imports: [
     BrowserModule,

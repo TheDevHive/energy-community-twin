@@ -12,29 +12,33 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class MailController
 {
-    @PostMapping
-    public ResponseEntity<Boolean> requestAuthCode(@RequestBody String mail)
+    @PostMapping("/{isRegister}")
+    public ResponseEntity<Boolean> requestAuthCode(@RequestBody String mail, @PathVariable boolean isRegister)
     {
         if (mail == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         AdminDAO adminDAO = DBManager.getInstance().getAdminDAO();
-        if (adminDAO.findByEmail(mail) != null)
+        if (adminDAO.findByEmail(mail) != null && isRegister)
             return new ResponseEntity<>(HttpStatus.CONFLICT);
+        else if (adminDAO.findByEmail(mail) == null && !isRegister)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         boolean status = MailManager.getInstance().setAuthCode(mail);
         return new ResponseEntity<>(status, (status? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    @PostMapping("/try/{authCode}")
-    public ResponseEntity<String> tryAuthCode(@RequestBody String mail, @PathVariable Integer authCode)
+    @PostMapping("/try/{authCode}/{isRegister}")
+    public ResponseEntity<String> tryAuthCode(@RequestBody String mail, @PathVariable Integer authCode, @PathVariable boolean isRegister)
     {
         if (authCode == null || mail == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         AdminDAO adminDAO = DBManager.getInstance().getAdminDAO();
-        if (adminDAO.findByEmail(mail) != null)
+        if (adminDAO.findByEmail(mail) != null && isRegister)
             return new ResponseEntity<>(HttpStatus.CONFLICT);
+        else if (adminDAO.findByEmail(mail) == null && !isRegister)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         String outcome = MailManager.getInstance().tryAuthCode(mail, authCode);
         return new ResponseEntity<>(outcome, HttpStatus.OK);

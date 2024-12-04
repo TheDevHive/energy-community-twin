@@ -24,4 +24,10 @@ export class AdminService {
       observe: 'body'
     });
   }
+
+  changePassword(credentials: Credentials): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/changePass`, credentials, {
+      observe: 'body'
+    });
+  }
 }

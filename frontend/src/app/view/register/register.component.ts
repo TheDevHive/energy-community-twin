@@ -70,20 +70,21 @@ export class RegisterComponent {
         password: password,
       };
   
-      this.mailService.requestAuthCode(email).subscribe({
+      this.mailService.requestAuthCode(email, true).subscribe({
         next: (response: boolean) => {
           if (response) {
             this.authCodeSended = true;
-            this.registerForm.reset(); // Pulisce il modulo
+            this.registerForm.reset();
+            this.showMessage('Verification code sent successfully.', 'success');
           } else {
-            console.log('Internal Server Error');
+            
           }
         },
         error: (error) => {
           if (error.status === 400) {
             this.showMessage('Email is missing or invalid.', 'danger');
           } else if (error.status === 409) {
-            this.showMessage('Conflict: Email already exists.', 'danger');
+            this.showMessage('This Email is already associated to an account.', 'danger');
           } else {
             this.showMessage('An unexpected error occurred.', 'danger');
           }
@@ -92,13 +93,11 @@ export class RegisterComponent {
     }
   }
   
-
   resendAuthCode() {
-    this.mailService.requestAuthCode(this.credentials.email).subscribe({
+    this.mailService.requestAuthCode(this.credentials.email, true).subscribe({
       next: (response: boolean) => {
-        if (response) {
-          console.log('Auth code resent successfully');
-        }
+        if (response)
+          this.showMessage('Verification code sent successfully.', 'success');
       },
       error: (error) => {
         console.error('Failed to resend auth code:', error);
@@ -111,17 +110,17 @@ export class RegisterComponent {
     const authCodeString = Object.values(authCodeObject).join('');
     
     if (authCodeString.length < 5) {
-      console.log('Incomplete verification code');
+      
       this.showMessage('Please enter all 5 digits of the verification code.', 'danger');
       return;
     }
   
     const authCode = parseInt(authCodeString, 10);
     
-    console.log('Auth Code as Integer:', authCode);
-    console.log(this.credentials.email);
     
-    this.mailService.tryAuthCode(this.credentials.email, authCode).subscribe({
+    
+    
+    this.mailService.tryAuthCode(this.credentials.email, authCode, true).subscribe({
       next: (response: string) => {
         if (response) {
           switch (response) {
@@ -131,7 +130,7 @@ export class RegisterComponent {
   
             case 'not_requested':
               console.error('Verification code not requested for this email.');
-              this.showMessage('Verification code not requested. Please register again.', 'danger');
+              this.showMessage('Verification code not requested. Please request one.', 'danger');
               break;
   
             case 'removed':
@@ -157,17 +156,14 @@ export class RegisterComponent {
       error: (error) => {
         switch (error.status) {
           case 400:
-            console.error('Bad Request: Email or Authentication Code are missing.');
             this.showMessage('Email or Authentication Code are missing.', 'danger');
             break;
   
           case 409:
-            console.error('Conflict: Email already registered.');
             this.showMessage('This email is already registered.', 'danger');
             break;
   
           default:
-            console.error('Unexpected error:', error);
             this.showMessage('An unexpected error occurred. Please try again.', 'danger');
             break;
         }
@@ -179,9 +175,7 @@ export class RegisterComponent {
   registerAdmin() {
     this.adminService.register(this.credentials).subscribe({
       next: (outcome: boolean) => {
-        console.log('Registration successful.');
         this.showMessage('Registration successful! Redirecting to login...', 'success');
-        
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);

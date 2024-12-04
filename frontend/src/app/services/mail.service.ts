@@ -19,21 +19,17 @@ export class MailService {
     private auth : AuthService
   ) { }
 
-  requestAuthCode(mail: string): Observable<boolean> {
-    return this.apiResponseService.extractBody(
-      this.http.post<ResponseEntity<boolean>>(`${this.apiUrl}`, mail, {
-        observe: 'response', // Mantiene l'osservazione della risposta
-      })
-    );
-  }
-  
-  tryAuthCode(mail: string, authCode: number): Observable<string> {
-    return this.http.post(`${this.apiUrl}/try/${authCode}`, mail, {
-      observe: 'body', // Ensures only the body of the response is returned
-      responseType: 'text' // Specifies the response type as plain text
+  requestAuthCode(mail: string, isRegister: boolean): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/${isRegister}`, mail, {
+      observe: 'body',
     });
   }
   
-
+  tryAuthCode(mail: string, authCode: number, isRegister: boolean): Observable<string> {
+    return this.http.post(`${this.apiUrl}/try/${authCode}/${isRegister}`, mail, {
+      observe: 'body',
+      responseType: 'text'
+    });
+  }
   
 }

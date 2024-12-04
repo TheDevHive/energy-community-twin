@@ -68,7 +68,7 @@ describe('RegisterComponent', () => {
     component.credentials = { email: 'test@example.com', password: 'password123' };
     component.tryAuthCode();
 
-    expect(mailService.tryAuthCode).toHaveBeenCalledWith('test@example.com', 12345);
+    expect(mailService.tryAuthCode).toHaveBeenCalledWith('test@example.com', 12345, true);
     expect(adminService.register).toHaveBeenCalled();
   });
 
