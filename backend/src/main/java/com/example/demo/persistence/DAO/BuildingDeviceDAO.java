@@ -17,7 +17,7 @@ import java.util.List;
 
 public class BuildingDeviceDAO {
     Connection connection;
-    SQLiteBlobConverter blobConverter = new SQLiteBlobConverter();
+    public SQLiteBlobConverter blobConverter = new SQLiteBlobConverter();
 
     public BuildingDeviceDAO(Connection connection) {
         this.connection = connection;

@@ -4,6 +4,7 @@ import com.example.demo.model.*;
 import com.example.demo.persistence.DAO.*;
 import com.example.demo.persistence.DBManager;
 import com.example.demo.utility.SQLiteBlobConverter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -48,9 +49,13 @@ public class BuildingDeviceDAOTest{
     }
 
     @Test
-    public void testSaveOrUpdate_InsertNewApartment() throws SQLException {
+    public void testSaveOrUpdate_InsertNewBuildingDevice() throws SQLException, JsonProcessingException {
         // Set up
         when(mockBuilding.getId()).thenReturn(1);
+        SQLiteBlobConverter spyBlobConverter = Mockito.spy(new SQLiteBlobConverter());
+        BuildingDeviceDAO spyBuildingDeviceDAO = Mockito.spy(new BuildingDeviceDAO(mockConnection));
+        spyBuildingDeviceDAO.blobConverter = spyBlobConverter;
+
 
         doReturn(null).when(spyBuildingDeviceDAO).findByPrimaryKey(buildingDevice.getId());
 
@@ -66,7 +71,7 @@ public class BuildingDeviceDAOTest{
         // Assert
         verify(mockPreparedStatement).setString(1, buildingDevice.getName());
         verify(mockPreparedStatement).setInt(2, buildingDevice.getConsumesEnergy());
-        //verify(mockPreparedStatement).setObject(3, buildingDevice.getEnergyCurve()); // TODO: aggiustare con le classi giuste
+        verify(spyBlobConverter).setBlob(mockPreparedStatement, 3, buildingDevice.getEnergyCurve());
         verify(mockPreparedStatement).setInt(4, buildingDevice.getBuilding().getId());
         verify(mockPreparedStatement).setFloat(5, buildingDevice.getWindSensitivity());
         verify(mockPreparedStatement).setFloat(6, buildingDevice.getLightSensitivity());
@@ -77,29 +82,46 @@ public class BuildingDeviceDAOTest{
     }
 
     @Test
-    public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
+    public void testSaveOrUpdate_UpdateExistingBuildingDevice() throws SQLException, JsonProcessingException {
         // Set up
-        when(mockBuilding.getId()).thenReturn(1);
+        BuildingDevice mockBuildingDevice= Mockito.mock(BuildingDevice.class);
+        Building mockBuilding = Mockito.mock(Building.class);
+        SQLiteBlobConverter spyBlobConverter = Mockito.spy(new SQLiteBlobConverter());
+        BuildingDeviceDAO spyBuildingDeviceDAO = Mockito.spy(new BuildingDeviceDAO(mockConnection));
+        spyBuildingDeviceDAO.blobConverter = spyBlobConverter;
 
-        doReturn(buildingDevice).when(spyBuildingDeviceDAO).findByPrimaryKey(buildingDevice.getId());
+        Mockito.doReturn(mockBuildingDevice).when(spyBuildingDeviceDAO).findByPrimaryKey(1);
+        Mockito.when(mockBuildingDevice.getId()).thenReturn(1);
+        Mockito.when(mockBuildingDevice.getName()).thenReturn("Test Device");
+        Mockito.when(mockBuildingDevice.getConsumesEnergy()).thenReturn(0);
+        Mockito.when(mockBuildingDevice.getBuilding()).thenReturn(mockBuilding);
+        Mockito.when(mockBuildingDevice.getId()).thenReturn(1);
+        Mockito.when(mockBuildingDevice.getWindSensitivity()).thenReturn(1.0f);
+        Mockito.when(mockBuildingDevice.getLightSensitivity()).thenReturn(1.0f);
+        Mockito.when(mockBuildingDevice.getTemperatureSensitivity()).thenReturn(1.0f);
+        Mockito.when(mockBuildingDevice.getPrecipitationSensitivity()).thenReturn(1.0f);
 
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+        EnergyCurve mockEnergyCurve = new EnergyCurve();
+        Mockito.when(mockBuildingDevice.getEnergyCurve()).thenReturn(mockEnergyCurve);
+
+        Mockito.when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockPreparedStatement);
+        Mockito.when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
         // Execute
-        spyBuildingDeviceDAO.saveOrUpdate(buildingDevice);
+        boolean result=spyBuildingDeviceDAO.saveOrUpdate(mockBuildingDevice);
 
         // Assert
-        verify(mockPreparedStatement).setInt(1, buildingDevice.getBuilding().getId());
-        verify(mockPreparedStatement).setString(2, buildingDevice.getName());
-        verify(mockPreparedStatement).setInt(3, buildingDevice.getConsumesEnergy());
-        //verify(mockPreparedStatement).setObject(4, buildingDevice.getEnergyCurve()); // TODO: vedi sopra
-        verify(mockPreparedStatement).setFloat(5, buildingDevice.getWindSensitivity());
-        verify(mockPreparedStatement).setFloat(6, buildingDevice.getLightSensitivity());
-        verify(mockPreparedStatement).setFloat(7, buildingDevice.getTemperatureSensitivity());
-        verify(mockPreparedStatement).setFloat(8, buildingDevice.getPrecipitationSensitivity());
-        verify(mockPreparedStatement).setInt(9, buildingDevice.getId());
-        verify(mockPreparedStatement).executeUpdate();
+        assertTrue(result);
+        Mockito.verify(mockPreparedStatement).setInt(1, 0);
+        Mockito.verify(mockPreparedStatement).setString(2, "Test Device");
+        Mockito.verify(mockPreparedStatement).setInt(3, 0);
+        Mockito.verify(spyBlobConverter).setBlob(mockPreparedStatement, 4, mockEnergyCurve);
+        Mockito.verify(mockPreparedStatement).setFloat(5, 1.0f);
+        Mockito.verify(mockPreparedStatement).setFloat(6, 1.0f);
+        Mockito.verify(mockPreparedStatement).setFloat(7, 1.0f);
+        Mockito.verify(mockPreparedStatement).setFloat(8, 1.0f);
+        Mockito.verify(mockPreparedStatement).setInt(9, 1);
+        Mockito.verify(mockPreparedStatement).executeUpdate();
     }
 
     @Test
