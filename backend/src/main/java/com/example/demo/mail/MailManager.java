@@ -101,4 +101,14 @@ public class MailManager
             session = null;
         }
     }
+
+    public Map<String, Pair<Integer, Integer>> getAuthCodes()
+    {
+        return this.authCodes;
+    }
+
+    public Session getSession()
+    {
+        return session;
+    }
 }
