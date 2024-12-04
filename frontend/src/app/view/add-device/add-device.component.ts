@@ -19,6 +19,7 @@ export class AddDeviceComponent implements OnInit {
   @Input() apartment!: Apartment;
   @Input() isBuildingDevice!: boolean;
   @Input() battery: boolean =false;
+  energy_value: number = 50;
   deviceForm: FormGroup;
   loading = false;
 
@@ -30,6 +31,7 @@ export class AddDeviceComponent implements OnInit {
       id: [''],
       name: ['', [Validators.required, this.noWhitespaceValidator]],
       consumesEnergy: [1, Validators.required],
+      capacity: [0, Validators.required],
     });
   }
 
@@ -42,7 +44,8 @@ export class AddDeviceComponent implements OnInit {
           id: this.device.id,
           name: this.device.name,
           consumesEnergy: this.device.consumesEnergy, // Set the correct value for the checkbox
-          building: this.building
+          building: this.building,
+          capacity: this.device.energy_curve.energyCurve[0]
         });
       }
       else
@@ -51,7 +54,8 @@ export class AddDeviceComponent implements OnInit {
           id: this.device.id,
           name: this.device.name,
           consumesEnergy: this.device.consumesEnergy, // Set the correct value for the checkbox
-          apartment: this.apartment
+          apartment: this.apartment,
+          capacity: this.device.energy_curve.energyCurve[0]
         });
       }
     }
@@ -65,12 +69,15 @@ export class AddDeviceComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log( this.deviceForm.get('consumesEnergy')?.value)
     if (this.deviceForm.valid && !this.loading) {
       this.loading = true;
-
+      if(this.battery){
+        this.energy_value = this.deviceForm.get('capacity')?.value;
+        if(this.isEdit){
+          this.device.energy_curve.energyCurve= Array(24).fill(this.energy_value);
+        }
+      }
       if (this.isBuildingDevice) {
-
         const bDevice: BuildingDevice = {
           ...this.device,
           id: this.isEdit && this.device ? this.device.id : 0,
@@ -79,7 +86,7 @@ export class AddDeviceComponent implements OnInit {
           energy_curve: this.isEdit && this.device?.energy_curve
             ? this.device.energy_curve
             : {
-                energyCurve: Array(24).fill(50)
+                energyCurve: Array(24).fill(this.energy_value)
               },
           building: this.building
         };
@@ -96,7 +103,7 @@ export class AddDeviceComponent implements OnInit {
           energy_curve: this.isEdit && this.device?.energy_curve
             ? this.device.energy_curve
             : {
-                energyCurve: Array(24).fill(50)
+                energyCurve: Array(24).fill(this.energy_value)
               },
           apartment: this.apartment
         };

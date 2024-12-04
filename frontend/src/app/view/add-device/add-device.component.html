@@ -21,6 +21,21 @@
         </div>
       </div>
 
+      <div *ngIf="battery" class="mb-3">
+        <label for="capacity" class="form-label">Maximum Capacity</label>
+        <input
+          type="number"
+          class="form-control"
+          id="capacity"
+          formControlName="capacity"
+          placeholder="Enter battery capacity"
+          [ngClass]="{ 'is-invalid': deviceForm.get('capacity')?.invalid && deviceForm.get('capacity')?.touched }"
+        />
+        <div class="invalid-feedback" *ngIf="deviceForm.get('capacity')?.invalid && deviceForm.get('capacity')?.touched">
+          Capacity is mandatory
+        </div>
+      </div>
+
       <!-- Checkbox for Consumes energy -->
       <div *ngIf="!battery" class="checkbox-container">
         <input
@@ -30,10 +45,7 @@
           (change)="onCheckboxChange($event)"
         />
         <label for="customCheckbox">Consumes energy</label>
-      </div>
-      
-      
-      
+      </div>  
     </div>
   
     <div class="modal-footer">

@@ -432,14 +432,20 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
   energyClass(device: ApartmentDevice): string {
     let energy = this.energy(device);
-    if (energy < 1000) {
-      return 'A';
-    } else if (energy < 5000) {
-      return 'B';
-    } else if (energy < 10000) {
+    if(device.consumesEnergy==0)
+      energy=-energy;
+    if(energy<0){
+      return 'F'
+    }else if(energy<500){
+      return 'E';
+    } else if (energy < 1000) {
+      return 'D';
+    } else if (energy < 1500) {
       return 'C';
-    }
-    return 'D';
+    } else if (energy < 2000) {
+      return 'B';
+    } 
+    return 'A';
   }
 
 
