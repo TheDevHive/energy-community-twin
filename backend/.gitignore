@@ -34,3 +34,6 @@ build/
 
 ### Exclude DB File ###
 *.db
+
+### Exclude Email Settings ###
+backend/src/main/java/com/example/demo/mail/MailSettings.java
