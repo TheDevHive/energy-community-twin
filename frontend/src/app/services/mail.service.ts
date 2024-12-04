@@ -28,11 +28,12 @@ export class MailService {
   }
   
   tryAuthCode(mail: string, authCode: number): Observable<string> {
-    return this.apiResponseService.extractBody(
-      this.http.post<ResponseEntity<string>>(`${this.apiUrl}/try/${authCode}`, mail, {
-        observe: 'response', // Mantiene l'osservazione della risposta
-      })
-    );
-  }  
+    return this.http.post(`${this.apiUrl}/try/${authCode}`, mail, {
+      observe: 'body', // Ensures only the body of the response is returned
+      responseType: 'text' // Specifies the response type as plain text
+    });
+  }
+  
+
   
 }

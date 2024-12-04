@@ -12,10 +12,12 @@ import { AuthGuard } from './guards/auth.guard';
 import { LogoutGuard } from './guards/logout.guard';
 import { DeviceViewComponent } from './view/device-view/device-view.component';
 import { ApartmentComponent } from './view/apartment/apartment.component';
+import { RegisterComponent } from './view/register/register.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/communities', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [LogoutGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [LogoutGuard] },
   { path: 'communities', component: CommunitiesComponent, canActivate: [AuthGuard] },
   { path: 'communities/add', component: AddCommunityComponent, canActivate: [AuthGuard] },
   { path: 'communities/:id', component: BuildingsComponent, canActivate: [AuthGuard] },

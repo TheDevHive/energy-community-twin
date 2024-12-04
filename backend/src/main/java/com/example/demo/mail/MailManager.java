@@ -89,6 +89,7 @@ public class MailManager
                 return "wrong";
             }
         }
+        authCodes.remove(userMail);
         return "correct";
     }
 

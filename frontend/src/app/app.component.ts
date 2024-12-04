@@ -9,6 +9,7 @@ import { filter } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   isLoginPage: boolean = false;
+  isRegisterPage: boolean = false;
 
   constructor(private router: Router) {}
 
@@ -20,6 +21,7 @@ export class AppComponent implements OnInit {
       .subscribe(event => {
         // Check if the current route is the login page
         this.isLoginPage = this.router.url === '/login';
+        this.isRegisterPage = this.router.url === '/register';
       });
   }
 }

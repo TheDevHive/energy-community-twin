@@ -1,23 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MailService } from './mail.service';
+import { AdminService } from './admin.service';
 
-describe('MailService', () => {
-  let service: MailService;
+describe('AdminService', () => {
+  let service: AdminService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [MailService],
+      providers: [AdminService],
     });
-    service = TestBed.inject(MailService);
+    service = TestBed.inject(AdminService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call requestAuthCode (mock example)', () => {
+  it('should handle registration (mock example)', () => {
     expect(service).toBeDefined(); 
   });
 });

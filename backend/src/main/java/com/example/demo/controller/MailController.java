@@ -20,7 +20,7 @@ public class MailController
 
         AdminDAO adminDAO = DBManager.getInstance().getAdminDAO();
         if (adminDAO.findByEmail(mail) != null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
 
         boolean status = MailManager.getInstance().setAuthCode(mail);
         return new ResponseEntity<>(status, (status? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR));
@@ -34,7 +34,7 @@ public class MailController
 
         AdminDAO adminDAO = DBManager.getInstance().getAdminDAO();
         if (adminDAO.findByEmail(mail) != null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
 
         String outcome = MailManager.getInstance().tryAuthCode(mail, authCode);
         return new ResponseEntity<>(outcome, HttpStatus.OK);

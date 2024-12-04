@@ -44,6 +44,7 @@ import { PieChartComponent } from './view/SHARED/pie-chart/pie-chart.component';
 import { EnergyReportsComponent } from './view/SHARED/energy-reports/energy-reports.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulation.component';
+import { RegisterComponent } from './view/register/register.component';
 
 
 @NgModule({
@@ -68,7 +69,8 @@ import { AddSimulationComponent } from './view/SHARED/add-simulation/add-simulat
     PieChartComponent,
     ApartmentComponent,
     EnergyReportsComponent,
-    AddSimulationComponent
+    AddSimulationComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
