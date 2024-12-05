@@ -14,10 +14,11 @@ import java.util.Scanner;
 
 public class GenerateWeatherData {
 
-    public static List<WeatherData> fetchWeatherData(String startDate, String endDate) throws IOException {
+    public static List<WeatherData> fetchWeatherData(String startDate, String endDate, String baseApiURL) throws IOException {
         // The latitude and longitude are for the city of Rende, Italy
+        // https://api.open-meteo.com/v1/forecast
         String apiUrl = String.format(
-                "https://api.open-meteo.com/v1/forecast?latitude=39.3315&longitude=16.1804&hourly=temperature_2m,precipitation,cloud_cover,wind_speed_10m&timezone=Europe%%2FBerlin&start_date=%s&end_date=%s",
+                baseApiURL + "?latitude=39.3315&longitude=16.1804&hourly=temperature_2m,precipitation,cloud_cover,wind_speed_10m&timezone=Europe%%2FBerlin&start_date=%s&end_date=%s",
                 startDate, endDate
         );
 
