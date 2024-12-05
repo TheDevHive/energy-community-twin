@@ -1,8 +1,56 @@
-.alert{
+/* Alert styling */
+.alert {
     text-align: center;
     padding-bottom: 0;
 }
 
+/* Logo image styling */
 .logo img {
     max-height: 120px;
+}
+
+/* General anchor styling */
+a {
+    color: var(--color-primary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect for all links */
+a:hover {
+    color: var(--color-primary-dark);
+}
+
+/* Specific styling for the "Forgot password?" link */
+.align-right {
+    float: right; /* Aligns the link to the right */
+    text-align: right; /* Ensures text is right-aligned */
+    margin-top: -1.5rem; /* Adjusts vertical alignment */
+}
+
+/* Ensure hover works specifically for the align-right class */
+.align-right:hover {
+    color: var(--color-primary-dark);
+}
+
+/* Responsive adjustments for better alignment on small screens */
+@media (max-width: 576px) {
+    .align-right {
+        float: none; /* Disable float on small screens */
+        text-align: center; /* Center-align on small screens */
+        margin-top: 1rem; /* Add space above the link */
+    }
+}
+
+/* Container for links to handle layout alignment */
+.links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Styling for the parent container of both links */
+.links a {
+    flex: 1;
 }

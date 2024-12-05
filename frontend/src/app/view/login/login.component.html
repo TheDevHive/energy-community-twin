@@ -60,8 +60,10 @@
                     <p>An internal server error has occurred.</p>
                   </div>
                 </div>
-                <a routerLink="/register">You're not registered? Click Here</a>
-                <a routerLink="/changePassword">Forgot password? Click Here</a>
+                <div class="d-flex justify-content-between w-100">
+                  <a routerLink="/register" class="link-style">You're not registered?</a>
+                  <a routerLink="/changePassword" class="link-style text-end">Forgot password?</a>
+                </div>
                 <div class="col-12">
                   <button class="btn btn-primary w-100" type="submit" [disabled]="loginForm.invalid">Login</button>
                 </div>
