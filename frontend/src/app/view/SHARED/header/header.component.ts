@@ -23,6 +23,8 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    if (!this.authService.isAuthenticated())
+      return;
     this.loadEmail();
   }
 
