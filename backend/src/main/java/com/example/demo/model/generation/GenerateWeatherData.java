@@ -14,6 +14,15 @@ import java.util.Scanner;
 
 public class GenerateWeatherData {
 
+    /**
+     * Fetch weather data from the Open-Meteo API.
+     *
+     * @param startDate   The start date of the weather data.
+     * @param endDate     The end date of the weather data.
+     * @param baseApiURL  The base URL of the Open-Meteo API. --> https://api.open-meteo.com/v1/forecast
+     * @return A list of weather data.
+     * @throws IOException If an error occurs while fetching the data.
+     */
     public static List<WeatherData> fetchWeatherData(String startDate, String endDate, String baseApiURL) throws IOException {
         // The latitude and longitude are for the city of Rende, Italy
         // https://api.open-meteo.com/v1/forecast
