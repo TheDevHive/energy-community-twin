@@ -8,6 +8,7 @@ import com.example.demo.persistence.TS_DBManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnergyReportDAO {
     private Connection connection;
@@ -160,15 +161,14 @@ public class EnergyReportDAO {
 
     private List<TimeSeriesData> loadTimeSeriesData(int reportId) {
         TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
-        List<TimeSeriesData> timeSeriesDataList = new ArrayList<>();
-        for (TS_Measurement measurement : tsmd.findByReportId(reportId)) {
-            TimeSeriesData tsd = new TimeSeriesData(
-                measurement.getTimestamp(),
-                measurement.getValue()
-            );
-            timeSeriesDataList.add(tsd);
-        }
 
-        return timeSeriesDataList;
+        return tsmd.findByReportId(reportId).stream()
+                .collect(Collectors.groupingBy(
+                        TS_Measurement::getTimestamp,
+                        Collectors.summingDouble(TS_Measurement::getValue)
+                ))
+                .entrySet().stream()
+                .map(entry -> new TimeSeriesData(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 }

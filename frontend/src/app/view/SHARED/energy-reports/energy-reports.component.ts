@@ -10,6 +10,7 @@ import { AddSimulationComponent } from '../add-simulation/add-simulation.compone
 
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
+import { WeatherData } from '../../../models/time-series-data';
 import { EnergyReportService } from '../../../services/energy-report.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { AlertService } from '../../../services/alert.service';
@@ -86,102 +87,119 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.selectLastReport();
   }
 
+  // Add these utility functions at the top of the class
+  private formatEnergyValue(value: number): { value: number; unit: string } {
+    if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kW' };
+    }
+    else if (Math.abs(value) >= 1000000) {
+      return { value: value / 1000000, unit: 'MW' };
+    }
+    return { value: value, unit: 'W' };
+  }
+
+  formatEnergyDisplay(value: number): string {
+    const formatted = this.formatEnergyValue(value);
+    return `${formatted.value.toFixed(2)} ${formatted.unit}`;
+  }
+
   // Modify selectLastReport() to handle chart updates
-selectLastReport() {
-  // Check if reports are already loaded
-  if (this.reports.length === 0) {
-    // If no reports, load them first
-    this.reportService.getReports(this.refUUID).subscribe({
-      next: (reports) => {
-        this.reports = reports;
+  selectLastReport() {
+    // Check if reports are already loaded
+    if (this.reports.length === 0) {
+      // If no reports, load them first
+      this.reportService.getReports(this.refUUID).subscribe({
+        next: (reports) => {
+          this.reports = reports;
 
-        // Update data source after loading
-        this.dataSource = new MatTableDataSource(this.reports);
+          // Update data source after loading
+          this.dataSource = new MatTableDataSource(this.reports);
 
-        // Sort and select the last report after loading
-        this.reports.sort((a, b) => b.id - a.id);
+          // Sort and select the last report after loading
+          this.reports.sort((a, b) => b.id - a.id);
 
-        // Select the last report if available
-        if (this.reports.length > 0) {
-          this.selectedReport = this.reports[0];
-          // Update the date range and chart after selecting new report
-          this.setReportDateRange(this.selectedReport);
-          
-          // Initialize or update chart based on whether it exists
-          if (this.timeSeriesChart) {
-            this.updateChartData();
-          } else {
-            this.initializeChart();
+          // Select the last report if available
+          if (this.reports.length > 0) {
+            this.selectedReport = this.reports[0];
+            console.log('Selected report:', this.selectedReport);
+            // Update the date range and chart after selecting new report
+            this.setReportDateRange(this.selectedReport);
+
+            // Initialize or update chart based on whether it exists
+            if (this.timeSeriesChart) {
+              this.updateChartData();
+            } else {
+              this.initializeChart();
+            }
           }
+        },
+        error: (error) => {
+          console.error('Error loading reports:', error);
+          this.reports = [];
         }
-      },
-      error: (error) => {
-        console.error('Error loading reports:', error);
-        this.reports = [];
-      }
-    });
-  } else {
-    // If reports are already loaded, just sort and select
-    this.reports.sort((a, b) => b.id - a.id);
+      });
+    } else {
+      // If reports are already loaded, just sort and select
+      this.reports.sort((a, b) => b.id - a.id);
 
-    if (this.reports.length > 0) {
-      this.selectedReport = this.reports[0];
-      // Update the date range and chart for existing reports
-      this.setReportDateRange(this.selectedReport);
-      if (this.timeSeriesChart) {
-        this.updateChartData();
+      if (this.reports.length > 0) {
+        this.selectedReport = this.reports[0];
+        // Update the date range and chart for existing reports
+        this.setReportDateRange(this.selectedReport);
+        if (this.timeSeriesChart) {
+          this.updateChartData();
+        }
       }
     }
   }
-}
 
-startNewSimulation() {
-  const modalRef = this.modalService.open(AddSimulationComponent, {
-    centered: true,
-    backdrop: 'static',
-    windowClass: 'building-modal',
-  });
+  startNewSimulation() {
+    const modalRef = this.modalService.open(AddSimulationComponent, {
+      centered: true,
+      backdrop: 'static',
+      windowClass: 'building-modal',
+    });
 
-  modalRef.componentInstance.refUUID = this.refUUID;
+    modalRef.componentInstance.refUUID = this.refUUID;
 
-  modalRef.result.then(
-    (result) => {
-      if (result) {
-        console.log('Simulation data:', result);
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          console.log('Simulation data:', result);
 
-        // Fetch new reports and update the UI
-        this.reportService.getReports(this.refUUID).subscribe({
-          next: (reports) => {
-            this.reports = reports;
-            this.updateDataSource();
-            this.selectLastReport();
+          // Fetch new reports and update the UI
+          this.reportService.getReports(this.refUUID).subscribe({
+            next: (reports) => {
+              this.reports = reports;
+              this.updateDataSource();
+              this.selectLastReport();
 
-            if (this.reports.length === 1)
-              this.initializeChart();
-            
-            // Notify user about the new simulation
-            this.alertService.setAlertNewSimulation(
-              'success',
-              'Simulation added successfully!'
-            );
-          },
-          error: (error) => {
-            console.error('Error reloading reports:', error);
+              if (this.reports.length === 1)
+                this.initializeChart();
 
-            // Notify user about the error
-            this.alertService.setAlertNewSimulation(
-              'danger',
-              'Failed to start the simulation. Please try again.'
-            );
-          }
-        });
+              // Notify user about the new simulation
+              this.alertService.setAlertNewSimulation(
+                'success',
+                'Simulation added successfully!'
+              );
+            },
+            error: (error) => {
+              console.error('Error reloading reports:', error);
+
+              // Notify user about the error
+              this.alertService.setAlertNewSimulation(
+                'danger',
+                'Failed to start the simulation. Please try again.'
+              );
+            }
+          });
+        }
+      },
+      (reason) => {
+        console.log('Modal dismissed:', reason);
       }
-    },
-    (reason) => {
-      console.log('Modal dismissed:', reason);
-    }
-  );
-}
+    );
+  }
 
   // Modify updateDataSource() to ensure chart updates
   private updateDataSource() {
@@ -235,10 +253,8 @@ startNewSimulation() {
   }
 
   initializeChart() {
-    
     const ctx = document.getElementById('timeSeriesChart') as HTMLCanvasElement;
-  
-    // Add null check
+
     if (!ctx) {
       console.error('Chart canvas element not found');
       this.retryChartInitialization();
@@ -250,11 +266,11 @@ startNewSimulation() {
       data: {
         labels: [],
         datasets: [{
-          label: 'Energy Production (W)',
+          label: 'Energy Production',
           data: [],
           borderColor: this.isDarkMode ? '#3498db' : '#2980b9',
           tension: 0.1,
-          fill: false
+          fill: false,
         }]
       },
       options: {
@@ -265,13 +281,18 @@ startNewSimulation() {
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Energy Production (W)'
+              text: 'Energy Production'
             },
             grid: {
               color: this.isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
             },
             ticks: {
-              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
+              callback: (value) => {
+                // Display value with one decimal
+                const formatted = this.formatEnergyValue(value as number);
+                return `${formatted.value.toFixed(1)} ${formatted.unit}`;
+              }
             }
           },
           x: {
@@ -290,6 +311,27 @@ startNewSimulation() {
           }
         },
         plugins: {
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const dataPoint = context.raw; // Use raw instead of dataset.data
+
+                const weather = (dataPoint as any).weather;
+                const production = this.formatEnergyDisplay((dataPoint as any).y);
+
+                if (weather) {
+                  return [
+                    `Energy Production: ${production}`,
+                    `Temperature: ${weather.temperature.toFixed(1)}°C`,
+                    `Precipitation: ${weather.precipitation.toFixed(1)} mm`,
+                    `Cloud Cover: ${weather.cloudCover.toFixed(0)}%`,
+                    `Wind Speed: ${weather.windSpeed.toFixed(1)} km/h`
+                  ];
+                }
+                return `Energy Production: ${production}`;
+              }
+            }
+          },
           legend: {
             display: false,
             labels: {
@@ -311,13 +353,13 @@ startNewSimulation() {
       console.error('Failed to initialize chart after multiple attempts');
       return;
     }
-  
+
     // Wait a short time before retrying
     setTimeout(() => {
       try {
         // Attempt to find the canvas again
         const retryCtx = document.getElementById('timeSeriesChart') as HTMLCanvasElement;
-        
+
         if (retryCtx) {
           this.setReportDateRange(this.selectedReport);
           this.initializeChart();
@@ -331,6 +373,7 @@ startNewSimulation() {
       }
     }, 500); // 500ms delay between attempts
   }
+
 
   updateChartData() {
     const startDateValue = this.dateRange.get('start')?.value;
@@ -363,63 +406,80 @@ startNewSimulation() {
       startDate.getMonth() === endDate.getMonth() &&
       startDate.getDate() === endDate.getDate();
 
-      if (isSingleDay) {
-        // Generate hourly ticks for the day
-        const ticks = this.generateHourlyTicks(startDate);
-    
-        // Filter and map data for the specific day
-        const filteredData = this.selectedReport.timeSeriesData
-            .filter(d => {
-                const date = d.date instanceof Date
-                    ? d.date
-                    : typeof d.date === 'string'
-                    ? new Date(d.date)
-                    : null;
-                return date && date >= startDate && date <= endDate;
-            })
-            .map(d => ({
-                ...d,
-                date: d.date instanceof Date
-                    ? d.date
-                    : new Date(d.date)
-            }))
-            .sort((a, b) => a.date.getTime() - b.date.getTime());
-    
-        // Group the filtered data by hour
-        const groupedData = filteredData.reduce((grouped, current) => {
-            const hour = current.date.getHours();
-            const existing = grouped.get(hour) || { hour, production: 0 };
-            existing.production += current.production;
-            grouped.set(hour, existing);
-            return grouped;
-        }, new Map<number, { hour: number; production: number }>());
-    
-        // Convert grouped data to an array and align with ticks
-        const chartData = ticks.map(tickDate => {
-            const hour = tickDate.getHours();
-            const matchingData = groupedData.get(hour) || { hour, production: 0 };
-            return {
-                date: tickDate,
-                production: matchingData.production
-            };
-        });
-    
-        const hourlyFormatter = new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: false
-        });
-    
-        // Update chart
-        if (this.timeSeriesChart) {
-            this.timeSeriesChart.data.labels = chartData.map(d => hourlyFormatter.format(d.date));
-            this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
-            // Customize x-axis for hourly view
-            this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit = 12;
-            this.timeSeriesChart.update('none');
-        }
+    if (isSingleDay) {
+      // Generate hourly ticks for the day
+      const ticks = this.generateHourlyTicks(startDate);
+
+      // Filter and map data for the specific day
+      const filteredData = this.selectedReport.timeSeriesData
+        .filter(d => {
+          const date = d.date instanceof Date
+            ? d.date
+            : typeof d.date === 'string'
+              ? new Date(d.date)
+              : null;
+          return date && date >= startDate && date <= endDate;
+        })
+        .map(d => ({
+          ...d,
+          date: d.date instanceof Date
+            ? d.date
+            : new Date(d.date)
+        }))
+        .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+      // Group the filtered data by hour
+      const groupedData = filteredData.reduce((grouped, current) => {
+        const hour = current.date.getHours();
+        const existing = grouped.get(hour) || { hour, production: 0 };
+        existing.production += current.production;
+        grouped.set(hour, existing);
+        return grouped;
+      }, new Map<number, { hour: number; production: number }>());
+
+      // Convert grouped data to an array and align with ticks
+      // In the single day section
+      const chartData = ticks.map(tickDate => {
+        const hour = tickDate.getHours();
+        const matchingData = groupedData.get(hour) || { hour, production: 0 };
+
+        // Find the first weather data point for this hour
+        const weatherData = filteredData
+          .filter(d => d.date.getHours() === hour)
+          .map(d => d.weather)[0] || {
+          temperature: 0,
+          precipitation: 0,
+          cloudCover: 0,
+          windSpeed: 0
+        };
+
+        return {
+          date: tickDate,
+          production: matchingData.production,
+          weather: weatherData
+        };
+      });
+
+      const hourlyFormatter = new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false
+      });
+
+      // Update chart
+      if (this.timeSeriesChart) {
+        this.timeSeriesChart.data.labels = chartData.map(d => hourlyFormatter.format(d.date));
+        this.timeSeriesChart.data.datasets[0].data = chartData.map(d => ({
+          x: d.date,
+          y: d.production,
+          weather: d.weather // Explicitly include weather data
+        }));
+        // Customize x-axis for hourly view
+        this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit = 12;
+        this.timeSeriesChart.update('none');
+      }
     }
-     else {
+    else {
       // Multi-day logic
       const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -463,16 +523,55 @@ startNewSimulation() {
         console.log('Monthly data:', filteredData);
         filteredData = this.aggregateDataByMonth(filteredData);
       } else {
-        // Group filtered data by day and sum production values
+        console.log('Daily data:', filteredData);
+        // Group filtered data by day and calculate weather averages
         const groupedData = filteredData.reduce((grouped, current) => {
           const date = current.date.toDateString();
-          const existing = grouped.get(date) || { date: current.date, production: 0 };
+
+          // Ensure safe weather object with default values
+          const safeWeather = current.weather || {
+            temperature: 0,
+            precipitation: 0,
+            cloudCover: 0,
+            windSpeed: 0
+          };
+
+          const existing = grouped.get(date) || {
+            date: current.date,
+            production: 0,
+            weatherSum: {
+              temperature: 0,
+              precipitation: 0,
+              cloudCover: 0,
+              windSpeed: 0
+            },
+            count: 0
+          };
+
           existing.production += current.production;
+          existing.weatherSum.temperature += safeWeather.temperature || 0;
+          existing.weatherSum.precipitation += safeWeather.precipitation || 0;
+          existing.weatherSum.cloudCover += safeWeather.cloudCover || 0;
+          existing.weatherSum.windSpeed += safeWeather.windSpeed || 0;
+          existing.count++;
+
           grouped.set(date, existing);
           return grouped;
-        }, new Map<string, TimeSeriesData>());
+        }, new Map<string, any>());
 
-        filteredData = Array.from(groupedData.values());
+        console.log('Grouped data:', groupedData);
+
+        // Convert grouped data and calculate weather averages
+        filteredData = Array.from(groupedData.values()).map(data => ({
+          date: data.date,
+          production: data.production,
+          weather: {
+            temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
+            precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
+            cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
+            windSpeed: data.count > 0 ? data.weatherSum.windSpeed / data.count : 0
+          }
+        }));
       }
 
       // Generate regular tick marks
@@ -489,16 +588,27 @@ startNewSimulation() {
             return dataDate.toDateString() === tickDate.toDateString();
           }
         });
+
         return {
           date: tickDate,
-          production: matchingData?.production || 0
+          production: matchingData?.production || 0,
+          weather: matchingData?.weather || {
+            temperature: 0,
+            precipitation: 0,
+            cloudCover: 0,
+            windSpeed: 0
+          }
         };
       });
 
       // Update chart
       if (this.timeSeriesChart) {
         this.timeSeriesChart.data.labels = chartData.map(d => dateFormatter.format(d.date));
-        this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
+        this.timeSeriesChart.data.datasets[0].data = chartData.map(d => ({
+          x: d.date,
+          y: d.production,
+          weather: d.weather
+        }));
 
         // Update tick settings based on data range
         this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit =
@@ -529,20 +639,56 @@ startNewSimulation() {
   }
 
   private aggregateDataByMonth(data: TimeSeriesData[]): TimeSeriesData[] {
-    const monthlyData = new Map<string, number>();
+    const monthlyData = new Map<string, {
+      sum: number,
+      weatherSum: WeatherData,
+      count: number
+    }>();
 
     data.forEach(item => {
       const date = new Date(item.date);
       const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-      const currentSum = monthlyData.get(monthKey) || 0;
-      monthlyData.set(monthKey, currentSum + item.production);
+
+      // Ensure default weather data if not present
+      const safeWeather = item.weather || {
+        temperature: 0,
+        precipitation: 0,
+        cloudCover: 0,
+        windSpeed: 0
+      };
+
+      const current = monthlyData.get(monthKey) || {
+        sum: 0,
+        weatherSum: {
+          temperature: 0,
+          precipitation: 0,
+          cloudCover: 0,
+          windSpeed: 0
+        },
+        count: 0
+      };
+
+      current.sum += item.production;
+      current.weatherSum.temperature += safeWeather.temperature;
+      current.weatherSum.precipitation += safeWeather.precipitation;
+      current.weatherSum.cloudCover += safeWeather.cloudCover;
+      current.weatherSum.windSpeed += safeWeather.windSpeed;
+      current.count++;
+
+      monthlyData.set(monthKey, current);
     });
 
-    return Array.from(monthlyData.entries()).map(([monthKey, sum]) => {
+    return Array.from(monthlyData.entries()).map(([monthKey, data]) => {
       const [year, month] = monthKey.split('-').map(Number);
       return {
         date: new Date(year, month - 1, 1),
-        production: sum
+        production: data.sum,
+        weather: {
+          temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
+          precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
+          cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
+          windSpeed: data.count > 0 ? data.weatherSum.windSpeed / data.count : 0
+        }
       };
     });
   }
@@ -552,19 +698,23 @@ startNewSimulation() {
     let currentDate = new Date(startDate);
     const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
-    // Determine appropriate tick interval based on date range
-    let tickInterval: number;
-    if (totalDays <= 30) {
-      tickInterval = 1; // Daily ticks for month or less
+    if (totalDays > 31) {
+      // Monthly ticks
+      while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        // Move to first day of next month
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+      }
     } else {
-      // Calculate tick interval based on division of total days
-      tickInterval = Math.ceil(totalDays / 30);
+      // Daily ticks for shorter periods
+      let tickInterval = totalDays <= 30 ? 1 : Math.ceil(totalDays / 30);
+
+      while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + tickInterval);
+      }
     }
 
-    while (currentDate <= endDate) {
-      dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + tickInterval);
-    }
     return dates;
   }
 
@@ -572,18 +722,18 @@ startNewSimulation() {
     const ticks: Date[] = [];
     const baseDate = new Date(date);
     baseDate.setHours(0, 0, 0, 0); // Start of the day
-  
+
     for (let hour = 0; hour < 24; hour += 2) {
       const tickDate = new Date(baseDate);
       tickDate.setHours(hour);
       ticks.push(tickDate);
     }
-  
+
     // Add the last tick at 23:59
     const lastTickDate = new Date(baseDate);
     lastTickDate.setHours(23, 59, 0, 0);
     ticks.push(lastTickDate);
-  
+
     return ticks;
   }
 
@@ -602,7 +752,7 @@ startNewSimulation() {
   }
 
   onDownload(report: EnergyReport) {
-    this.reportService.downloadReport(report.id);    
+    this.reportService.downloadReport(report.id);
   }
 
   onDelete(report: EnergyReport) {
@@ -620,27 +770,27 @@ startNewSimulation() {
 
     modalRef.result.then(
       (result) => {
-      if (result === true) {
-        this.reportService.deleteReport(report.id.toString()).subscribe(
-        () => {
-          this.reports = this.reports.filter(r => r.id !== report.id);
-          this.updateDataSource();
-          this.selectLastReport();
-          this.updateChartData();
+        if (result === true) {
+          this.reportService.deleteReport(report.id.toString()).subscribe(
+            () => {
+              this.reports = this.reports.filter(r => r.id !== report.id);
+              this.updateDataSource();
+              this.selectLastReport();
+              this.updateChartData();
 
-          this.alertService.setAlertNewSimulation(
-            'success',
-            'Simulation deleted successfully!'
+              this.alertService.setAlertNewSimulation(
+                'success',
+                'Simulation deleted successfully!'
+              );
+            },
+            (error) => {
+              console.error('Error deleting report:', error);
+            }
           );
-        },
-        (error) => {
-          console.error('Error deleting report:', error);
         }
-        );
-      }
       },
       (reason) => {
-      // Modal dismissed
+        // Modal dismissed
       }
     );
   }
