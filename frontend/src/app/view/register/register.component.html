@@ -61,8 +61,20 @@
                   <a routerLink="/login" class="d-block mt-3 outline-none custom-anchor">Already registered?</a>
 
                   <div class="col-12">
-                    <button class="btn btn-primary w-100" type="submit" [disabled]="registerForm.invalid">Register</button>
-                  </div>
+                    <button 
+                        class="btn btn-primary w-100 position-relative" 
+                        type="submit" 
+                        [disabled]="loading || registerForm.invalid">
+                        <span [class.invisible]="loading">Register</span>
+                        <div 
+                            *ngIf="loading" 
+                            class="position-absolute top-50 start-50 translate-middle d-flex align-items-center"
+                        >
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </div>
+                    </button>
+                </div>
                 </form>
               </div>
 
@@ -87,7 +99,7 @@
 
                   <!-- Submit -->
                   <div class="col-12">
-                    <button class="btn btn-primary w-100" type="submit" [disabled]="verificationForm.invalid" (click)="tryAuthCode()">Verify</button>
+                    <button class="btn btn-primary w-100" type="submit" [disabled]="loading || verificationForm.invalid" (click)="tryAuthCode()">Verify</button>
                   </div>
                 </form>
               </div>

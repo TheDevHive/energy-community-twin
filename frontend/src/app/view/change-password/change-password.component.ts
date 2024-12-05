@@ -18,6 +18,9 @@ export class ChangePasswordComponent {
   message: string = '';
   messageType: 'success' | 'danger' = 'success';
 
+  // New loading property
+  loading: boolean = false;
+
   email!: string;
 
   private timeoutHandle: any;
@@ -80,6 +83,9 @@ export class ChangePasswordComponent {
         return;
       }
 
+      // Set loading to true before request
+      this.loading = true;
+
       this.email = email;
       this.mailService.requestAuthCode(email, false).subscribe({
         next: (response: boolean) => {
@@ -87,8 +93,13 @@ export class ChangePasswordComponent {
             this.changeStep();
             this.showMessage('Verification code sent successfully.', 'success');
           }
+          // Set loading back to false
+          this.loading = false;
         },
         error: (error) => {
+          // Set loading back to false
+          this.loading = false;
+
           if (error.status === 404)
             this.showMessage('This Email is not associated with any account', 'danger');
           else
@@ -98,8 +109,7 @@ export class ChangePasswordComponent {
     }
   }
 
-  changeStep() 
-  {
+  changeStep() {
     if (this.currentStep === 'email') {
       this.currentStep = 'verification';
     } else if (this.currentStep === 'verification') {
@@ -117,8 +127,14 @@ export class ChangePasswordComponent {
     }
     const authCode = parseInt(authCodeString, 10);
 
+    // Set loading to true before request
+    this.loading = true;
+
     this.mailService.tryAuthCode(this.email, authCode, false).subscribe({
       next: (response: string) => {
+        // Set loading back to false
+        this.loading = false;
+
         switch (response) {
           case 'correct':
             this.changeStep();
@@ -142,6 +158,9 @@ export class ChangePasswordComponent {
         }
       },
       error: (error) => {
+        // Set loading back to false
+        this.loading = false;
+
         switch (error.status) {
           case 400:
             this.showMessage('Email or Authentication Code are missing.', 'danger');
@@ -157,7 +176,6 @@ export class ChangePasswordComponent {
         }
       },
     });
-    
   }
 
   resetPassword() {
@@ -169,8 +187,14 @@ export class ChangePasswordComponent {
         password: password
       };
 
+      // Set loading to true before request
+      this.loading = true;
+
       this.adminService.changePassword(credentials).subscribe({
         next: (response: boolean) => {
+          // Set loading back to false
+          this.loading = false;
+
           if (response) {
             this.showMessage('Registration successful! Redirecting to login...', 'success');
             setTimeout(() => {
@@ -179,6 +203,8 @@ export class ChangePasswordComponent {
           }
         },
         error: () => {
+          // Set loading back to false
+          this.loading = false;
           this.showMessage('Failed to reset password. Please try again.', 'danger');
         },
       });
@@ -186,11 +212,18 @@ export class ChangePasswordComponent {
   }
 
   resendAuthCode() {
+    // Set loading to true before request
+    this.loading = true;
+
     this.mailService.requestAuthCode(this.email, false).subscribe({
       next: () => {
+        // Set loading back to false
+        this.loading = false;
         this.showMessage('Verification code sent successfully.', 'success');
       },
       error: () => {
+        // Set loading back to false
+        this.loading = false;
         this.showMessage('Failed to resend verification code.', 'danger');
       },
     });

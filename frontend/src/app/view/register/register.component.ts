@@ -19,6 +19,8 @@ export class RegisterComponent {
   message: string = '';
   messageType: 'success' | 'danger' = 'success';
 
+  loading: boolean = false;
+
   private timeoutHandle: any;
 
   credentials!: Credentials;
@@ -70,17 +72,24 @@ export class RegisterComponent {
         password: password,
       };
   
+      // Set loading to true before request
+      this.loading = true;
+  
       this.mailService.requestAuthCode(email, true).subscribe({
         next: (response: boolean) => {
+          // Set loading to false after request
+          this.loading = false;
+
           if (response) {
             this.authCodeSended = true;
             this.registerForm.reset();
             this.showMessage('Verification code sent successfully.', 'success');
-          } else {
-            
           }
         },
         error: (error) => {
+          // Set loading to false after request
+          this.loading = false;
+
           if (error.status === 400) {
             this.showMessage('Email is missing or invalid.', 'danger');
           } else if (error.status === 409) {
@@ -94,13 +103,23 @@ export class RegisterComponent {
   }
   
   resendAuthCode() {
+    // Set loading to true before request
+    this.loading = true;
+
     this.mailService.requestAuthCode(this.credentials.email, true).subscribe({
       next: (response: boolean) => {
+        // Set loading to false after request
+        this.loading = false;
+
         if (response)
           this.showMessage('Verification code sent successfully.', 'success');
       },
       error: (error) => {
+        // Set loading to false after request
+        this.loading = false;
+
         console.error('Failed to resend auth code:', error);
+        this.showMessage('Failed to resend verification code.', 'danger');
       }
     });
   }
@@ -110,18 +129,20 @@ export class RegisterComponent {
     const authCodeString = Object.values(authCodeObject).join('');
     
     if (authCodeString.length < 5) {
-      
       this.showMessage('Please enter all 5 digits of the verification code.', 'danger');
       return;
     }
   
     const authCode = parseInt(authCodeString, 10);
     
-    
-    
+    // Set loading to true before request
+    this.loading = true;
     
     this.mailService.tryAuthCode(this.credentials.email, authCode, true).subscribe({
       next: (response: string) => {
+        // Set loading to false after request
+        this.loading = false;
+
         if (response) {
           switch (response) {
             case 'correct':
@@ -154,6 +175,9 @@ export class RegisterComponent {
         }
       },
       error: (error) => {
+        // Set loading to false after request
+        this.loading = false;
+
         switch (error.status) {
           case 400:
             this.showMessage('Email or Authentication Code are missing.', 'danger');
@@ -171,28 +195,34 @@ export class RegisterComponent {
     });
   }
   
-  
   registerAdmin() {
+    // Set loading to true before request
+    this.loading = true;
+
     this.adminService.register(this.credentials).subscribe({
       next: (outcome: boolean) => {
+        // Set loading to false after request
+        this.loading = false;
+
         this.showMessage('Registration successful! Redirecting to login...', 'success');
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
       error: () => {
+        // Set loading to false after request
+        this.loading = false;
+
         console.error('Error during registration.');
         this.showMessage('An error occurred during registration. Please try again.', 'danger');
       }
     });
   }
-  
 
   checkEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   }
-
 
   showMessage(message: string, type: 'success' | 'danger') {
     this.message = message;
@@ -206,6 +236,4 @@ export class RegisterComponent {
       this.message = '';
     }, 5000);
   }
-
-  
 }
