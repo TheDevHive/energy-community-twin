@@ -228,4 +228,24 @@ export class ChangePasswordComponent {
       },
     });
   }
+
+  onPaste(event: ClipboardEvent, startIndex: number): void {
+    event.preventDefault();
+    const clipboardData = event.clipboardData;
+    if (!clipboardData) return;
+
+    const pastedText = clipboardData.getData('text');
+    if (!pastedText) return;
+
+    const inputFields = ['code1', 'code2', 'code3', 'code4', 'code5'];
+
+    // Populate the inputs starting from the index where paste occurred
+    for (let i = 0; i < pastedText.length; i++) {
+      const targetIndex = startIndex + i;
+      if (targetIndex >= inputFields.length) break;
+
+      const controlName = inputFields[targetIndex];
+      this.verificationForm.controls[controlName].setValue(pastedText[i]);
+    }
+  }
 }
