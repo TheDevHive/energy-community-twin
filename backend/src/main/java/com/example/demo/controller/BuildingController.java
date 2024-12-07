@@ -190,13 +190,7 @@ public class BuildingController {
         }
         EnergyReport report = new EnergyReport();
         DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
-        List<String> deviceList = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd(), report.getId());
-        for (Apartment apartment : apartments) {
-            List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO()
-                    .findByApartment(apartment);
-                    deviceList.addAll(
-                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd(), report.getId()));
-        }
+        List<String> deviceList = GenerateData.generateDataBuilding(building, timeRange.getStart(), timeRange.getEnd(), report.getId());
         if (deviceList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -150,7 +150,7 @@ public class ApartmentController {
         }
         EnergyReport report = new EnergyReport();
         DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
-        List<String> deviceList = GenerateData.generateDataApartment(devices, timeRange.getStart(), timeRange.getEnd(), report.getId());
+        List<String> deviceList = GenerateData.generateDataApartment(apartment, timeRange.getStart(), timeRange.getEnd(), report.getId());
         if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "A"+ApartmentId)){
             return new ResponseEntity<>(deviceList, HttpStatus.OK);
         } else {

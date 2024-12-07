@@ -13,10 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -198,12 +196,11 @@ public class CommunityController {
         Community community = DBManager.getInstance().getCommunityDAO().findByPrimaryKey(commId);
         if (community == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        List<Building> buildings = DBManager.getInstance().getBuildingDAO().findByCommunity(community);
         EnergyReport report = new EnergyReport();
         report.setStartDate(timeRange.getStart());
         report.setEndDate(timeRange.getEnd());
         DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
-        List<String> deviceList = GenerateData.generateDataCommunity(buildings, timeRange.getStart(), timeRange.getEnd(), report.getId());
+        List<String> deviceList = GenerateData.generateDataCommunity(community, timeRange.getStart(), timeRange.getEnd(), report.getId());
         if (GenerateData.generateReport(report, deviceList, timeRange.getStart(), timeRange.getEnd(), "C"+commId)){
             return new ResponseEntity<>(deviceList, HttpStatus.OK);
         } else {
