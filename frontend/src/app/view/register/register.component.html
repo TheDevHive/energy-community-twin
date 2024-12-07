@@ -10,12 +10,14 @@
             </a>
           </div>
 
+          <!-- Alert Section -->
+          <div *ngIf="message" class="alert alert-{{messageType}} text-center" role="alert">
+            {{ message }}
+          </div>
+
           <div class="card mb-3">
             <div class="card-body">
-              <!-- Alert Section -->
-              <div *ngIf="message" class="alert alert-{{messageType}} text-center" role="alert">
-                {{ message }}
-              </div>
+              
 
               <!-- Register Form -->
               <div *ngIf="!authCodeSended">
@@ -101,7 +103,7 @@
                         type="text" 
                         maxlength="1" 
                         class="form-control text-center squares"
-                        style="width: 48px;"
+                        style="width: 48px; height: 48px; border-radius: 5px;"
                         (paste)="onPaste($event, i)">
                 </div>
                 

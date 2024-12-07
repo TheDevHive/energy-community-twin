@@ -69,7 +69,7 @@ public class MailManager
         String messageText = String.format(
                 "<html>" +
                         "<body>" +
-                        "<p>Dear user,</p>" +
+                        "<p>Dear User,</p>" +
                         "<p>Your verification code is: <b>%d</b></p>" +
                         "<p>Please use this code to complete your authentication process. The code will expire after %d attempts.</p>" +
                         "<p>Thank you.</p>" +

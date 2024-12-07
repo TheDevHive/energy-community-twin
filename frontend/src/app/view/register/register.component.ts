@@ -270,7 +270,7 @@ export class RegisterComponent {
 
     this.timeoutHandle = setTimeout(() => {
       this.message = '';
-    }, 5000);
+    }, 7500);
   }
 
   onPaste(event: ClipboardEvent, startIndex: number): void {

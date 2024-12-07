@@ -66,7 +66,7 @@ export class ChangePasswordComponent {
     this.timeoutHandle = setTimeout(() => {
       this.message = '';
       this.messageType = 'success';
-    }, 5000);
+    }, 7500);
   }
 
   checkEmail(email: string): boolean {
