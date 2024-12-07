@@ -101,7 +101,7 @@
       </div>
 
       <!-- Right Column: Chart -->
-      <div class="col-lg-8">
+      <div *ngIf="!isBattery" class="col-lg-8">
         <div class="card border shadow-sm h-100">
           <div class="card-body" style="padding: 5%;">  <!-- Removed d-flex classes here -->
               <app-energy-simulator 
