@@ -50,7 +50,7 @@ public class MailManager
             message.setFrom(new InternetAddress(MailSettings.mail));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(dest));
             message.setSubject("The DevHive");
-            message.setText(text);
+            message.setContent(text, "text/html");
             Transport.send(message);
         } catch (MessagingException e) {
             System.out.println("ERROR SENDING THE EMAIL.");
@@ -60,13 +60,21 @@ public class MailManager
         return true;
     }
 
+
     public boolean setAuthCode(String userMail)
     {
         int authCode = 10000 + (int)(Math.random() * 90000);
         Pair<Integer, Integer> authPair = new Pair<>(authCode, MAX_TRIES);
         authCodes.put(userMail, authPair);
         String messageText = String.format(
-                "Dear user,\n\nYour verification code is: %d\nPlease use this code to complete your authentication process. The code will expire after %d attempts.\n\nThank you.",
+                "<html>" +
+                        "<body>" +
+                        "<p>Dear User,</p>" +
+                        "<p>Your verification code is: <b>%d</b></p>" +
+                        "<p>Please use this code to complete your authentication process. The code will expire after %d attempts.</p>" +
+                        "<p>Thank you.</p>" +
+                        "</body>" +
+                        "</html>",
                 authCode, MAX_TRIES
         );
         return send(userMail, messageText);

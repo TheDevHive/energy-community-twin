@@ -1,6 +1,7 @@
 .alert{
     text-align: center;
     padding-bottom: 0;
+    width: 100%;
 }
 
 .logo img {
@@ -26,6 +27,12 @@
     /* Hover effect senza sottolineatura */
     &:hover {
       color: var(--color-primary-dark);
+      cursor: pointer;
     }
   
   }
+
+  .squares {
+    border-radius: 0px;
+  }
+  

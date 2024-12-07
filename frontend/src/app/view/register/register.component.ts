@@ -33,9 +33,13 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group({
       email: ['', Validators.required],
-      password: ['', Validators.required],
+      password: ['', [
+        Validators.required,
+        Validators.pattern(/([0-9]+|[a-z]+|[A-Z]+|[_\-\.\*]+)+/)
+      ]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.customValidation });
+    
 
     this.verificationForm = this.fb.group({
       code1: ['', [Validators.required, Validators.pattern('[0-9]')]],
@@ -50,19 +54,51 @@ export class RegisterComponent {
     const emailControl = group.get('email');
     const passwordControl = group.get('password');
     const confirmPasswordControl = group.get('confirmPassword');
-
+  
+    // Validate email
     if (emailControl && !this.checkEmail(emailControl.value)) {
-      emailControl.setErrors({ 'invalidEmail': true });
+      emailControl.setErrors({ invalidEmail: true });
+    } else {
+      emailControl?.setErrors(null);
     }
-
-    if (passwordControl && confirmPasswordControl && 
-        passwordControl.value !== confirmPasswordControl.value) {
-      confirmPasswordControl.setErrors({ 'passwordMismatch': true });
-    } else if (confirmPasswordControl?.hasError('passwordMismatch')) {
-      confirmPasswordControl.setErrors(null);
+  
+    if (passwordControl) {
+      const passwordValue = passwordControl.value;
+  
+      if (!passwordValue?.match(/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[_\-.*])[a-zA-Z0-9_\-.*]+/) || passwordValue.length < 8) {
+        passwordControl.setErrors({ invalidPassword: true });
+      } else {
+        passwordControl.setErrors(null);
+      }
+    }
+  
+    // Validate confirmPassword
+    if (
+      passwordControl &&
+      confirmPasswordControl &&
+      passwordControl.value !== confirmPasswordControl.value
+    ) {
+      confirmPasswordControl.setErrors({ passwordMismatch: true });
+    } else {
+      confirmPasswordControl?.setErrors(null);
     }
   };
+  
+  passwordHasMinLength = false;
+  passwordHasUpperCase = false;
+  passwordHasNumber = false;
+  passwordHasSymbol = false;
 
+  ngOnInit() {
+    this.registerForm.get('password')?.valueChanges.subscribe((password: string) => {
+      this.passwordHasMinLength = password?.length >= 8;
+      this.passwordHasUpperCase = /[A-Z]/.test(password);
+      this.passwordHasNumber = /[0-9]/.test(password);
+      this.passwordHasSymbol = /[_\-.*]/.test(password);
+    });
+  }
+
+  
   submitForm() {
     if (this.registerForm.valid) {
       const { email, password } = this.registerForm.value;
@@ -234,6 +270,27 @@ export class RegisterComponent {
 
     this.timeoutHandle = setTimeout(() => {
       this.message = '';
-    }, 5000);
+    }, 7500);
   }
+
+  onPaste(event: ClipboardEvent, startIndex: number): void {
+    event.preventDefault();
+    const clipboardData = event.clipboardData;
+    if (!clipboardData) return;
+
+    const pastedText = clipboardData.getData('text');
+    if (!pastedText) return;
+
+    const inputFields = ['code1', 'code2', 'code3', 'code4', 'code5'];
+
+    // Populate the inputs starting from the index where paste occurred
+    for (let i = 0; i < pastedText.length; i++) {
+      const targetIndex = startIndex + i;
+      if (targetIndex >= inputFields.length) break;
+
+      const controlName = inputFields[targetIndex];
+      this.verificationForm.controls[controlName].setValue(pastedText[i]);
+    }
+  }
+  
 }

@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -34,25 +34,23 @@ describe('RegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should handle 400 error on submitForm', () => {
-    // Mock the requestAuthCode method to throw a 400 error
+  fakeAsync(() => {
     mailService.requestAuthCode.and.returnValue(throwError({ status: 400 }));
   
-    // Set valid form values
     component.registerForm.setValue({
       email: 'invalid@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
+      password: 'Password1*',
+      confirmPassword: 'Password1*',
     });
   
-    // Call the submitForm method
     component.submitForm();
   
-    // Verify the correct error message and type are set
+    flushMicrotasks();
+    tick(5000); // Simulate the timeout to clear the message
+  
     expect(component.message).toBe('Email is missing or invalid.');
     expect(component.messageType).toBe('danger');
   });
-  
 
   it('should call tryAuthCode and handle success', () => {
     mailService.tryAuthCode.and.returnValue(of('correct'));

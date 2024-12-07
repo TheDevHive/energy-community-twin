@@ -10,12 +10,14 @@
             </a>
           </div>
 
+          <!-- Alert Section -->
+          <div *ngIf="message" class="alert alert-{{messageType}} text-center" role="alert">
+            {{ message }}
+          </div>
+
           <div class="card mb-3">
             <div class="card-body">
-              <!-- Alert Section -->
-              <div *ngIf="message" class="alert alert-{{messageType}} text-center" role="alert">
-                {{ message }}
-              </div>
+              
 
               <!-- Register Form -->
               <div *ngIf="!authCodeSended">
@@ -42,11 +44,20 @@
                     <label for="password" class="form-label">Password</label>
                     <input formControlName="password" type="password" name="password" class="form-control"
                       [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-                    <div *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched"
-                      class="invalid-feedback">
-                      Password is required.
-                    </div>
+                      <div *ngIf="registerForm.get('password')?.errors?.['invalidPassword'] && registerForm.get('password')?.touched"
+                        class="invalid-feedback">
+                        <strong>Password must include:</strong>
+                        <ul class="mb-0">
+                          <li *ngIf="!passwordHasMinLength">At least 8 characters</li>
+                          <li *ngIf="!passwordHasUpperCase">An uppercase letter</li>
+                          <li *ngIf="!passwordHasNumber">A number</li>
+                          <li *ngIf="!passwordHasSymbol">A symbol: <code>_</code>, <code>-</code>, <code>.</code>, or <code>*</code></li>
+                        </ul>
+                      </div>
+
+                    
                   </div>
+                  
 
                   <div class="col-12">
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
@@ -87,14 +98,19 @@
 
                 <form [formGroup]="verificationForm" class="row g-3 needs-validation">
                   <div class="col-12 d-flex justify-content-between">
-                    <input *ngFor="let control of ['code1', 'code2', 'code3', 'code4', 'code5']"
-                      [formControlName]="control" type="text" maxlength="1" class="form-control text-center"
-                      style="width: 48px;">
-                  </div>
+                    <input *ngFor="let control of ['code1', 'code2', 'code3', 'code4', 'code5']; let i = index"
+                        [formControlName]="control" 
+                        type="text" 
+                        maxlength="1" 
+                        class="form-control text-center squares"
+                        style="width: 48px; height: 48px; border-radius: 5px;"
+                        (paste)="onPaste($event, i)">
+                </div>
+                
 
                   <!-- Resend Code -->
                   <div class="col-12 text-center mt-3">
-                    <a (click)="resendAuthCode()" style="cursor: pointer;">Resend Code</a>
+                    <a class="resend-code-anchor outline-none custom-anchor" (click)="resendAuthCode()">Resend Code</a>
                   </div>
 
                   <!-- Submit -->
