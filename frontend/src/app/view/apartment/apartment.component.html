@@ -82,17 +82,22 @@
             <ol class="breadcrumb mb-2 mb-md-0">
                 <li class="breadcrumb-item">
                     <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">Communities</h5>
+                    </a>
+                </li>                
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', apartment?.building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a [routerLink]="['/communities', apartment?.building?.community?.id]"
+                    <a [routerLink]="['/buildings', apartment?.building?.id]"
                         style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">{{ apartment?.building?.address }}</h5>
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a [routerLink]="['/buildings', apartment?.building?.id]"
+                    <a 
                         style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">Apartment {{ apartment?.id }}</h5>
                     </a>
@@ -206,17 +211,22 @@
             <ol class="breadcrumb mb-2 mb-md-0">
                 <li class="breadcrumb-item">
                     <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">Communities</h5>
+                    </a>
+                </li>                
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', apartment?.building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a [routerLink]="['/communities', apartment?.building?.community?.id]"
+                    <a [routerLink]="['/buildings', apartment?.building?.id]"
                         style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">{{ apartment?.building?.address }}</h5>
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a [routerLink]="['/buildings', apartment?.building?.id]"
+                    <a 
                         style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">Apartment {{ apartment?.id }}</h5>
                     </a>

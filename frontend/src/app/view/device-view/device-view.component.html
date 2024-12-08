@@ -17,33 +17,34 @@
       <ol class="breadcrumb mb-2 mb-md-0">
         <li class="breadcrumb-item">
           <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
-            <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+            <h5 class="card-title mb-0 d-inline">Communities</h5>
           </a>
         </li>
-        <li class="breadcrumb-item">
-          <a
-            [routerLink]="['/communities', building?.community?.id]"
-            style="text-decoration-color: var(--color-secondary-dark);">
-            <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+      <li class="breadcrumb-item">
+          <a [routerLink]="['/communities', building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
+              <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
           </a>
-        </li>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <a [routerLink]="['/buildings', building?.id]" style="text-decoration-color: var(--color-secondary-dark);">
+          <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+        </a>
+      </li>
         <li *ngIf="isBuildingDevice" class="breadcrumb-item">
             <a
-            [routerLink]="['/buildings', building?.id]"
             style="text-decoration-color: var(--color-secondary-dark);">
             <h5 *ngIf="device" class="card-title mb-0 d-inline">{{ device.name }}</h5>
           </a>
         </li>
         <li *ngIf="!isBuildingDevice" class="breadcrumb-item">
           <a
-          [routerLink]="['/buildings', building?.id]"
+          [routerLink]="['/apartments', apartment?.id]"
           style="text-decoration-color: var(--color-secondary-dark);">
           <h5 *ngIf="device" class="card-title mb-0 d-inline"> Apartment {{ apartment?.id }}</h5>
         </a>
       </li>
         <li *ngIf="!isBuildingDevice" class="breadcrumb-item">
           <a
-          [routerLink]="['/apartments', apartment?.id]"
           style="text-decoration-color: var(--color-secondary-dark);">
           <h5 *ngIf="device" class="card-title mb-0 d-inline"> {{ device.name }}</h5>
         </a>
