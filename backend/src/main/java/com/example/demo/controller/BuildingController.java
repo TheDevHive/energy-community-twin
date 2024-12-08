@@ -235,6 +235,7 @@ public class BuildingController {
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
                 .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy()==1)).toList();
         for (BuildingDevice device : devices) {
+            //if(!(device.getConsumesEnergy()==-1)){
             int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum()
                     / device.getEnergyCurve().getEnergyCurve().size();
             energyProduction += temp;
@@ -248,6 +249,7 @@ public class BuildingController {
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
                 .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy()==0)).toList();
         for (BuildingDevice device : devices) {
+            //if(!(device.getConsumesEnergy()==-1)){
             int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum()
                     / device.getEnergyCurve().getEnergyCurve().size();
             energyConsumption += temp;

@@ -174,6 +174,7 @@ public class ApartmentController {
         List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO().findAll().stream().filter(device -> device.getApartment().getId() == apartmentId && device.getConsumesEnergy()==1).toList();
         double energyProduction = 0;
         for (ApartmentDevice apartmentDevice : apartmentDevices)
+            //if(!(apartmentDevice.getConsumesEnergy()==-1))
             energyProduction += Math.round(((double) apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
         return energyProduction;
     }
@@ -183,6 +184,7 @@ public class ApartmentController {
         List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO().findAll().stream().filter(device -> device.getApartment().getId() == apartmentId && device.getConsumesEnergy()==0).toList();
         double energyConsumption = 0;
         for (ApartmentDevice apartmentDevice : apartmentDevices)
+            //if(!(apartmentDevice.getConsumesEnergy()==-1))
             energyConsumption += Math.round(((double) apartmentDevice.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum() / apartmentDevice.getEnergyCurve().getEnergyCurve().size()) * 100.0) / 100.0;
         return energyConsumption;
     }
