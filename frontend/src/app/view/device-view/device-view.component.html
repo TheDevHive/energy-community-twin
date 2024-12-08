@@ -6,7 +6,7 @@
           <div class="card border shadow-sm">
             <div class="card-body p-4">
               <h3 *ngIf="device" class="text-primary">
-                <i class="bi bi-cpu me-2"></i>{{ device.name }} - Device Details
+                <i [ngClass]="{'bi bi-battery-full me-2': isBattery, 'bi bi-cpu me-2' : !isBattery }"></i> {{ device.name }} - {{!isBattery? 'Device Details': 'Battery Details'}}
               </h3>
             </div>
           </div>
