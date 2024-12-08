@@ -363,69 +363,63 @@ startNewSimulation() {
       startDate.getMonth() === endDate.getMonth() &&
       startDate.getDate() === endDate.getDate();
 
-    if (isSingleDay) {
-      // Single day logic
-      const ticks = this.generateHourlyTicks(startDate);
-
-      // Filter and map data for the specific day
-      const filteredData = this.selectedReport.timeSeriesData
-        .filter(d => {
-          // Ensure date is converted to a proper Date object
-          const date = d.date instanceof Date
-            ? d.date
-            : typeof d.date === 'string'
-              ? new Date(d.date)
-              : null;
-
-          return date && date >= startDate && date <= endDate;
-        })
-        .map(d => ({
-          ...d,
-          date: d.date instanceof Date
-            ? d.date
-            : new Date(d.date)
-        }))
-        .sort((a, b) => a.date.getTime() - b.date.getTime());
-
-      const hourlyFormatter = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false
-      });
-
-      // Create data points for all 2-hour intervals
-      const chartData = ticks.map(tickDate => {
-        // Find production data closest to each 2-hour tick
-        const matchingData = filteredData.reduce((closest, current) => {
-          const currentDate = new Date(current.date);
-          const closestDate = new Date(closest.date);
-          const tickTime = tickDate.getTime();
-          const currentTime = currentDate.getTime();
-          const closestTime = closestDate.getTime();
-
-          // Find the data point closest to the current 2-hour tick
-          return Math.abs(currentTime - tickTime) < Math.abs(closestTime - tickTime)
-            ? current
-            : closest;
-        }, filteredData[0] || { date: tickDate, production: 0 });
-
-        return {
-          date: tickDate,
-          production: matchingData?.production || 0
-        };
-      });
-
-      // Update chart
-      if (this.timeSeriesChart) {
-        this.timeSeriesChart.data.labels = chartData.map(d => hourlyFormatter.format(d.date));
-        this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
-
-        // Customize x-axis for hourly view
-        this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit = 12;
-
-        this.timeSeriesChart.update('none');
-      }
-    } else {
+      if (isSingleDay) {
+        // Generate hourly ticks for the day
+        const ticks = this.generateHourlyTicks(startDate);
+    
+        // Filter and map data for the specific day
+        const filteredData = this.selectedReport.timeSeriesData
+            .filter(d => {
+                const date = d.date instanceof Date
+                    ? d.date
+                    : typeof d.date === 'string'
+                    ? new Date(d.date)
+                    : null;
+                return date && date >= startDate && date <= endDate;
+            })
+            .map(d => ({
+                ...d,
+                date: d.date instanceof Date
+                    ? d.date
+                    : new Date(d.date)
+            }))
+            .sort((a, b) => a.date.getTime() - b.date.getTime());
+    
+        // Group the filtered data by hour
+        const groupedData = filteredData.reduce((grouped, current) => {
+            const hour = current.date.getHours();
+            const existing = grouped.get(hour) || { hour, production: 0 };
+            existing.production += current.production;
+            grouped.set(hour, existing);
+            return grouped;
+        }, new Map<number, { hour: number; production: number }>());
+    
+        // Convert grouped data to an array and align with ticks
+        const chartData = ticks.map(tickDate => {
+            const hour = tickDate.getHours();
+            const matchingData = groupedData.get(hour) || { hour, production: 0 };
+            return {
+                date: tickDate,
+                production: matchingData.production
+            };
+        });
+    
+        const hourlyFormatter = new Intl.DateTimeFormat('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: false
+        });
+    
+        // Update chart
+        if (this.timeSeriesChart) {
+            this.timeSeriesChart.data.labels = chartData.map(d => hourlyFormatter.format(d.date));
+            this.timeSeriesChart.data.datasets[0].data = chartData.map(d => d.production);
+            // Customize x-axis for hourly view
+            this.timeSeriesChart.options.scales.x.ticks.maxTicksLimit = 12;
+            this.timeSeriesChart.update('none');
+        }
+    }
+     else {
       // Multi-day logic
       const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -466,7 +460,19 @@ startNewSimulation() {
 
       // Aggregate data if range is more than 31 days
       if (totalDays > 31) {
+        console.log('Monthly data:', filteredData);
         filteredData = this.aggregateDataByMonth(filteredData);
+      } else {
+        // Group filtered data by day and sum production values
+        const groupedData = filteredData.reduce((grouped, current) => {
+          const date = current.date.toDateString();
+          const existing = grouped.get(date) || { date: current.date, production: 0 };
+          existing.production += current.production;
+          grouped.set(date, existing);
+          return grouped;
+        }, new Map<string, TimeSeriesData>());
+
+        filteredData = Array.from(groupedData.values());
       }
 
       // Generate regular tick marks

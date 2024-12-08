@@ -1,0 +1,113 @@
+<div class="container">
+  <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+          <div class="d-flex justify-content-center py-4">
+            <a href="index.html" class="logo d-flex align-items-center w-auto">
+              <img src="assets/logo.png" alt="">
+            </a>
+          </div>
+
+          <div class="card mb-3">
+            <div class="card-body">
+              <!-- Alert Section -->
+              <div *ngIf="message" class="alert alert-{{messageType}} text-center" role="alert">
+                {{ message }}
+              </div>
+
+              <!-- Register Form -->
+              <div *ngIf="!authCodeSended">
+                <div class="pt-4 pb-2">
+                  <h5 class="card-title text-center pb-0 fs-4">Register a new account</h5>
+                  <p class="text-center small">Enter your details to create an account</p>
+                </div>
+
+                <form [formGroup]="registerForm" class="row g-3 needs-validation" (ngSubmit)="submitForm()" novalidate>
+                  <div class="col-12">
+                    <label for="email" class="form-label">Email</label>
+                    <div class="input-group has-validation">
+                      <span class="input-group-text" id="inputGroupPrepend">&#64;</span>
+                      <input formControlName="email" type="email" name="email" class="form-control"
+                        [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                      <div *ngIf="registerForm.get('email')?.errors?.['invalidEmail'] && registerForm.get('email')?.touched"
+                        class="invalid-feedback">
+                        Enter a valid email.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label for="password" class="form-label">Password</label>
+                    <input formControlName="password" type="password" name="password" class="form-control"
+                      [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                    <div *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched"
+                      class="invalid-feedback">
+                      Password is required.
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input formControlName="confirmPassword" type="password" name="confirmPassword" class="form-control"
+                      [class.is-invalid]="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched">
+                    <div *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched"
+                      class="invalid-feedback">
+                      Passwords do not match.
+                    </div>
+                  </div>
+
+                  <a routerLink="/login" class="d-block mt-3 outline-none custom-anchor">Already registered?</a>
+
+                  <div class="col-12">
+                    <button 
+                        class="btn btn-primary w-100 position-relative" 
+                        type="submit" 
+                        [disabled]="loading || registerForm.invalid">
+                        <span [class.invisible]="loading">Register</span>
+                        <div 
+                            *ngIf="loading" 
+                            class="position-absolute top-50 start-50 translate-middle d-flex align-items-center"
+                        >
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </div>
+                    </button>
+                </div>
+                </form>
+              </div>
+
+              <!-- Verification Form -->
+              <div *ngIf="authCodeSended">
+                <div class="pt-4 pb-2">
+                  <h5 class="card-title text-center pb-0 fs-4">Enter the Verification Code</h5>
+                  <p class="text-center small">Check your email for the verification code</p>
+                </div>
+
+                <form [formGroup]="verificationForm" class="row g-3 needs-validation">
+                  <div class="col-12 d-flex justify-content-between">
+                    <input *ngFor="let control of ['code1', 'code2', 'code3', 'code4', 'code5']"
+                      [formControlName]="control" type="text" maxlength="1" class="form-control text-center"
+                      style="width: 48px;">
+                  </div>
+
+                  <!-- Resend Code -->
+                  <div class="col-12 text-center mt-3">
+                    <a (click)="resendAuthCode()" style="cursor: pointer;">Resend Code</a>
+                  </div>
+
+                  <!-- Submit -->
+                  <div class="col-12">
+                    <button class="btn btn-primary w-100" type="submit" [disabled]="loading || verificationForm.invalid" (click)="tryAuthCode()">Verify</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
