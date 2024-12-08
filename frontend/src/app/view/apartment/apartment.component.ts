@@ -267,6 +267,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     deviceData.apartment = this.apartment;
       this.apartmentDeviceService.createApartmentDevice(deviceData).subscribe({
         next: (newDevice: ApartmentDevice) => {
+          this.devices = [...this.devices, newDevice];
           this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
           this.alert.setAlertApartmentDevice('success', `Device <strong>${newDevice.id}</strong> created successfully`);
          
@@ -283,6 +284,7 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     deviceData.consumesEnergy = -1;
     this.apartmentDeviceService.createApartmentDevice(deviceData).subscribe({
       next: (newDevice: ApartmentDevice) => {
+        this.batteries = [...this.batteries, newDevice];
         this.batteryDataSource.data = [...this.batteryDataSource.data, newDevice];
         this.alert.setAlertApartmentBattery('success', `Device <strong>${newDevice.id}</strong> created successfully`);
       },
