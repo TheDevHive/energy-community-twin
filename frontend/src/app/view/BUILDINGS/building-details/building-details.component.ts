@@ -391,6 +391,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     deviceData.building = this.building;
       this.buildingDeviceService.createDevice(deviceData).subscribe({
         next: (newDevice: BuildingDevice) => {
+          this.devices = [...this.devices, newDevice];
           this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
           this.alert.setAlertBuildingDevices('success', `Device <strong>${newDevice.id}</strong> created successfully`);
         },
@@ -406,6 +407,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
     deviceData.consumesEnergy = -1;
     this.buildingDeviceService.createDevice(deviceData).subscribe({
       next: (newDevice: BuildingDevice) => {
+        this.batteries = [...this.batteries, newDevice];
         this.batteryDataSource.data = [...this.batteryDataSource.data, newDevice];
         this.alert.setAlertBuildingBattery('success', `Device <strong>${newDevice.id}</strong> created successfully`);
      },
