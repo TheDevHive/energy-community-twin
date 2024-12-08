@@ -66,8 +66,9 @@ body {
 }
 
 .card-title {
-  color: var(--color-secondary-dark);
+  color: var(--color-secondary);
   font-weight: 600;
+  font-size: 17px;
 }
 
 /* Table Styles */

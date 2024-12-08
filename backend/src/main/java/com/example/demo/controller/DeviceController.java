@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.controller.Auth.AuthUtility;
 import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.BuildingDevice;
+import com.example.demo.model.Device;
 import com.example.demo.model.EnergyCurve;
 import com.example.demo.model.EnergyReport;
 import com.example.demo.model.TS_Device;
@@ -226,8 +227,16 @@ public class DeviceController {
             } else {
                 EnergyReport report = new EnergyReport();
                 DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
-                boolean result = GenerateData.generateDataDevice(uuid, timeRange.getStart(), timeRange.getEnd(), report.getId());
-                if (result && GenerateData.generateReport(report, Arrays.asList(new String[]{uuid}), timeRange.getStart(), timeRange.getEnd(), "D"+uuid)){
+                Device device = null;
+                if (uuid.startsWith("A")) {
+                    device = DBManager.getInstance().getApartmentDeviceDAO().findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
+                } else if (uuid.startsWith("B")) {
+                    device = DBManager.getInstance().getBuildingDeviceDAO().findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                String result = GenerateData.generateDataDevice(device, timeRange.getStart(), timeRange.getEnd(), report.getId());
+                if (!result.equals("") && GenerateData.generateReport(report, Arrays.asList(new String[]{uuid}), timeRange.getStart(), timeRange.getEnd(), "D"+uuid)){
                     return new ResponseEntity<>(true, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

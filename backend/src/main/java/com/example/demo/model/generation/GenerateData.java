@@ -9,8 +9,8 @@ import com.example.demo.model.Apartment;
 import com.example.demo.model.ApartmentDevice;
 import com.example.demo.model.Building;
 import com.example.demo.model.BuildingDevice;
+import com.example.demo.model.Community;
 import com.example.demo.model.Device;
-import com.example.demo.model.EnergyCurve;
 import com.example.demo.model.EnergyReport;
 import com.example.demo.model.TS_Device;
 import com.example.demo.model.TS_Measurement;
@@ -19,93 +19,126 @@ import com.example.demo.persistence.DBManager;
 import com.example.demo.persistence.TS_DBManager;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
+import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.BuildingDeviceDAO;
-import com.example.demo.persistence.DAO.TS_DeviceDAO;
-import com.example.demo.persistence.DAO.TS_MeasurementDAO;
 
 public class GenerateData {
 
-    public static double generate(LocalDateTime date, int hour, EnergyCurve energyCurve) {
-        if (date == null) {
-            throw new IllegalArgumentException("String is empty");
+    public static double generate(Device device, LocalDateTime timestamp, int reportId){
+        if(device.getConsumesEnergy() == -1){
+            return 0;
+        } else {
+            int prodCons = (device.getConsumesEnergy() == 1) ? 1 : -1;
+            Random random = new Random();
+            double energy = random.nextGaussian(device.getEnergyCurve().getEnergyCurve().get(timestamp.getHour()),
+            device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
+            energy *= prodCons;
+            TS_Device ts_device = null;
+            if(device instanceof BuildingDevice){
+                ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + device.getId());
+            } else if(device instanceof ApartmentDevice){
+                ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("A" + device.getId());
+            }
+            TS_DBManager.getInstance().getTS_MeasurementDAO().saveOrUpdate(new TS_Measurement(-1, ts_device.getId(), reportId, timestamp, energy));
+            return energy;
         }
-        if (hour < 0 || hour > 23) {
-            throw new IllegalArgumentException("Hour must be between 0 and 23");
-        }
-        if (energyCurve == null) {
-            throw new IllegalArgumentException("EnergyCurve is null");
-        }
-        if (!energyCurve.validate()) {
-            throw new IllegalArgumentException("EnergyCurve is not valid");
-        }
-        Random random = new Random();
-        return random.nextGaussian(energyCurve.getEnergyCurve().get(hour),
-                energyCurve.getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
     }
 
-    public static boolean generateDataDevice(String uuid, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
-        TS_DeviceDAO ts_DeviceDAO = TS_DBManager.getInstance().getTS_DeviceDAO();
-        TS_Device ts_device = ts_DeviceDAO.findByUuid(uuid);
-        TS_MeasurementDAO ts_MeasurementDAO = TS_DBManager.getInstance().getTS_MeasurementDAO();
-        Device device = null;
-        if (ts_device.getUuid().startsWith("A")) {
-            device = DBManager.getInstance().getApartmentDeviceDAO()
-                    .findByPrimaryKey(Integer.parseInt(ts_device.getUuid().substring(1)));
-        } else if (ts_device.getUuid().startsWith("B")) {
-            device = DBManager.getInstance().getBuildingDeviceDAO()
-                    .findByPrimaryKey(Integer.parseInt(ts_device.getUuid().substring(1)));
-        }
-        if (device == null) {
-            return false;
-        }
-
+    public static List<String> generateData(List<Device> batteries, List<Device> otherDevices, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
+        List<String> uuids = new ArrayList<>();
         int hours = CalculateDate.dateDifferenceHours(dateEnd, dateStart);
-        int prodOrCons = device.getConsumesEnergy() ? -1 : 1;
-        for (int i = 0; i < hours; i++) {
-            LocalDateTime date = CalculateDate.hoursAdd(dateStart, i);
-            double energy = GenerateData.generate(date, date.getHour(),
-                    device.getEnergyCurve()) * prodOrCons;
-            TS_Measurement ts_measurement = new TS_Measurement(-1, ts_device.getId(), reportId, date, energy);
-            ts_MeasurementDAO.saveOrUpdate(ts_measurement);
-        }
-        return true;
-    }
-
-    public static ArrayList<String> generateDataBuilding(List<BuildingDevice> devices, LocalDateTime dateStart,
-            LocalDateTime dateEnd, int reportId) {
-        ArrayList<String> uuids = new ArrayList<>();
-        for (BuildingDevice buildingDevice : devices) {
-            String uuid = "B" + buildingDevice.getId();
-            if (generateDataDevice(uuid, dateStart, dateEnd, reportId)) {
+        double lastEnergy = 0;
+        for(int hour = 0;hour < hours;hour++){
+            LocalDateTime date = CalculateDate.hoursAdd(dateStart, hour);
+            double energy = 0;
+            for(Device device : otherDevices){
+                String uuid = null;
+                if (device instanceof BuildingDevice) {
+                    uuid = "B" + device.getId();
+                } else if (device instanceof ApartmentDevice) {
+                    uuid = "A" + device.getId();
+                } else {
+                    continue;
+                }
+                energy += GenerateData.generate(device, date, reportId);
                 uuids.add(uuid);
+            }
+            double energyToDo = energy;
+            for(Device device : batteries){
+                TS_Device ts_device = null;
+                if(device instanceof BuildingDevice){
+                    ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + device.getId());
+                } else if(device instanceof ApartmentDevice){
+                    ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("A" + device.getId());
+                }
+                double newEnergy = lastEnergy + energyToDo;
+                if (newEnergy < 0){
+                    newEnergy = 0;
+                } else if (newEnergy > device.getEnergyCurve().getEnergyCurve().get(0)){
+                    newEnergy = device.getEnergyCurve().getEnergyCurve().get(0);
+                }
+                if (energyToDo < 0){
+                    energyToDo += (newEnergy - lastEnergy);
+                } else {
+                    energyToDo -= (newEnergy - lastEnergy);
+                }
+                lastEnergy = newEnergy;
+                TS_Measurement ts_measurement = new TS_Measurement(-1, ts_device.getId(), reportId, date, lastEnergy);
+                TS_DBManager.getInstance().getTS_MeasurementDAO().saveOrUpdate(ts_measurement);
+                if(lastEnergy == 0){
+                    break;
+                }
             }
         }
         return uuids;
     }
 
-    public static ArrayList<String> generateDataApartment(List<ApartmentDevice> devices, LocalDateTime dateStart,
-            LocalDateTime dateEnd, int reportId) {
-        ArrayList<String> uuids = new ArrayList<>();
-        for (ApartmentDevice apartmentDevice : devices) {
-            String uuid = "A" + apartmentDevice.getId();
-            if (generateDataDevice(uuid, dateStart, dateEnd, reportId)) {
-                uuids.add(uuid);
+    public static List<String> generateDataDeviceList(List<Device> devices, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
+        List<Device> batteries = new ArrayList<>();
+        List<Device> other = new ArrayList<>();
+        for (Device device : devices) {
+            if(device.getConsumesEnergy() == -1){
+                batteries.add(device);
+            } else {
+                other.add(device);
             }
         }
-        return uuids;
+        return generateData(batteries, other, dateStart, dateEnd, reportId);
     }
 
-    public static ArrayList<String> generateDataCommunity(List<Building> buildings, LocalDateTime dateStart,
-            LocalDateTime dateEnd, int reportId) {
-        ArrayList<String> uuids = new ArrayList<>();
+    public static List<String> generateDataBuilding(Building building, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
+        List<String> uuids = new ArrayList<>();
         BuildingDeviceDAO buildingDeviceDAO = DBManager.getInstance().getBuildingDeviceDAO();
+        List<Device> devices = buildingDeviceDAO.findByBuilding(building).stream().map(device -> (Device) device).toList();
+        generateDataDeviceList(devices, dateStart, dateEnd, reportId);
         ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
+        List<Apartment> apartments = apartmentDAO.findByBuilding(building);
+        for (Apartment apartment : apartments) {
+            uuids.addAll(generateDataApartment(apartment, dateStart, dateEnd, reportId));
+        }
+        return uuids;
+    }
+
+    public static ArrayList<String> generateDataApartment(Apartment apartment, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
+        ArrayList<String> uuids = new ArrayList<>();
         ApartmentDeviceDAO apartmentDeviceDAO = DBManager.getInstance().getApartmentDeviceDAO();
+        List<Device> devices = apartmentDeviceDAO.findByApartment(apartment).stream().map(device -> (Device) device).toList();
+        uuids.addAll(generateDataDeviceList(devices, dateStart, dateEnd, reportId));
+        return uuids;
+    }
+
+    public static String generateDataDevice(Device device, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
+        List<String> uuids = generateDataDeviceList(List.of(device), dateStart, dateEnd, reportId);
+        return uuids.get(0);
+    }
+
+    public static ArrayList<String> generateDataCommunity(Community community, LocalDateTime dateStart,
+            LocalDateTime dateEnd, int reportId) {
+        ArrayList<String> uuids = new ArrayList<>();
+        BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+        List<Building> buildings = buildingDAO.findByCommunity(community);
         for (Building building : buildings) {
-            uuids.addAll(generateDataBuilding(buildingDeviceDAO.findByBuilding(building), dateStart, dateEnd, reportId));
-            for (Apartment apartment : apartmentDAO.findByBuilding(building)) {
-                uuids.addAll(generateDataApartment(apartmentDeviceDAO.findByApartment(apartment), dateStart, dateEnd, reportId));
-            }
+            uuids.addAll(generateDataBuilding(building, dateStart, dateEnd, reportId));
         }
         return uuids;
     }

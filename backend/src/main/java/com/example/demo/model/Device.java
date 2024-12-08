@@ -5,26 +5,51 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Device {
     private int id;
     private String name;
-    private boolean consumesEnergy;
+    private int consumesEnergy;
+
+    private float windSensitivity;
+    private float lightSensitivity;
+    private float temperatureSensitivity;
+
+    private float precipitationSensitivity;
     @JsonProperty("energy_curve")
     private EnergyCurve energyCurve;
-
-    public Device(int id, String name, boolean consumesEnergy, EnergyCurve energyCurve) {
+    public Device(int id, String name, int consumesEnergy, EnergyCurve energyCurve, float windSensitivity, float lightSensitivity, float temperatureSensitivity, float precipitationSensitivity) {
         this.id = id;
         this.name = name;
         this.consumesEnergy = consumesEnergy;
         this.energyCurve = energyCurve;
+        this.windSensitivity = windSensitivity;
+        this.lightSensitivity = lightSensitivity;
+        this.temperatureSensitivity = temperatureSensitivity;
+        this.precipitationSensitivity = precipitationSensitivity;
     }
 
     public int getId() {
         return id;
     }
 
+    public float getWindSensitivity() {
+        return windSensitivity;
+    }
+
+    public float getLightSensitivity() {
+        return lightSensitivity;
+    }
+
+    public float getTemperatureSensitivity() {
+        return temperatureSensitivity;
+    }
+
+    public float getPrecipitationSensitivity() {
+        return precipitationSensitivity;
+    }
+
     public String getName() {
         return name;
     }
 
-    public boolean getConsumesEnergy() {
+    public int getConsumesEnergy() {
         return consumesEnergy;
     }
 
@@ -40,7 +65,7 @@ public class Device {
         this.name = name;
     }
 
-    public void setConsumesEnergy(boolean consumesEnergy) {
+    public void setConsumesEnergy(int consumesEnergy) {
         this.consumesEnergy = consumesEnergy;
     }
 
@@ -54,6 +79,10 @@ public class Device {
                 ", name=" + name +
                 ", consumesEnergy=" + consumesEnergy +
                 ", energyCurve=" + energyCurve.toString() +
+                ", windSensitivity=" + windSensitivity +
+                ", lightSensitivity=" + lightSensitivity +
+                ", temperatureSensitivity=" + temperatureSensitivity +
+                ", precipitationSensitivity=" + precipitationSensitivity +
                 '}';
     }
 

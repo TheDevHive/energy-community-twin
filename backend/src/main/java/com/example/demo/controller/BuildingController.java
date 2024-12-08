@@ -190,13 +190,7 @@ public class BuildingController {
         }
         EnergyReport report = new EnergyReport();
         DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
-        List<String> deviceList = GenerateData.generateDataBuilding(devices, timeRange.getStart(), timeRange.getEnd(), report.getId());
-        for (Apartment apartment : apartments) {
-            List<ApartmentDevice> apartmentDevices = DBManager.getInstance().getApartmentDeviceDAO()
-                    .findByApartment(apartment);
-                    deviceList.addAll(
-                    GenerateData.generateDataApartment(apartmentDevices, timeRange.getStart(), timeRange.getEnd(), report.getId()));
-        }
+        List<String> deviceList = GenerateData.generateDataBuilding(building, timeRange.getStart(), timeRange.getEnd(), report.getId());
         if (deviceList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -239,8 +233,9 @@ public class BuildingController {
     public static double getEnergyProduction(int buildingId) {
         int energyProduction = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
-                .filter(device -> (device.getBuilding().getId() == buildingId && !device.getConsumesEnergy())).toList();
+                .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy()==1)).toList();
         for (BuildingDevice device : devices) {
+            //if(!(device.getConsumesEnergy()==-1)){
             int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum()
                     / device.getEnergyCurve().getEnergyCurve().size();
             energyProduction += temp;
@@ -252,8 +247,9 @@ public class BuildingController {
     public static double getEnergyConsumption(int buildingId) {
         double energyConsumption = 0;
         List<BuildingDevice> devices = DBManager.getInstance().getBuildingDeviceDAO().findAll().stream()
-                .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy())).toList();
+                .filter(device -> (device.getBuilding().getId() == buildingId && device.getConsumesEnergy()==0)).toList();
         for (BuildingDevice device : devices) {
+            //if(!(device.getConsumesEnergy()==-1)){
             int temp = device.getEnergyCurve().getEnergyCurve().stream().mapToInt(Integer::intValue).sum()
                     / device.getEnergyCurve().getEnergyCurve().size();
             energyConsumption += temp;

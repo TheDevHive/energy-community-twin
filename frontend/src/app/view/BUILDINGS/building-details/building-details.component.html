@@ -83,14 +83,16 @@
             <ol class="breadcrumb mb-2 mb-md-0">
                 <li class="breadcrumb-item">
                     <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                      <h5 class="card-title mb-0 d-inline">Communities</h5>
+                    </a>
+                  </li>
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
                     </a>
                 </li>
-                <li class="breadcrumb-item">
-                    <a [routerLink]="['/communities', building?.community?.id]"
-                        style="text-decoration-color: var(--color-secondary-dark);">
-                        <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
-                    </a>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">
                     <h5 class="card-title mb-0 d-inline">Building Devices List</h5>
@@ -195,20 +197,144 @@
             </div>
         </div>
 
+
+        <!-- Batteries Section Header -->
+        <div
+            class="d-flex flex-column align-items-start align-items-md-center flex-md-row justify-content-between mb-4">
+            <ol class="breadcrumb mb-2 mb-md-0">
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                      <h5 class="card-title mb-0 d-inline">Communities</h5>
+                    </a>
+                  </li>
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
+                        <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <h5 class="card-title mb-0 d-inline">Building Batteries List</h5>
+                </li>
+            </ol>
+            <button class="btn btn-primary mt-2 mt-md-0 align-self-start align-self-md-center"
+                (click)="openAddBatteryDialog()">
+                <i class="bi bi-plus-lg me-2"></i>
+                Add New Battery
+            </button>
+        </div>
+
+        <app-alert [page]="'BuildingBattery'"></app-alert>
+
+        <!-- Batteries Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <!-- Empty State for Batteries -->
+                <div *ngIf="!batteryDataSource.data.length" class="text-center py-5">
+                    <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px;">
+                        <i class="bi bi-battery-full text-primary fs-1"></i>
+                    </div>
+                    <h5 class="text-muted mb-3">No Battery Added Yet</h5>
+                    <p class="text-muted mb-4">
+                        Start by adding battery to optimize your apartment's energy consumption and production.
+                    </p>
+                    <button class="btn btn-primary" (click)="openAddBatteryDialog()">
+                        <i class="bi bi-plus-lg me-2"></i>Add Your First Battery
+                    </button>
+                </div>
+
+                <!-- Batteries Table -->
+                <div class="table-responsive" *ngIf="batteryDataSource.data.length">
+                    <table mat-table [dataSource]="batteryDataSource" matSort
+                        (matSortChange)="onBatterySortChange($event)" #deviceSort="matSort"
+                        class="table align-middle mb-0 bg-white">
+                        <!-- ID Column -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                            <td mat-cell *matCellDef="let device">{{device.id}}</td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                            <td mat-cell *matCellDef="let device">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-battery-full me-2"></i>
+                                    {{device.name}}
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Column -->
+                        <ng-container matColumnDef="energy">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Capacity</th>
+                            <td mat-cell *matCellDef="let device">
+                                <span class="me-2">
+                                    <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
+                                </span>
+                                {{ (energy(device) / 24) | number:'1.2-2' }} Wh
+                            </td>
+                        </ng-container>
+
+                        <!-- Energy Class Column -->
+                        <!-- Adjusted Energy Class Column in Devices Table -->
+                        <ng-container matColumnDef="energyClass">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Energy Class</th>
+                            <td mat-cell *matCellDef="let device">
+                                <span class="badge bg-{{getEnergyClassColor(device.energyClass)}} energy-class-badge">
+                                    {{energyClass(device)}}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <!-- Actions Column -->
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Actions</th>
+                            <td mat-cell *matCellDef="let device">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm" (click)="navigateToDevice(device.id)">
+                                        Details
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" (click)="openEditBatteryDialog(device)">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" (click)="openDeleteBatteryDialog(device)">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="deviceColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: deviceColumns;"></tr>
+                    </table>
+
+                    <mat-paginator #devicePaginator [pageSizeOptions]="[5, 10, 20]"
+                        showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Buildings Section Header -->
         <div
             class="d-flex flex-column align-items-start align-items-md-center flex-md-row justify-content-between mb-4">
             <ol class="breadcrumb mb-2 mb-md-0">
                 <li class="breadcrumb-item">
                     <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
+                      <h5 class="card-title mb-0 d-inline">Communities</h5>
+                    </a>
+                  </li>
+                <li class="breadcrumb-item">
+                    <a [routerLink]="['/communities', building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
                         <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
                     </a>
                 </li>
-                <li class="breadcrumb-item">
-                    <a [routerLink]="['/communities', building?.community?.id]"
-                        style="text-decoration-color: var(--color-secondary-dark);">
-                        <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
-                    </a>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">
                     <h5 class="card-title mb-0 d-inline">Building Apartments List</h5>
