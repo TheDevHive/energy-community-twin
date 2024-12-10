@@ -48,7 +48,7 @@ public class ApartmentDAOTest {
         MockitoAnnotations.openMocks(this);
         apartmentDAO = new ApartmentDAO(mockConnection);
         spyApartmentDAO = Mockito.spy(apartmentDAO);
-        apartment = new Apartment(0, mockBuilding, 3, 100, "A", mockUser);
+        apartment = new Apartment(0, mockBuilding, 3, 100, "A", 0.20, mockUser);
     }
 
     @Test
@@ -218,4 +218,3 @@ public class ApartmentDAOTest {
         verify(mockPreparedStatement).executeUpdate();
     }
 }
-
