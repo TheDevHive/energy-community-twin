@@ -151,14 +151,17 @@ public class GenerateData {
         double production = ltsdd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
         double consumption = ltsdd.stream().map(tsd -> tsd.getProduction()).filter(num -> num <= 0).mapToDouble(Double::doubleValue).sum();
         double batteryUsage = 0;
-        TimeSeriesData tsdb = ltsdb.get(0);
-        for (TimeSeriesData tsd : ltsdb) {
-            if (tsd.getProduction() < tsdb.getProduction()){
-                batteryUsage += tsd.getProduction();
+        double batteryEnd = 0;
+        if (ltsdb.size() > 0){
+            TimeSeriesData tsdb = ltsdb.get(0);
+            for (TimeSeriesData tsd : ltsdb) {
+                if (tsd.getProduction() < tsdb.getProduction()){
+                    batteryUsage += tsd.getProduction();
+                }
+                tsdb = tsd;
             }
-            tsdb = tsd;
+            batteryEnd = tsdb.getProduction();
         }
-        double batteryEnd = tsdb.getProduction();
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
