@@ -72,8 +72,9 @@ public class ApartmentDAOTest {
         verify(mockPreparedStatement).setInt(1, apartment.getResidents());
         verify(mockPreparedStatement).setInt(2, apartment.getSquareFootage());
         verify(mockPreparedStatement).setString(3, apartment.getEnergyClass());
-        verify(mockPreparedStatement).setInt(4, apartment.getBuilding().getId());
-        verify(mockPreparedStatement).setInt(5, apartment.getUser().getId());
+        verify(mockPreparedStatement).setDouble(4, apartment.getEnergyCost());
+        verify(mockPreparedStatement).setInt(5, apartment.getBuilding().getId());
+        verify(mockPreparedStatement).setInt(6, apartment.getUser().getId());
         verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, apartment.getId());
     }
@@ -96,9 +97,10 @@ public class ApartmentDAOTest {
         verify(mockPreparedStatement).setInt(1, apartment.getResidents());
         verify(mockPreparedStatement).setInt(2, apartment.getSquareFootage());
         verify(mockPreparedStatement).setString(3, apartment.getEnergyClass());
-        verify(mockPreparedStatement).setInt(4, apartment.getBuilding().getId());
-        verify(mockPreparedStatement).setInt(5, apartment.getUser().getId());
-        verify(mockPreparedStatement).setInt(6, apartment.getId());
+        verify(mockPreparedStatement).setDouble(4, apartment.getEnergyCost());
+        verify(mockPreparedStatement).setInt(5, apartment.getBuilding().getId());
+        verify(mockPreparedStatement).setInt(6, apartment.getUser().getId());
+        verify(mockPreparedStatement).setInt(7, apartment.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -115,6 +117,7 @@ public class ApartmentDAOTest {
         when(mockResultSet.getInt("residents")).thenReturn(3);
         when(mockResultSet.getInt("square_footage")).thenReturn(100);
         when(mockResultSet.getString("energy_class")).thenReturn("A");
+        when(mockResultSet.getDouble("energy_cost")).thenReturn(0.20);
 
         BuildingDAO mockBuildingDAO = mock(BuildingDAO.class);
         UserDAO mockUserDAO = mock(UserDAO.class);
@@ -142,6 +145,7 @@ public class ApartmentDAOTest {
             assertEquals(3, resultApartment.getResidents());
             assertEquals(100, resultApartment.getSquareFootage());
             assertEquals("A", resultApartment.getEnergyClass());
+            assertEquals(0.20, resultApartment.getEnergyCost());
         }
     }
 
@@ -174,6 +178,7 @@ public class ApartmentDAOTest {
         when(mockResultSet.getInt("residents")).thenReturn(3, 4);
         when(mockResultSet.getInt("square_footage")).thenReturn(100, 120);
         when(mockResultSet.getString("energy_class")).thenReturn("A", "B");
+        when(mockResultSet.getDouble("energy_cost")).thenReturn(0.20, 0.25);
 
         BuildingDAO mockBuildingDAO = mock(BuildingDAO.class);
         UserDAO mockUserDAO = mock(UserDAO.class);
