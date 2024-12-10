@@ -20,11 +20,12 @@ public class BuildingDAO {
 
     public boolean saveOrUpdate(Building building) {
         if (findByPrimaryKey(building.getId()) == null) {
-            String sql = "INSERT INTO building (community_id, address, floors) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO building (community_id, address, floors, energy_cost) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, building.getCommunity().getId());
                 pstmt.setString(2, building.getAddress());
                 pstmt.setInt(3, building.getFloors());
+                pstmt.setDouble(4, building.getEnergyCost());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -35,12 +36,13 @@ public class BuildingDAO {
                 return false;
             }
         } else {
-            String sql = "UPDATE building SET community_id = ?, address = ?, floors = ? WHERE id = ?";
+            String sql = "UPDATE building SET community_id = ?, address = ?, floors = ?, energy_cost = ? WHERE id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, building.getCommunity().getId());
                 pstmt.setString(2, building.getAddress());
                 pstmt.setInt(3, building.getFloors());
-                pstmt.setInt(4, building.getId());
+                pstmt.setDouble(4, building.getEnergyCost());
+                pstmt.setInt(5, building.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -62,7 +64,8 @@ public class BuildingDAO {
                 if (community == null) {
                     return null;
                 }
-                building = new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors"));
+                building = new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors"),
+                        rs.getDouble("energy_cost"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,7 +80,8 @@ public class BuildingDAO {
             ResultSet rs = pstmt.executeQuery();
             List<Building> buildings = new ArrayList<>();
             while (rs.next()) {
-                buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors")));
+                buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors"),
+                        rs.getDouble("energy_cost")));
             }
             return buildings;
         } catch (SQLException e) {
@@ -109,7 +113,8 @@ public class BuildingDAO {
                 if (community == null) {
                     continue;
                 }
-                buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors")));
+                buildings.add(new Building(rs.getInt("id"), community, rs.getString("address"), rs.getInt("floors"),
+                        rs.getDouble("energy_cost")));
             }
             return buildings;
         } catch (SQLException e) {
