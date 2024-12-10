@@ -144,7 +144,7 @@ public class ReportController {
         csvBuilder.append("Date,Production\n");
 
         // Aggiungi solo le colonne Date e Production
-        List<TimeSeriesData> timeSeriesData = report.getTimeSeriesData();
+        List<TimeSeriesData> timeSeriesData = report.getTimeSeriesDataDevice();
         for (TimeSeriesData data : timeSeriesData) {
             csvBuilder.append(data.getDate()).append(",").append(data.getProduction()).append("\n");
         }

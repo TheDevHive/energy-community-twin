@@ -71,5 +71,6 @@ export class DeviceService {
       { headers: this.authService.getHeaders() }
     );
   }
+
 }
 
