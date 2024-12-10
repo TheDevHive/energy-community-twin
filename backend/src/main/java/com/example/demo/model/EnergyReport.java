@@ -14,7 +14,10 @@ public class EnergyReport {
     private Double totalProduction;
     private Double totalConsumption;
     private Double totalDifference;
-    private List<TimeSeriesData> timeSeriesData;
+    private Double batteryUsage;
+    private Double batteryEnd;
+    private List<TimeSeriesData> timeSeriesDataDevice;
+    private List<TimeSeriesData> timeSeriesDataBattery;
 
     // Default constructor
     public EnergyReport() {
@@ -27,14 +30,19 @@ public class EnergyReport {
         this.totalProduction = 0.0;
         this.totalConsumption = 0.0;
         this.totalDifference = 0.0;
-        this.timeSeriesData = new ArrayList<>();
+        this.batteryUsage = 0.0;
+        this.batteryEnd = 0.0;
+        this.timeSeriesDataDevice = new ArrayList<>();
+        this.timeSeriesDataBattery = new ArrayList<>();
+
     }
 
     // Full constructor
     public EnergyReport(int id, String refUUID, LocalDateTime startDate, LocalDateTime endDate, 
                         Integer days, Integer devices, Double totalProduction, 
                         Double totalConsumption, Double totalDifference, 
-                        List<TimeSeriesData> timeSeriesData) {
+                        Double batteryUsage, Double batteryEnd,
+                        List<TimeSeriesData> timeSeriesDataDevice, List<TimeSeriesData> timeSeriesDataBattery) {
         this.id = id;
         this.refUUID = refUUID;
         this.startDate = startDate;
@@ -44,7 +52,10 @@ public class EnergyReport {
         this.totalProduction = totalProduction;
         this.totalConsumption = totalConsumption;
         this.totalDifference = totalDifference;
-        this.timeSeriesData = timeSeriesData;
+        this.batteryUsage = batteryUsage;
+        this.batteryEnd = batteryEnd;
+        this.timeSeriesDataDevice = timeSeriesDataDevice;
+        this.timeSeriesDataBattery = timeSeriesDataBattery;
     }
 
     // Getters and Setters
@@ -120,12 +131,36 @@ public class EnergyReport {
         this.totalDifference = totalDifference;
     }
 
-    public List<TimeSeriesData> getTimeSeriesData() {
-        return timeSeriesData;
+    public List<TimeSeriesData> getTimeSeriesDataDevice() {
+        return timeSeriesDataDevice;
     }
 
-    public void setTimeSeriesData(List<TimeSeriesData> timeSeriesData) {
-        this.timeSeriesData = timeSeriesData;
+    public Double getBatteryUsage() {
+        return batteryUsage;
+    }
+
+    public void setBatteryUsage(Double batteryUsage) {
+        this.batteryUsage = batteryUsage;
+    }
+
+    public Double getBatteryEnd() {
+        return batteryEnd;
+    }
+
+    public void setBatteryEnd(Double batteryEnd) {
+        this.batteryEnd = batteryEnd;
+    }
+
+    public void setTimeSeriesDataDevice(List<TimeSeriesData> timeSeriesDataDevice) {
+        this.timeSeriesDataDevice = timeSeriesDataDevice;
+    }
+
+    public List<TimeSeriesData> getTimeSeriesDataBattery() {
+        return timeSeriesDataBattery;
+    }
+
+    public void setTimeSeriesDataBattery(List<TimeSeriesData> timeSeriesDataBattery) {
+        this.timeSeriesDataBattery = timeSeriesDataBattery;
     }
 
     public String reportKind(){
@@ -161,7 +196,8 @@ public class EnergyReport {
                 ", totalProduction=" + totalProduction +
                 ", totalConsumption=" + totalConsumption +
                 ", totalDifference=" + totalDifference +
-                ", timeSeriesData=" + timeSeriesData +
+                ", timeSeriesDataDevice=" + timeSeriesDataDevice +
+                ", timeSeriesDataBattery=" + timeSeriesDataBattery +
                 '}';
     }
 }

@@ -131,7 +131,9 @@ public class DBManager {
                     "devices INTEGER NOT NULL, " +
                     "total_production DOUBLE NOT NULL, " +
                     "total_consumption DOUBLE NOT NULL, " +
-                    "total_difference DOUBLE NOT NULL);");
+                    "total_difference DOUBLE NOT NULL, " +
+                    "battery_usage DOUBLE NOT NULL, " +
+                    "battery_end DOUBLE NOT NULL);");
         } catch (SQLException ignored) {
             return false;
         } finally {

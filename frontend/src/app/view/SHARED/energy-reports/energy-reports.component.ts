@@ -57,7 +57,10 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     totalProduction: 0,
     totalConsumption: 0,
     totalDifference: 0,
-    timeSeriesData: []
+    batteryUsage: 0,
+    batteryEnd: 0,
+    timeSeriesDataDevice: [],
+    timeSeriesDataBattery: []
   };
 
   public isDarkMode = false;
@@ -411,7 +414,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       const ticks = this.generateHourlyTicks(startDate);
 
       // Filter and map data for the specific day
-      const filteredData = this.selectedReport.timeSeriesData
+      const filteredData = this.selectedReport.timeSeriesDataDevice
         .filter(d => {
           const date = d.date instanceof Date
             ? d.date
@@ -499,7 +502,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       }
 
       // Filter data within the date range
-      let filteredData = this.selectedReport.timeSeriesData
+      let filteredData = this.selectedReport.timeSeriesDataDevice
         .filter(d => {
           // Ensure date is converted to a proper Date object
           const date = d.date instanceof Date

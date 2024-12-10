@@ -110,7 +110,7 @@ public class GenerateData {
         List<String> uuids = new ArrayList<>();
         BuildingDeviceDAO buildingDeviceDAO = DBManager.getInstance().getBuildingDeviceDAO();
         List<Device> devices = buildingDeviceDAO.findByBuilding(building).stream().map(device -> (Device) device).toList();
-        generateDataDeviceList(devices, dateStart, dateEnd, reportId);
+        uuids.addAll(generateDataDeviceList(devices, dateStart, dateEnd, reportId));
         ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
         List<Apartment> apartments = apartmentDAO.findByBuilding(building);
         for (Apartment apartment : apartments) {
@@ -144,19 +144,31 @@ public class GenerateData {
     }
 
     public static boolean generateReport(EnergyReport report, List<String> deviceList, LocalDateTime start,
-            LocalDateTime end, String resUUID) {
+            LocalDateTime end, String refUUID) {
         report = DBManager.getInstance().getEnergyReportDAO().findByPrimaryKey(report.getId());
-        List<TimeSeriesData> ltsd = report.getTimeSeriesData();
-        double production = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
-        double consumption = ltsd.stream().map(tsd -> tsd.getProduction()).filter(num -> num <= 0).mapToDouble(Double::doubleValue).sum();
+        List<TimeSeriesData> ltsdd = report.getTimeSeriesDataDevice();
+        List<TimeSeriesData> ltsdb = report.getTimeSeriesDataBattery();
+        double production = ltsdd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
+        double consumption = ltsdd.stream().map(tsd -> tsd.getProduction()).filter(num -> num <= 0).mapToDouble(Double::doubleValue).sum();
+        double batteryUsage = 0;
+        TimeSeriesData tsdb = ltsdb.get(0);
+        for (TimeSeriesData tsd : ltsdb) {
+            if (tsd.getProduction() < tsdb.getProduction()){
+                batteryUsage += tsd.getProduction();
+            }
+            tsdb = tsd;
+        }
+        double batteryEnd = tsdb.getProduction();
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
-        report.setRefUUID(resUUID);
+        report.setRefUUID(refUUID);
         report.setDevices(deviceList.size());
         report.setStartDate(start);
         report.setEndDate(end);
         report.setDays(CalculateDate.dateDifferenceHours(end, start)/24);
+        report.setBatteryUsage(batteryUsage);
+        report.setBatteryEnd(batteryEnd);
         return DBManager.getInstance().getEnergyReportDAO().saveOrUpdate(report);
     }
 
