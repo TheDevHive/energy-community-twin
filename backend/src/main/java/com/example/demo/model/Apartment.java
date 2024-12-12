@@ -6,14 +6,17 @@ public class Apartment {
     private int residents;
     private int squareFootage;
     private String energyClass;
+    private double energy_cost;
     private User user;
 
-    public Apartment(int id, Building building, int residents, int squareFootage, String energyClass, User user) {
+    public Apartment(int id, Building building, int residents, int squareFootage, String energyClass,
+            double energy_cost, User user) {
         this.id = id;
         this.building = building;
         this.residents = residents;
         this.squareFootage = squareFootage;
         this.energyClass = energyClass;
+        this.energy_cost = energy_cost;
         this.user = user;
     }
 
@@ -35,6 +38,10 @@ public class Apartment {
 
     public String getEnergyClass() {
         return energyClass;
+    }
+
+    public double getEnergyCost() {
+        return energy_cost;
     }
 
     public User getUser() {
@@ -65,10 +72,13 @@ public class Apartment {
         this.energyClass = energy_class;
     }
 
+    public void setEnergyCost(double energy_cost) {
+        this.energy_cost = energy_cost;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
-
 
     public String toString() {
         return "Apartment{" +
@@ -77,18 +87,21 @@ public class Apartment {
                 ", residents=" + residents +
                 ", square_footage=" + squareFootage +
                 ", energy_class=" + energyClass +
+                ", energy_cost=" + energy_cost +
                 ", user=" + user +
                 '}';
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Apartment apartment = (Apartment) o;
         return id == apartment.id;
     }
 
-    public Apartment(){
+    public Apartment() {
 
     }
 }

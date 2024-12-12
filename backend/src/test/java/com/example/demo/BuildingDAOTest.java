@@ -46,7 +46,7 @@ public class BuildingDAOTest {
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         buildingDAO = new BuildingDAO(mockConnection);
-        building= new Building(1, mockCommunity, "123 Main St", 3);
+        building = new Building(1, mockCommunity, "123 Main St", 3, 0.20);
     }
 
     @Test
@@ -71,10 +71,10 @@ public class BuildingDAOTest {
         verify(mockPreparedStatement).setInt(1, building.getCommunity().getId());
         verify(mockPreparedStatement).setString(2, building.getAddress());
         verify(mockPreparedStatement).setInt(3, building.getFloors());
+        verify(mockPreparedStatement).setDouble(4, building.getEnergyCost());
         verify(mockPreparedStatement).executeUpdate();
         assertEquals(1, building.getId());
     }
-
 
     @Test
     public void testSaveOrUpdate_UpdateExistingApartment() throws SQLException {
@@ -95,7 +95,8 @@ public class BuildingDAOTest {
         verify(mockPreparedStatement).setInt(1, building.getCommunity().getId());
         verify(mockPreparedStatement).setString(2, building.getAddress());
         verify(mockPreparedStatement).setInt(3, building.getFloors());
-        verify(mockPreparedStatement).setInt(4, building.getId());
+        verify(mockPreparedStatement).setDouble(4, building.getEnergyCost());
+        verify(mockPreparedStatement).setInt(5, building.getId());
         verify(mockPreparedStatement).executeUpdate();
     }
 
@@ -110,11 +111,11 @@ public class BuildingDAOTest {
         when(mockResultSet.getInt("community_id")).thenReturn(1, 2);
         when(mockResultSet.getString("address")).thenReturn("123 Main St", "456 Elm St");
         when(mockResultSet.getInt("floors")).thenReturn(3, 4);
+        when(mockResultSet.getDouble("energy_cost")).thenReturn(0.20, 0.25);
 
         CommunityDAO mockCommunityDAO = mock(CommunityDAO.class);
         when(mockCommunityDAO.findByPrimaryKey(1)).thenReturn(mockCommunity);
         when(mockCommunityDAO.findByPrimaryKey(2)).thenReturn(mockCommunity);
-
 
         DBManager mockDBManager = mock(DBManager.class);
         try (MockedStatic<DBManager> mockedDBManager = Mockito.mockStatic(DBManager.class)) {
@@ -141,6 +142,7 @@ public class BuildingDAOTest {
         when(mockResultSet.getInt("community_id")).thenReturn(1);
         when(mockResultSet.getString("address")).thenReturn("123 Main St");
         when(mockResultSet.getInt("floors")).thenReturn(3);
+        when(mockResultSet.getDouble("energy_cost")).thenReturn(0.20);
 
         CommunityDAO mockCommunityDAO = mock(CommunityDAO.class);
         when(mockCommunityDAO.findByPrimaryKey(1)).thenReturn(mockCommunity);
@@ -158,6 +160,7 @@ public class BuildingDAOTest {
             assertEquals(mockCommunity, result.getCommunity());
             assertEquals("123 Main St", result.getAddress());
             assertEquals(3, result.getFloors());
+            assertEquals(0.20, result.getEnergyCost());
         }
     }
 

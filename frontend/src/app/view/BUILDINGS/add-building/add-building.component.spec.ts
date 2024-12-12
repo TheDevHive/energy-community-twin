@@ -83,13 +83,15 @@ describe('AddBuildingComponent', () => {
     it('should submit if form is valid', () => {
       component.buildingForm.get('address')?.setValue('123 Main St');
       component.buildingForm.get('floors')?.setValue(5);
+      component.buildingForm.get('energyCost')?.setValue(0.20);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
         id: '',  // Include id as an empty string to match the component's output
         address: '123 Main St',
-        floors: 5
+        floors: 5,
+        energyCost: 0.20
       });
     });
   });
@@ -103,13 +105,15 @@ describe('AddBuildingComponent', () => {
     it('should close the modal with building data on successful submit', () => {
       component.buildingForm.get('address')?.setValue('123 Main St');
       component.buildingForm.get('floors')?.setValue(5);
+      component.buildingForm.get('energyCost')?.setValue(0.20);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
         id: '',  // Include id as an empty string
         address: '123 Main St',
-        floors: 5
+        floors: 5,
+        energyCost: 0.20
       });
     });
     
@@ -175,13 +179,15 @@ describe('AddBuildingComponent', () => {
     it('should trim whitespace from address input on submit', () => {
       component.buildingForm.get('address')?.setValue('  123 Main St  ');
       component.buildingForm.get('floors')?.setValue(5);
+      component.buildingForm.get('energyCost')?.setValue(0.20);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
         id: '',  // Include id as an empty string
         address: '123 Main St',
-        floors: 5
+        floors: 5,
+        energyCost: 0.20
       });
     });
     

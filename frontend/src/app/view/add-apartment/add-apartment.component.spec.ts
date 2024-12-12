@@ -79,13 +79,15 @@ describe('AddApartmentComponent', () => {
     it('should submit if form is valid', () => {
       component.apartmentForm.get('residents')?.setValue(1);
       component.apartmentForm.get('squareFootage')?.setValue(5);
+      component.apartmentForm.get('energyCost')?.setValue(0.20);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
         id: '',
         residents: 1,
-        squareFootage: 5
+        squareFootage: 5,
+        energyCost: 0.20
       });
     });
   });
@@ -99,13 +101,15 @@ describe('AddApartmentComponent', () => {
     it('should close the modal with apartment data on successful submit', () => {
       component.apartmentForm.get('residents')?.setValue(1);
       component.apartmentForm.get('squareFootage')?.setValue(5);
+      component.apartmentForm.get('energyCost')?.setValue(0.20);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
         id: '',
         residents: 1,
-        squareFootage: 5
+        squareFootage: 5,
+        energyCost: 0.20
       });
     });
     
@@ -171,13 +175,15 @@ describe('AddApartmentComponent', () => {
     it('should trim whitespace from address input on submit', () => {
       component.apartmentForm.get('residents')?.setValue(1);
       component.apartmentForm.get('squareFootage')?.setValue(5);
+      component.apartmentForm.get('energyCost')?.setValue(0.20);
     
       component.onSubmit();
     
       expect(activeModal.close).toHaveBeenCalledWith({
         id: '', 
         residents: 1,
-        squareFootage: 5
+        squareFootage: 5,
+        energyCost: 0.20
       });
     });
     

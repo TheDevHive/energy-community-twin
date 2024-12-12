@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './add-apartment.component.css'
 })
 export class AddApartmentComponent implements OnInit {
-  @Input() isEdit: boolean = false; 
+  @Input() isEdit: boolean = false;
   @Input() apartmentData?: Apartment;
   apartmentForm: FormGroup;
   loading = false;
@@ -22,6 +22,7 @@ export class AddApartmentComponent implements OnInit {
       id: [''],
       residents: [0, [Validators.required, Validators.min(0)]],
       squareFootage: [0, [Validators.required, Validators.min(1)]],
+      energyCost: [0.20, [Validators.required, Validators.min(0.01)]]
     });
   }
 
@@ -30,7 +31,8 @@ export class AddApartmentComponent implements OnInit {
       this.apartmentForm.patchValue({
         id: this.apartmentData.id,
         residents: this.apartmentData.residents,
-        squareFootage: this.apartmentData.squareFootage
+        squareFootage: this.apartmentData.squareFootage,
+        energyCost: this.apartmentData.energyCost
       });
     }
   }

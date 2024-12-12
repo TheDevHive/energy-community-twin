@@ -47,6 +47,7 @@ describe('CommunityService', () => {
     community: mockCommunity,
     address: '123 Test St',
     floors: 3,
+    energyCost: 0.20,
     stats: mockBuildingStats // Add the stats property here
   };
 
