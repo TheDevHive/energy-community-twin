@@ -9,7 +9,6 @@ import com.example.demo.persistence.TS_DBManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EnergyReportDAO {
     private Connection connection;
@@ -160,12 +159,12 @@ public class EnergyReportDAO {
         TS_DeviceDAO tdd = TS_DBManager.getInstance().getTS_DeviceDAO();
         List<TimeSeriesData> timeSeriesDataList = new ArrayList<>();
         for (TS_Measurement measurement : tsmd.findByReportId(reportId)) {
-            if (tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("B")) {
-                if (bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() == -1) {
+            if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("B")) {
+                if (bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()) != null && bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() == -1) {
                     continue;
                 }
-            } else if (tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("A")) {
-                if (add.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() == -1) {
+            } else if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("A")) {
+                if (add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)) != null && add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)).getConsumesEnergy() == -1) {
                     continue;
                 }
             } else {
@@ -187,12 +186,12 @@ public class EnergyReportDAO {
         TS_DeviceDAO tdd = TS_DBManager.getInstance().getTS_DeviceDAO();
         List<TimeSeriesData> timeSeriesDataList = new ArrayList<>();
         for (TS_Measurement measurement : tsmd.findByReportId(reportId)) {
-            if (tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("B")) {
-                if (bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() != -1) {
+            if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("B")) {
+                if (bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()) != null && bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() != -1) {
                     continue;
                 }
-            } else if (tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("A")) {
-                if (add.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() != -1) {
+            } else if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("A")) {
+                if (add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)) != null && add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)).getConsumesEnergy() != -1) {
                     continue;
                 }
             } else {
