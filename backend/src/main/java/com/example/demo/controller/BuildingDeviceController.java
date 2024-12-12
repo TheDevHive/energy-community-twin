@@ -49,8 +49,9 @@ public class BuildingDeviceController {
         if (device == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!DBManager.getInstance().getBuildingDeviceDAO().delete(device))
+        if(!DBManager.getInstance().getBuildingDeviceDAO().delete(device) && TS_DBManager.getInstance().getTS_DeviceDAO().delete(TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + Integer.toString(device.getId())))){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -50,7 +50,7 @@ public class ApartmentDeviceController {
         if (device == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!DBManager.getInstance().getApartmentDeviceDAO().delete(device))
+        if(!DBManager.getInstance().getApartmentDeviceDAO().delete(device) || !TS_DBManager.getInstance().getTS_DeviceDAO().delete(TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("A" + Integer.toString(device.getId()))))
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.OK);
     }

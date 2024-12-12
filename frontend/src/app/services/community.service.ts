@@ -122,6 +122,7 @@ export class CommunityService {
 
   generateMeasurements(community_id: String, timeRange: TimeRange): Observable<boolean> {
     console.log('Sending TimeRange:', JSON.stringify(timeRange)); // Add this line
+    console.log('Sending community:' + community_id); // Add this line
     return this.http.post<boolean>(
       `${this.apiUrl}/${community_id}/generate-measurements`,
       timeRange,
