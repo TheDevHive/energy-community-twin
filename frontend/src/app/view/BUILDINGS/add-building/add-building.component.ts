@@ -22,7 +22,8 @@ export class AddBuildingComponent implements OnInit {
     this.buildingForm = this.fb.group({
       id: [''],
       address: ['', [Validators.required, this.noWhitespaceValidator]],
-      floors: [0, [Validators.required, Validators.min(1)]]
+      floors: [0, [Validators.required, Validators.min(1)]],
+      energyCost: [0.20, [Validators.required, Validators.min(0.01)]]
     });
   }
 
@@ -32,7 +33,8 @@ export class AddBuildingComponent implements OnInit {
       this.buildingForm.patchValue({
         id: this.buildingData.id,
         address: this.buildingData.address,
-        floors: this.buildingData.floors
+        floors: this.buildingData.floors,
+        energyCost: this.buildingData.energyCost
       });
     }
   }

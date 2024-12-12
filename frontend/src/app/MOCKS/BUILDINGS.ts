@@ -26,6 +26,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '123 Green Street',
         floors: 5,
+        energyCost: 0.20,
         stats: {
             buildingId: 1,
             apartments: 5,
@@ -40,6 +41,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '456 Green Street',
         floors: 3,
+        energyCost: 0.25,
         stats: {
             buildingId: 2,
             apartments: 7,
@@ -54,6 +56,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '789 Green Street',
         floors: 7,
+        energyCost: 0.30,
         stats: {
             buildingId: 3,
             apartments: 13,
@@ -68,6 +71,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '101 Green Street',
         floors: 4,
+        energyCost: 0.15,
         stats: {
             buildingId: 4,
             apartments: 10,
@@ -82,6 +86,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '112 Green Street',
         floors: 6,
+        energyCost: 0.20,
         stats: {
             buildingId: 5,
             apartments: 10,
@@ -96,6 +101,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '113 Green Street',
         floors: 6,
+        energyCost: 0.20,
         stats: {
             buildingId: 6,
             apartments: 10,
@@ -110,6 +116,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '114 Green Street',
         floors: 6,
+        energyCost: 0.20,
         stats: {
             buildingId: 7,
             apartments: 10,
@@ -124,6 +131,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '115 Green Street',
         floors: 6,
+        energyCost: 0.20,
         stats: {
             buildingId: 8,
             apartments: 10,
@@ -138,6 +146,7 @@ export const BUILDINGS: Building[] = [
         community: mockCommunity,
         address: '116 Green Street',
         floors: 6,
+        energyCost: 0.20,
         stats: {
             buildingId: 9,
             apartments: 10,

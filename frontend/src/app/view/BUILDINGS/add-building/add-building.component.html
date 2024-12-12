@@ -1,55 +1,53 @@
 <div class="modal-header modal-dark">
     <h4 class="modal-title">{{ isEdit ? 'Edit Building' : 'Add Building' }}</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
-  </div>
-  
-  <form [formGroup]="buildingForm" (ngSubmit)="onSubmit()">
+</div>
+
+<form [formGroup]="buildingForm" (ngSubmit)="onSubmit()">
     <div class="modal-body">
         <!-- Building address field -->
         <div class="mb-3">
             <label for="address" class="form-label">Address</label>
-            <input type="text" 
-                   class="form-control" 
-                   id="address" 
-                   formControlName="address"
-                   placeholder="Enter address"
-                   [class.is-invalid]="buildingForm.get('address')?.invalid && buildingForm.get('address')?.touched">
-            <div class="invalid-feedback" 
-                 *ngIf="buildingForm.get('address')?.invalid && buildingForm.get('address')?.touched">
+            <input type="text" class="form-control" id="address" formControlName="address" placeholder="Enter address"
+                [class.is-invalid]="buildingForm.get('address')?.invalid && buildingForm.get('address')?.touched">
+            <div class="invalid-feedback"
+                *ngIf="buildingForm.get('address')?.invalid && buildingForm.get('address')?.touched">
                 Address is required
             </div>
         </div>
-  
+
         <!-- Number of floors field -->
         <div class="mb-3">
             <label for="floors" class="form-label">Number of Floors</label>
-            <input type="number" 
-                   class="form-control" 
-                   id="floors" 
-                   formControlName="floors"
-                   placeholder="Enter number of floors"
-                   [class.is-invalid]="buildingForm.get('floors')?.invalid && buildingForm.get('floors')?.touched">
-            <div class="invalid-feedback" 
-                 *ngIf="buildingForm.get('floors')?.invalid && buildingForm.get('floors')?.touched">
+            <input type="number" class="form-control" id="floors" formControlName="floors"
+                placeholder="Enter number of floors"
+                [class.is-invalid]="buildingForm.get('floors')?.invalid && buildingForm.get('floors')?.touched">
+            <div class="invalid-feedback"
+                *ngIf="buildingForm.get('floors')?.invalid && buildingForm.get('floors')?.touched">
                 Number of floors is required and must be valid
             </div>
         </div>
+
+        <!-- Cost of energy field -->
+        <div class="mb-3">
+            <label for="energyCost" class="form-label">Energy Cost</label>
+            <input type="number" class="form-control" id="energyCost" formControlName="energyCost"
+                placeholder="Enter the cost of energy"
+                [class.is-invalid]="buildingForm.get('energyCost')?.invalid && buildingForm.get('energyCost')?.touched">
+            <div class="invalid-feedback"
+                *ngIf="buildingForm.get('energyCost')?.invalid && buildingForm.get('energyCost')?.touched">
+                Energy cost must be valid
+            </div>
+        </div>
     </div>
-  
+
     <div class="modal-footer">
-        <button type="button" 
-                class="btn btn-outline-secondary" 
-                (click)="dismiss()"
-                [disabled]="loading">
+        <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" [disabled]="loading">
             Cancel
         </button>
-        <button type="submit" 
-                class="btn btn-primary submit-btn"
-                [disabled]="buildingForm.invalid || loading">
-            <span class="spinner-border spinner-border-sm me-2" 
-                  *ngIf="loading" 
-                  role="status"></span>
+        <button type="submit" class="btn btn-primary submit-btn" [disabled]="buildingForm.invalid || loading">
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
             {{ isEdit ? 'Update Building' : 'Add Building' }}
         </button>
     </div>
-  </form>
+</form>
