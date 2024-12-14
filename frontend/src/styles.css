@@ -662,7 +662,7 @@ mat-expansion-panel-header:focus {
 
 .checkbox-container label {
   cursor: pointer;
-  color: var(--color-text-muted);
+  color: var(--color-secondary);
   transition: color 0.3s ease;
 }
 

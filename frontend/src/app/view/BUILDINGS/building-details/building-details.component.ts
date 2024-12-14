@@ -37,7 +37,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   deviceDataSource: MatTableDataSource<BuildingDevice>;
 
   apartments: Apartment[] = [];
-  apartmentColumns: string[] = ['id', 'residents', 'squareFootage', 'energyClass', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
+  apartmentColumns: string[] = ['id', 'residents', 'squareFootage', 'energyClass', 'energyProduction', 'energyConsumption', 'energyDifference', 'energyCost', 'actions'];
   apartmentDataSource: MatTableDataSource<Apartment>;
 
   batteries:BuildingDevice[] = [];
@@ -113,6 +113,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         case 'energyProduction': return item.stats.energyProduction;
         case 'energyConsumption': return item.stats.energyConsumption;
         case 'energyDifference': return this.calculateEnergyDifference(item);
+        case 'energyCost': return item.energyCost;
         default: return item[property];
       }
     };
@@ -669,6 +670,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
           this.calculateEnergyDifference(b),
           isAsc
         );
+        case 'energyCost': return this.compare(a.energyCost, b.energyCost, isAsc);
         default: {
           const aValue = a[sort.active as keyof Apartment];
           const bValue = b[sort.active as keyof Apartment];

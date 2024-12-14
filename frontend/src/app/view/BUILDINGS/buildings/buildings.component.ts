@@ -39,7 +39,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   communityId = 0;
   communityName = 'Community Name';
 
-  displayedColumns: string[] = ['id', 'address', 'floors', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
+  displayedColumns: string[] = ['id', 'address', 'floors', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'energyDifference', 'energyCost', 'actions'];
   dataSource: MatTableDataSource<Building>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -96,6 +96,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
             this.buildings.forEach((building) => {
               building.stats = stats.find((stat) => stat.buildingId === building.id)!;
             });
+
+            console.log("buildings: ", this.buildings);
             
             // Update the data source
             this.dataSource.data = this.buildings;
@@ -329,6 +331,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
             b.stats.energyProduction - b.stats.energyConsumption,
             isAsc
           );
+          case 'energyCost': return this.compare(a.energyCost, b.energyCost, isAsc);
           default: return 0;
         }
       });

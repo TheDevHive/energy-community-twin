@@ -86,7 +86,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted mb-1">Energy Cost</h6>
-                                <h4 class="mb-0">{{building?.energyCost}}</h4>
+                                <h4 class="mb-0">{{building?.energyCost}} €/kWh</h4>
                             </div>
                         </div>
                     </div>
@@ -455,6 +455,12 @@
                                 </span>
                                 {{calculateEnergyDifference(apartment)}} Wh
                             </td>
+                        </ng-container>
+
+                        <!-- Energy Cost Column -->
+                        <ng-container matColumnDef="energyCost">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Energy Cost</th>
+                            <td mat-cell *matCellDef="let apartment">{{apartment.energyCost | number:'1.2-2'}} €/kWh</td>
                         </ng-container>
 
                         <!-- Actions Column -->

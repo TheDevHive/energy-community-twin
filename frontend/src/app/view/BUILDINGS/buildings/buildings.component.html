@@ -212,6 +212,14 @@
               </td>
             </ng-container>
 
+            <!-- Energy Cost Column -->
+            <ng-container matColumnDef="energyCost">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Energy Cost </th>
+              <td mat-cell *matCellDef="let building">
+                {{building.energyCost | number:'1.2-2'}} €/kWh
+              </td>
+            </ng-container>
+
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef> Actions </th>
