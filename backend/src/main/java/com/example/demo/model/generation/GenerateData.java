@@ -46,6 +46,12 @@ public class GenerateData {
 
     public static List<String> generateData(List<Device> batteries, List<Device> otherDevices, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
         List<String> uuids = new ArrayList<>();
+        if (dateEnd.getHour() == 22){
+            dateEnd = dateEnd.plusHours(2);
+        }
+        else if (dateEnd.getHour() == 23){
+            dateEnd = dateEnd.plusHours(1);
+        }
         int hours = CalculateDate.dateDifferenceHours(dateEnd, dateStart);
         double lastEnergy = 0;
         for(int hour = 0;hour < hours;hour++){

@@ -13,12 +13,14 @@ export class AddSimulationComponent implements OnInit {
   simulationForm: FormGroup;
   loading = false;
   @Input() refUUID?: string;
+  maxDate = new Date();
 
   constructor(
     private fb: FormBuilder,
     public activeModal: NgbActiveModal,
     private energyReportService: EnergyReportService
   ) {
+    this.maxDate.setDate(this.maxDate.getDate() + 14); // Set max date to 14 days in the future
     this.simulationForm = this.fb.group({
       startDate: [null, [Validators.required]],
       endDate: [null, [Validators.required]]
@@ -35,7 +37,7 @@ export class AddSimulationComponent implements OnInit {
       const startDate = new Date(this.simulationForm.get('startDate')?.value);
       const endDate = new Date(this.simulationForm.get('endDate')?.value);
 
-      // Add one day to both dates
+      // Add one day to both dates (adjust if needed)
       startDate.setDate(startDate.getDate() + 1);
       endDate.setDate(endDate.getDate() + 1);
 

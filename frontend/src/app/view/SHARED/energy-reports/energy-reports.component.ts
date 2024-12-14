@@ -256,6 +256,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     });
   }
 
+
   initializeChart() {
     const ctx = document.getElementById('timeSeriesChart') as HTMLCanvasElement;
 
@@ -271,14 +272,14 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         labels: [],
         datasets: [
           {
-            label: 'Device Energy Production',
+            label: 'Devices Energy',
             data: [],
             borderColor: this.isDarkMode ? '#3498db' : '#2980b9',
             tension: 0.1,
             fill: false,
           },
           {
-            label: 'Battery Energy Production',
+            label: 'Battery Energy',
             data: [],
             borderColor: '#FFD700', // Yellow color
             tension: 0.1,
@@ -302,7 +303,6 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
             ticks: {
               color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
               callback: (value) => {
-                // Display value with one decimal
                 const formatted = this.formatEnergyValue(value as number);
                 return `${formatted.value.toFixed(1)} ${formatted.unit}`;
               }
@@ -347,9 +347,14 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
             }
           },
           legend: {
-            display: true, // Changed to true to show dataset labels
+            display: true,
             labels: {
-              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
+              usePointStyle: true,
+              pointStyle: 'line',
+              font: { // Add this font configuration
+                size: 14 // Adjust this value to control line thickness. Higher value = thicker line
+              }
             }
           }
         },
