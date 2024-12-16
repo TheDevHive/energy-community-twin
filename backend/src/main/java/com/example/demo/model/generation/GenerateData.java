@@ -31,7 +31,6 @@ public class GenerateData {
         if(device.getConsumesEnergy() == -1){
             return 0;
         } else {
-            float standardTemperature = 20;
             WeatherData weatherData = TS_DBManager.getInstance().getTS_WeatherDao().findByPrimaryKey(timestamp);
             if (weatherData == null){
                 return 0;
@@ -42,26 +41,26 @@ public class GenerateData {
                     device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
             // influenza della luce:
             
-            float litghtInfluence = (device.getLightSensitivity() * (1-weatherData.getCloudCover()));
-            if (litghtInfluence == 0){
+            double litghtInfluence = (device.getLightSensitivity() * (weatherData.getCloudCover() <= 100 ? (100-weatherData.getCloudCover()) / 100 : 1.0));
+            if (device.getLightSensitivity() == 0){
                 litghtInfluence = 1;
             }
             
             // influenza del vento:
-            float windInfluence = (device.getWindSensitivity() * weatherData.getWindSpeed());
-            if (windInfluence == 0){
+            double windInfluence = (device.getWindSensitivity() * (weatherData.getWindSpeed() <= 100 ? (weatherData.getWindSpeed() / 100.0) : 1.0) );
+            if (device.getWindSensitivity() == 0){
                 windInfluence = 1;
             }
             
             // influenza della temperatura:
-            float temperatureInfluence = (device.getTemperatureSensitivity() * (weatherData.getTemperature() - standardTemperature));
-            if (temperatureInfluence == 0){
+            float temperatureInfluence = (device.getTemperatureSensitivity() * ((weatherData.getTemperature() + 50) / 100));
+            if (device.getTemperatureSensitivity() == 0){
                 temperatureInfluence = 1;
             }
             
             // influenza della pioggia:
-            float rainInfluence = (device.getPrecipitationSensitivity() * weatherData.getPrecipitation());
-            if (rainInfluence == 0){
+            double rainInfluence = (device.getPrecipitationSensitivity() * (weatherData.getPrecipitation() <= 100 ? (weatherData.getPrecipitation() / 100.0) : 1.0));
+            if (device.getPrecipitationSensitivity() == 0){
                 rainInfluence = 1;
             }
             
