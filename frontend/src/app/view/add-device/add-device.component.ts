@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Building } from '../../models/building';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BuildingDevice } from '../../models/building_device';
@@ -39,8 +39,14 @@ export class AddDeviceComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    if (this.battery) {
+      this.deviceForm.get('capacity')?.setValidators([Validators.required, this.noZeroValidator]);
+    }
+  
     // Initialize form with existing data if in edit mode
     if (this.isEdit && this.device) {
+      this.deviceForm.get('capacity')?.updateValueAndValidity();
       const formValues = {
         id: this.device.id,
         name: this.device.name,
@@ -70,6 +76,12 @@ export class AddDeviceComponent implements OnInit {
     const isWhitespace = (control.value || '').trim().length === 0;
     const isValid = !isWhitespace;
     return isValid ? null : { whitespace: true };
+  }
+
+  noZeroValidator(control: AbstractControl) {
+    const isZero = control.value === 0;
+    const isValid = !isZero;
+    return isValid ? null : { zero: true };
   }
 
   onSubmit(): void {

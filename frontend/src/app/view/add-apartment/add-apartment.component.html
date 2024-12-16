@@ -23,7 +23,7 @@
                 [class.is-invalid]="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
             <div class="invalid-feedback"
                 *ngIf="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
-                The cost of energy is required and must be valid
+                The square footage is required
             </div>
         </div>
         <div class="mb-3">
@@ -33,7 +33,7 @@
                 [class.is-invalid]="apartmentForm.get('energyCost')?.invalid && apartmentForm.get('energyCost')?.touched">
             <div class="invalid-feedback"
                 *ngIf="apartmentForm.get('energyCost')?.invalid && apartmentForm.get('energyCost')?.touched">
-                The square footage is required
+                The cost of energy is required and must be valid
             </div>
         </div>
     </div>

@@ -41,33 +41,27 @@ public class GenerateData {
             double energy = random.nextGaussian(device.getEnergyCurve().getEnergyCurve().get(timestamp.getHour()),
                     device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
             // influenza della luce:
-            System.out.println("energy A: " + energy);
             float litghtInfluence = (device.getLightSensitivity() * (1-weatherData.getCloudCover()));
             if (litghtInfluence == 0){
                 litghtInfluence = 1;
             }
-            System.out.println("litghtInfluence: " + litghtInfluence);
             // influenza del vento:
             float windInfluence = (device.getWindSensitivity() * weatherData.getWindSpeed());
             if (windInfluence == 0){
                 windInfluence = 1;
             }
-            System.out.println("windInfluence: " + windInfluence);
             // influenza della temperatura:
             float temperatureInfluence = (device.getTemperatureSensitivity() * (weatherData.getTemperature() - standardTemperature));
             if (temperatureInfluence == 0){
                 temperatureInfluence = 1;
             }
-            System.out.println("temperatureInfluence: " + temperatureInfluence);
             // influenza della pioggia:
             float rainInfluence = (device.getPrecipitationSensitivity() * weatherData.getPrecipitation());
             if (rainInfluence == 0){
                 rainInfluence = 1;
             }
-            System.out.println("rainInfluence: " + rainInfluence);
             energy *= litghtInfluence * windInfluence * temperatureInfluence * rainInfluence;
             energy *= prodCons;
-            System.out.println("energy B: " + energy);
             TS_Device ts_device = null;
             if(device instanceof BuildingDevice){
                 ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + device.getId());
