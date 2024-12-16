@@ -354,5 +354,22 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     );
   }
   
+  private formatEnergyValue(value: number, should_divide: boolean): { value: number; unit: string } {
+    if (should_divide){
+      value = value / 24;
+    }
+    if (Math.abs(value) >= 1000000) {
+      return { value: value / 1000000, unit: 'MWh' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kWh' };
+    }
+    return { value:( value), unit: 'Wh' };
+  }
+
+  formatEnergyDisplay(value: number, should_divide: boolean): string {
+    const formatted = this.formatEnergyValue(value, should_divide);
+    return `${formatted.value.toFixed(2)} ${formatted.unit}`;
+  }
   
 }

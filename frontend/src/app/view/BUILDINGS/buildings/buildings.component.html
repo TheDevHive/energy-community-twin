@@ -188,7 +188,7 @@
               <td mat-cell *matCellDef="let building">
                 <span class="text-success me-2">
                   <i class="bi bi-arrow-up-right"></i>
-                </span>{{building.stats.energyProduction | number:'1.2-2'}} Wh
+                </span>{{ formatEnergyDisplay(building.stats.energyProduction, false) }}
               </td>
             </ng-container>
 
@@ -198,7 +198,7 @@
               <td mat-cell *matCellDef="let building">
                 <span class="text-danger me-2">
                   <i class="bi bi-arrow-down-right"></i>
-                </span>{{building.stats.energyConsumption | number:'1.2-2'}} Wh
+                </span>{{ formatEnergyDisplay(building.stats.energyConsumption, false) }}
               </td>
             </ng-container>
 
@@ -208,7 +208,7 @@
               <td mat-cell *matCellDef="let building">
                 <span class="me-2">
                   <i class="bi" [ngClass]="energyDifferenceIcon(building)"></i>
-                </span>{{energyDifference(building)}} Wh
+                </span>{{ formatEnergyDisplay(building.stats.energyDifference, false) }}
               </td>
             </ng-container>
 
