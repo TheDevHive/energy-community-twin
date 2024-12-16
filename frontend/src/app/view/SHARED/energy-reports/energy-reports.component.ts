@@ -50,7 +50,6 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   @Input() refUUID: string = '';
 
   selectedReport: EnergyReport = {
-    totalCost: 0,
     id: 0,
     refUUID: '',
     startDate: new Date(),
