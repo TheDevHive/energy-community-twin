@@ -10,10 +10,12 @@ import { AddSimulationComponent } from '../add-simulation/add-simulation.compone
 
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
-import { WeatherData } from '../../../models/time-series-data';
+import { WeatherData } from '../../../models/weather-data';
 import { EnergyReportService } from '../../../services/energy-report.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { AlertService } from '../../../services/alert.service';
+import { WeatherService } from '../../../services/weather.service';
+import { TimeRange } from '../../../models/time_range';
 
 
 // This is important! Register Chart.js components
@@ -60,6 +62,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     totalDifference: 0,
     batteryUsage: 0,
     batteryEnd: 0,
+    totalCost: 0,
     timeSeriesDataDevice: [],
     timeSeriesDataBattery: []
   };
@@ -69,7 +72,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   constructor(
     private modalService: NgbModal,
     private reportService: EnergyReportService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private weatherService: WeatherService
   ) {
     // Check initial dark mode preference
     this.checkDarkModePreference();
@@ -367,6 +371,18 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     this.updateChartData();
   }
 
+  fetchWeatherList()
+  {
+    const timeRange: TimeRange = {
+      start: this.selectedReport.startDate.toString(),
+      end: this.selectedReport.endDate.toString()
+    }
+
+    this.weatherService.getWeatherByTimeRange(timeRange).subscribe(
+
+    );
+  }
+
   private retryChartInitialization(attempts: number = 3) {
     console.log('Retry initialization attempts:', attempts);
     if (attempts <= 0) {
@@ -655,6 +671,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           date: data.date,
           production: data.production,
           weather: {
+            localDataTime: data.date,
             temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
             precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
             cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
@@ -667,6 +684,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           date: data.date,
           production: data.productions.reduce((a: number, b: number) => a + b, 0) / data.productions.length, // Calculate average
           weather: {
+            localDataTime: data.date,
             temperature: 0,
             precipitation: 0,
             cloudCover: 0,
@@ -771,6 +789,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
       // Ensure default weather data if not present
       const safeWeather = item.weather || {
+        localDataTime: date,
         temperature: 0,
         precipitation: 0,
         cloudCover: 0,
@@ -780,6 +799,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       const current = monthlyData.get(monthKey) || {
         sum: 0,
         weatherSum: {
+          localDataTime: date,
           temperature: 0,
           precipitation: 0,
           cloudCover: 0,
@@ -804,6 +824,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         date: new Date(year, month - 1, 1),
         production: data.sum,
         weather: {
+          localDataTime: new Date(year, month - 1, 1),
           temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
           precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
           cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
@@ -835,6 +856,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       const current = monthlyData.get(monthKey) || {
         productions: [],
         weatherSum: {
+          localDataTime: date,
           temperature: 0,
           precipitation: 0,
           cloudCover: 0,
@@ -863,6 +885,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         date: new Date(year, month - 1, 1),
         production: averageProduction,
         weather: {
+          localDataTime: new Date(year, month - 1, 1),
           temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
           precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
           cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
