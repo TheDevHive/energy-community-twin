@@ -32,7 +32,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   // Table configuration
-  displayedColumns: string[] = ['id', 'startDate', 'endDate', 'days', 'devices', 'totalProduction', 'totalConsumption', 'totalDifference', 'actions'];
+  displayedColumns: string[] = ['id', 'startDate', 'endDate', 'days', 'devices', 'totalProduction', 'totalConsumption', 'totalDifference', 'totalCost', 'actions'];
   dataSource: MatTableDataSource<EnergyReport> = new MatTableDataSource<EnergyReport>();
 
   // Chart configuration

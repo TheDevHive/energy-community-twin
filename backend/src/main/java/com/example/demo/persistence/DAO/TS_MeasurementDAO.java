@@ -79,12 +79,10 @@ public class TS_MeasurementDAO {
     }
 
     public List<TS_Measurement> findByDeviceIdAndTimeRange(int deviceId, LocalDateTime startTime, LocalDateTime endTime) {
-        String sql = "SELECT * FROM measurement WHERE device_id = ? AND timestamp BETWEEN ? AND ? ORDER BY timestamp";
+        String sql = "SELECT * FROM measurement WHERE device_id = ?";
         List<TS_Measurement> measurements = new ArrayList<>();
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, deviceId);
-            pstmt.setString(2, startTime.toString());
-            pstmt.setString(3, endTime.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 measurements.add(new TS_Measurement(
@@ -97,7 +95,7 @@ public class TS_MeasurementDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return measurements;
+        return measurements.stream().filter(x -> x.getTimestamp().isAfter(startTime) && x.getTimestamp().isBefore(endTime)).toList();
     }
 
     public boolean saveOrUpdate(TS_Measurement measurement) {
