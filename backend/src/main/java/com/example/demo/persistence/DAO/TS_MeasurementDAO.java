@@ -3,6 +3,7 @@ package com.example.demo.persistence.DAO;
 import com.example.demo.model.TS_Measurement;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,13 +78,13 @@ public class TS_MeasurementDAO {
         return measurements;
     }
 
-    public List<TS_Measurement> findByDeviceIdAndTimeRange(int deviceId, String startTime, String endTime) {
+    public List<TS_Measurement> findByDeviceIdAndTimeRange(int deviceId, LocalDateTime startTime, LocalDateTime endTime) {
         String sql = "SELECT * FROM measurement WHERE device_id = ? AND timestamp BETWEEN ? AND ? ORDER BY timestamp";
         List<TS_Measurement> measurements = new ArrayList<>();
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, deviceId);
-            pstmt.setString(2, startTime);
-            pstmt.setString(3, endTime);
+            pstmt.setString(2, startTime.toString());
+            pstmt.setString(3, endTime.toString());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 measurements.add(new TS_Measurement(

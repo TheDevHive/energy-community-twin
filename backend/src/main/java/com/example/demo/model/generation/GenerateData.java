@@ -22,6 +22,8 @@ import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.BuildingDeviceDAO;
+import com.example.demo.persistence.DAO.TS_DeviceDAO;
+import com.example.demo.persistence.DAO.TS_MeasurementDAO;
 
 public class GenerateData {
 
@@ -38,28 +40,34 @@ public class GenerateData {
             Random random = new Random();
             double energy = random.nextGaussian(device.getEnergyCurve().getEnergyCurve().get(timestamp.getHour()),
                     device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
-            // influenza del sole:
+            // influenza della luce:
+            System.out.println("energy A: " + energy);
             float litghtInfluence = (device.getLightSensitivity() * (1-weatherData.getCloudCover()));
             if (litghtInfluence == 0){
                 litghtInfluence = 1;
             }
+            System.out.println("litghtInfluence: " + litghtInfluence);
             // influenza del vento:
             float windInfluence = (device.getWindSensitivity() * weatherData.getWindSpeed());
             if (windInfluence == 0){
                 windInfluence = 1;
             }
+            System.out.println("windInfluence: " + windInfluence);
             // influenza della temperatura:
             float temperatureInfluence = (device.getTemperatureSensitivity() * (weatherData.getTemperature() - standardTemperature));
             if (temperatureInfluence == 0){
                 temperatureInfluence = 1;
             }
+            System.out.println("temperatureInfluence: " + temperatureInfluence);
             // influenza della pioggia:
             float rainInfluence = (device.getPrecipitationSensitivity() * weatherData.getPrecipitation());
             if (rainInfluence == 0){
                 rainInfluence = 1;
             }
+            System.out.println("rainInfluence: " + rainInfluence);
             energy *= litghtInfluence * windInfluence * temperatureInfluence * rainInfluence;
             energy *= prodCons;
+            System.out.println("energy B: " + energy);
             TS_Device ts_device = null;
             if(device instanceof BuildingDevice){
                 ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + device.getId());
@@ -182,6 +190,7 @@ public class GenerateData {
     public static boolean generateReport(EnergyReport report, List<String> deviceList, LocalDateTime start,
             LocalDateTime end, String refUUID) {
         report = DBManager.getInstance().getEnergyReportDAO().findByPrimaryKey(report.getId());
+        final int reportId = report.getId();
         List<TimeSeriesData> ltsdd = report.getTimeSeriesDataDevice();
         List<TimeSeriesData> ltsdb = report.getTimeSeriesDataBattery();
         double production = ltsdd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
@@ -197,6 +206,24 @@ public class GenerateData {
                 tsdb = tsd;
             }
             batteryEnd = tsdb.getProduction();
+        }
+        double totalCost = 0;
+        BuildingDeviceDAO deviceDao = DBManager.getInstance().getBuildingDeviceDAO();
+        ApartmentDeviceDAO apartmentDeviceDAO = DBManager.getInstance().getApartmentDeviceDAO();
+        BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
+        ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
+        TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
+        TS_DeviceDAO tsdd = TS_DBManager.getInstance().getTS_DeviceDAO();
+        for (String uuid : deviceList) {
+            if (uuid.startsWith("B")) {
+                BuildingDevice device = deviceDao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
+                if(device.getConsumesEnergy() != -1){
+                    totalCost = device.getBuilding().getEnergyCost() * tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).mapToDouble(TS_Measurement::getValue).sum();
+                }
+            } else if (uuid.startsWith("A")) {
+                //ApartmentDevice device = apartmentDeviceDAO.findByUuid(uuid);
+                //totalCost += device.getCost();
+            }
         }
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);

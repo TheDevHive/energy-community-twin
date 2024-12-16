@@ -16,6 +16,7 @@ public class EnergyReport {
     private Double totalDifference;
     private Double batteryUsage;
     private Double batteryEnd;
+    private Double totalCost;
     private List<TimeSeriesData> timeSeriesDataDevice;
     private List<TimeSeriesData> timeSeriesDataBattery;
 
@@ -32,6 +33,7 @@ public class EnergyReport {
         this.totalDifference = 0.0;
         this.batteryUsage = 0.0;
         this.batteryEnd = 0.0;
+        this.totalCost = 0.0;
         this.timeSeriesDataDevice = new ArrayList<>();
         this.timeSeriesDataBattery = new ArrayList<>();
 
@@ -41,7 +43,7 @@ public class EnergyReport {
     public EnergyReport(int id, String refUUID, LocalDateTime startDate, LocalDateTime endDate, 
                         Integer days, Integer devices, Double totalProduction, 
                         Double totalConsumption, Double totalDifference, 
-                        Double batteryUsage, Double batteryEnd,
+                        Double batteryUsage, Double batteryEnd, Double totalCost,
                         List<TimeSeriesData> timeSeriesDataDevice, List<TimeSeriesData> timeSeriesDataBattery) {
         this.id = id;
         this.refUUID = refUUID;
@@ -54,6 +56,7 @@ public class EnergyReport {
         this.totalDifference = totalDifference;
         this.batteryUsage = batteryUsage;
         this.batteryEnd = batteryEnd;
+        this.totalCost = totalCost;
         this.timeSeriesDataDevice = timeSeriesDataDevice;
         this.timeSeriesDataBattery = timeSeriesDataBattery;
     }
@@ -151,6 +154,14 @@ public class EnergyReport {
         this.batteryEnd = batteryEnd;
     }
 
+    public Double getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(Double totalCost) {
+        this.totalCost = totalCost;
+    }
+
     public void setTimeSeriesDataDevice(List<TimeSeriesData> timeSeriesDataDevice) {
         this.timeSeriesDataDevice = timeSeriesDataDevice;
     }
@@ -196,6 +207,9 @@ public class EnergyReport {
                 ", totalProduction=" + totalProduction +
                 ", totalConsumption=" + totalConsumption +
                 ", totalDifference=" + totalDifference +
+                ", batteryUsage=" + batteryUsage +
+                ", batteryEnd=" + batteryEnd +
+                ", totalCost=" + totalCost +
                 ", timeSeriesDataDevice=" + timeSeriesDataDevice +
                 ", timeSeriesDataBattery=" + timeSeriesDataBattery +
                 '}';
