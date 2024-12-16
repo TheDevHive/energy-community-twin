@@ -131,9 +131,8 @@
                             <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Cost </th>
                             <td mat-cell *matCellDef="let report">
                                 <span [class]="'me-2 ' + (report.totalCost >= 0 ? 'text-success' : 'text-danger')">
-                                    <i [class]="'bi ' + energyDifferenceIcon(report)"></i>
                                 </span>
-                                {{formatEnergyDisplay(report.totalCost)}}
+                                {{formatTotalCost(report.totalCost)}}
                             </td>
                         </ng-container>
 

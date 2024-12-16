@@ -111,6 +111,10 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     return `${formatted.value.toFixed(2)} ${formatted.unit}`;
   }
 
+  formatTotalCost(value:number): string {
+    return Math.abs(value).toFixed(2) + ' €';
+  }
+
   // Modify selectLastReport() to handle chart updates
   selectLastReport() {
     // Check if reports are already loaded
