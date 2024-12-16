@@ -15,6 +15,7 @@ import com.example.demo.model.EnergyReport;
 import com.example.demo.model.TS_Device;
 import com.example.demo.model.TS_Measurement;
 import com.example.demo.model.TimeSeriesData;
+import com.example.demo.model.WeatherData;
 import com.example.demo.persistence.DBManager;
 import com.example.demo.persistence.TS_DBManager;
 import com.example.demo.persistence.DAO.ApartmentDAO;
@@ -28,10 +29,36 @@ public class GenerateData {
         if(device.getConsumesEnergy() == -1){
             return 0;
         } else {
+            float standardTemperature = 20;
+            WeatherData weatherData = TS_DBManager.getInstance().getTS_WeatherDao().findByPrimaryKey(timestamp);
+            if (weatherData == null){
+                return 0;
+            }
             int prodCons = (device.getConsumesEnergy() == 1) ? 1 : -1;
             Random random = new Random();
             double energy = random.nextGaussian(device.getEnergyCurve().getEnergyCurve().get(timestamp.getHour()),
-            device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
+                    device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
+            // influenza del sole:
+            float litghtInfluence = (device.getLightSensitivity() * (1-weatherData.getCloudCover()));
+            if (litghtInfluence == 0){
+                litghtInfluence = 1;
+            }
+            // influenza del vento:
+            float windInfluence = (device.getWindSensitivity() * weatherData.getWindSpeed());
+            if (windInfluence == 0){
+                windInfluence = 1;
+            }
+            // influenza della temperatura:
+            float temperatureInfluence = (device.getTemperatureSensitivity() * (weatherData.getTemperature() - standardTemperature));
+            if (temperatureInfluence == 0){
+                temperatureInfluence = 1;
+            }
+            // influenza della pioggia:
+            float rainInfluence = (device.getPrecipitationSensitivity() * weatherData.getPrecipitation());
+            if (rainInfluence == 0){
+                rainInfluence = 1;
+            }
+            energy *= litghtInfluence * windInfluence * temperatureInfluence * rainInfluence;
             energy *= prodCons;
             TS_Device ts_device = null;
             if(device instanceof BuildingDevice){
@@ -54,6 +81,9 @@ public class GenerateData {
         }
         int hours = CalculateDate.dateDifferenceHours(dateEnd, dateStart);
         double lastEnergy = 0;
+        if(!GenerateWeatherData.generateOrGet(dateStart, dateEnd)){
+            return null;
+        }
         for(int hour = 0;hour < hours;hour++){
             LocalDateTime date = CalculateDate.hoursAdd(dateStart, hour);
             double energy = 0;

@@ -7,14 +7,14 @@ public class WeatherData {
     private float temperature; // Temperature in degrees Celsius
     private float precipitation; // Precipitation in mm
     private float cloudCover; // Cloud cover percentage
-    private double windSpeed; // Wind speed in Km/h
+    private float windSpeed; // Wind speed in Km/h
 
     // Default constructor
     public WeatherData() {
     }
 
     // Full constructor
-    public WeatherData(LocalDateTime date, float temperature, float precipitation, float cloudCover, double windSpeed) {
+    public WeatherData(LocalDateTime date, float temperature, float precipitation, float cloudCover, float windSpeed) {
         this.date = date;
         this.temperature = temperature;
         this.precipitation = precipitation;
@@ -55,11 +55,11 @@ public class WeatherData {
         this.cloudCover = cloudCover;
     }
 
-    public double getWindSpeed() {
+    public float getWindSpeed() {
         return windSpeed;
     }
 
-    public void setWindSpeed(double windSpeed) {
+    public void setWindSpeed(float windSpeed) {
         this.windSpeed = windSpeed;
     }
 
