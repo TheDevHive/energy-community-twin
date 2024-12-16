@@ -1,9 +1,4 @@
-export interface WeatherData {
-    temperature: number; // Celsius
-    precipitation: number; // mm
-    cloudCover: number; // percentage
-    windSpeed: number; // km/h
-}
+import { WeatherData } from "./weather-data";
 
 export interface TimeSeriesData {
     date: Date;
