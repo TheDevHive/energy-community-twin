@@ -41,27 +41,33 @@ public class GenerateData {
             double energy = random.nextGaussian(device.getEnergyCurve().getEnergyCurve().get(timestamp.getHour()),
                     device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
             // influenza della luce:
+            
             float litghtInfluence = (device.getLightSensitivity() * (1-weatherData.getCloudCover()));
             if (litghtInfluence == 0){
                 litghtInfluence = 1;
             }
+            
             // influenza del vento:
             float windInfluence = (device.getWindSensitivity() * weatherData.getWindSpeed());
             if (windInfluence == 0){
                 windInfluence = 1;
             }
+            
             // influenza della temperatura:
             float temperatureInfluence = (device.getTemperatureSensitivity() * (weatherData.getTemperature() - standardTemperature));
             if (temperatureInfluence == 0){
                 temperatureInfluence = 1;
             }
+            
             // influenza della pioggia:
             float rainInfluence = (device.getPrecipitationSensitivity() * weatherData.getPrecipitation());
             if (rainInfluence == 0){
                 rainInfluence = 1;
             }
+            
             energy *= litghtInfluence * windInfluence * temperatureInfluence * rainInfluence;
             energy *= prodCons;
+            
             TS_Device ts_device = null;
             if(device instanceof BuildingDevice){
                 ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + device.getId());
@@ -99,7 +105,9 @@ public class GenerateData {
                     continue;
                 }
                 energy += GenerateData.generate(device, date, reportId);
-                uuids.add(uuid);
+                if(!uuids.contains(uuid)){
+                    uuids.add(uuid);
+                }
             }
             double energyToDo = energy;
             for(Device device : batteries){
@@ -204,24 +212,46 @@ public class GenerateData {
         double totalCost = 0;
         BuildingDeviceDAO deviceDao = DBManager.getInstance().getBuildingDeviceDAO();
         ApartmentDeviceDAO apartmentDeviceDAO = DBManager.getInstance().getApartmentDeviceDAO();
-        BuildingDAO buildingDAO = DBManager.getInstance().getBuildingDAO();
-        ApartmentDAO apartmentDAO = DBManager.getInstance().getApartmentDAO();
         TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
         TS_DeviceDAO tsdd = TS_DBManager.getInstance().getTS_DeviceDAO();
         for (String uuid : deviceList) {
             if (uuid.startsWith("B")) {
                 BuildingDevice device = deviceDao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
                 if(device.getConsumesEnergy() != -1){
-                    totalCost = device.getBuilding().getEnergyCost() * tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).mapToDouble(TS_Measurement::getValue).sum();
+                    totalCost += device.getBuilding().getEnergyCost() * tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).mapToDouble(TS_Measurement::getValue).sum();
+                } else {
+                    TS_Measurement old = null;
+                    for(TS_Measurement measurement : tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).toList()){
+                        if (old != null){
+                            if(old.getValue() - measurement.getValue() > 0){
+                                totalCost += (old.getValue() - measurement.getValue()) * device.getBuilding().getEnergyCost();
+                            }
+                        }
+                        old = measurement;
+                    }
                 }
             } else if (uuid.startsWith("A")) {
-                //ApartmentDevice device = apartmentDeviceDAO.findByUuid(uuid);
-                //totalCost += device.getCost();
+                ApartmentDevice device = apartmentDeviceDAO.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
+                if(device.getConsumesEnergy() != -1){
+                    totalCost += device.getApartment().getEnergyCost() * tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).mapToDouble(TS_Measurement::getValue).sum();
+                } else {
+                    TS_Measurement old = null;
+                    for(TS_Measurement measurement : tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).toList()){
+                        if (old != null){
+                            if(old.getValue() - measurement.getValue() > 0){
+                                totalCost += (old.getValue() - measurement.getValue()) * device.getApartment().getEnergyCost();
+                            }
+                        }
+                        old = measurement;
+
+                    }
+                }
             }
         }
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
+        report.setTotalCost(totalCost / 1000);
         report.setRefUUID(refUUID);
         report.setDevices(deviceList.size());
         report.setStartDate(start);
