@@ -3,7 +3,7 @@ import { precisionFixed } from "d3";
 export interface WeatherData{
 
 
-    localDataTime: Date;
+    date: Date;
     temperature: number;
     precipitation: number;
     cloudCover: number;
