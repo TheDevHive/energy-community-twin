@@ -22,11 +22,9 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
 
   data: EnergyData[] = [];
   energyScales = [
-    { value: 100, label: '100 W' },
-    { value: 500, label: '500 W' },
-    { value: 1000, label: '1 KW' },
-    { value: 5000, label: '5 KW' },
-    { value: 10000, label: '10 KW' }
+    { value: 1, label: 'W' },
+    { value: 1000, label: 'KW' },
+    { value: 1000000, label: 'MW' }
   ];
   selectedScale = this.energyScales[0].value;
 
@@ -88,20 +86,33 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
   }
 
   setEnergyData(data: EnergyData[]): void {
-    this.data = data;
+    // find the max value in EnergyData array
+    let max = 0;
+    data.forEach(d => {
+      if (d.value > max) {
+        max = d.value;
+      }
+    });
+    // set the selected scale based on the max value
+    if (max < 1000) {
+      this.selectedScale = 1;
+      this.data = data.map(d => ( {"hour":d.hour, "value":d.value % 100} ));
+    } else if (max < 1000000) {
+      this.selectedScale = 1000;
+      this.data = data.map(d => ( {"hour":d.hour, "value":Math.floor(d.value / 1000)} ));
+    } else {
+      this.selectedScale = 1000000;
+      this.data = data.map(d => ( {"hour":d.hour, "value":Math.floor(d.value / 1000000)} ));
+    }
+    console.log('Energy data set:', this.data);
     if (this.svg) {
       this.updateChart();
     }
   }
 
   onScaleChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.selectedScale = Number(target.value);
-    const middleValue = this.selectedScale / 2;
-    this.data = this.data.map(d => ({
-      ...d,
-      value: middleValue
-    }));
+    this.selectedScale = parseInt((event.target as HTMLSelectElement).value);
+    console.log('Selected scale:', this.selectedScale);
     this.updateChart();
   }
 
@@ -126,7 +137,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
       .range([0, innerWidth]);
 
     this.yScale = d3.scaleLinear()
-      .domain([0, this.selectedScale])
+      .domain([0, this.selectedScale*100])
       .range([innerHeight, 0]);
 
     // Initialize line generator
@@ -179,7 +190,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     const hour = Math.round(this.xScale.invert(x));
     
     if (hour >= 0 && hour < 24) {
-      const value = Math.max(0, Math.min(this.selectedScale,
+      const value = Math.max(0, Math.min(this.selectedScale * 100,
         this.yScale.invert(y)
       ));
 
@@ -268,8 +279,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
         .attr('x', 0 - (innerHeight / 2))
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
-        .text(`Energy ${this.type} (W)`);
-
+        .text(`Energy ${this.type} (${this.energyScales.find(s => s.value === this.selectedScale)?.label})`);
       g.append('text')
         .attr('transform', `translate(${innerWidth / 2}, ${innerHeight + 40})`)
         .style('text-anchor', 'middle')
@@ -284,12 +294,14 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
     }
 
     const pattern: EnergyCurve = {
-      energyCurve: this.data.map(d => d.value)
+      energyCurve: this.data.map(d => d.value * this.selectedScale),
     };
+    
+    console.log('Saving pattern:', pattern.energyCurve[0], pattern.energyCurve[23]);
 
     this.deviceService.saveEnergyPattern(this.deviceUuid, pattern).subscribe({
       next: (savedPattern) => {
-        this.patternSaved.emit(this.data.map((d) => d.value));
+        this.patternSaved.emit(this.data.map((d) => d.value * this.selectedScale));
         console.log('Pattern saved successfully', savedPattern);
         // You could emit an event here to notify parent components
       },
@@ -305,6 +317,7 @@ export class EnergySimulatorComponent implements OnInit, AfterViewInit {
       ...d,
       value: 50
     }));
+    this.selectedScale = this.energyScales[0].value;
     this.updateChart();
     // se a yellow warning message saying that the reset must be confirmed by saving
     this.alert.setAlertDevice('warning', 'The curve has been reset. Changes will be lost if not saved.');
