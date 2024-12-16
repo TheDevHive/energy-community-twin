@@ -179,7 +179,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
                                 </span>
-                                {{ (energy(device) / 24) | number:'1.2-2' }} Wh
+                                {{ formatEnergyDisplay(energy(device), true) }}
                             </td>
                         </ng-container>
 
@@ -308,7 +308,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
                                 </span>
-                                {{ (energy(device) / 24) | number:'1.2-2' }} W
+                                {{ formatEnergyDisplay(energy(device), true) }}
                             </td>
                         </ng-container>
 

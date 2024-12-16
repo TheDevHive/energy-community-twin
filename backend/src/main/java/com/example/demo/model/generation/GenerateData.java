@@ -250,7 +250,7 @@ public class GenerateData {
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
-        report.setTotalCost(totalCost / 1000);
+        report.setTotalCost(-totalCost / 1000);
         report.setRefUUID(refUUID);
         report.setDevices(deviceList.size());
         report.setStartDate(start);

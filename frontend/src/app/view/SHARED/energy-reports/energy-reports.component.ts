@@ -97,11 +97,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   // Add these utility functions at the top of the class
   private formatEnergyValue(value: number): { value: number; unit: string } {
-    if (Math.abs(value) >= 1000) {
-      return { value: value / 1000, unit: 'kW' };
-    }
-    else if (Math.abs(value) >= 1000000) {
+    if (Math.abs(value) >= 1000000) {
       return { value: value / 1000000, unit: 'MW' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kW' };
     }
     return { value: value, unit: 'W' };
   }

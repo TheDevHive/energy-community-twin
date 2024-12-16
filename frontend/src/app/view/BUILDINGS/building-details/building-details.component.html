@@ -172,7 +172,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
                                 </span>
-                                {{ (energy(device) / 24) | number:'1.2-2' }} Wh
+                                {{formatEnergyDisplay(energy(device), true)}}
                             </td>
                         </ng-container>
 
@@ -294,7 +294,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
                                 </span>
-                                {{ (energy(device) / 24) | number:'1.2-2' }} W
+                                {{formatEnergyDisplay(energy(device), false)}}
                             </td>
                         </ng-container>
 
@@ -431,7 +431,7 @@
                                 <span class="text-success me-2">
                                     <i class="bi bi-arrow-up-right"></i>
                                 </span>
-                                {{apartment.stats.energyProduction | number:'1.2-2' }} Wh
+                                {{formatEnergyDisplay(apartment.stats.energyProduction, false)}}
                             </td>
                         </ng-container>
 
@@ -442,7 +442,7 @@
                                 <span class="text-danger me-2">
                                     <i class="bi bi-arrow-down-right"></i>
                                 </span>
-                                {{apartment.stats.energyConsumption | number:'1.2-2' }} Wh
+                                {{formatEnergyDisplay(apartment.stats.energyConsumption, false)}}
                             </td>
                         </ng-container>
 
@@ -453,7 +453,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyIcon(calculateEnergyDifference(apartment))"></i>
                                 </span>
-                                {{calculateEnergyDifference(apartment)}} Wh
+                                {{formatEnergyDisplay(calculateEnergyDifference(apartment), false)}}
                             </td>
                         </ng-container>
 
