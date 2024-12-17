@@ -28,6 +28,7 @@ export class DeviceViewComponent {
   buildingAddress!: string;
   isBuildingDevice!: boolean;
   communityName!: string;
+  isBattery?: boolean=false;
 
   energyClassValue!: string;
 
@@ -55,9 +56,8 @@ export class DeviceViewComponent {
       this.deviceId = parseInt(uuid.slice(1), 10);
       this.isBuildingDevice = false;
     }
-    
-    this.loadDevice();
 
+    this.loadDevice();
   }
   
 
@@ -82,6 +82,8 @@ export class DeviceViewComponent {
         next: (deviceData: BuildingDevice) => {
           this.device = deviceData;
           this.building = deviceData.building;
+          if(this.device.consumesEnergy==-1)
+            this.isBattery=true;
   
           this.buildingAddress = deviceData.building?.address || 'Unknown Address';
           this.communityName = deviceData.building?.community?.name || 'Unknown Community';
@@ -93,7 +95,7 @@ export class DeviceViewComponent {
                 value,
               })
             );
-            this.energySimulator.type = (deviceData.consumesEnergy)? 'Consumption' : 'Production';
+            this.energySimulator.type = (deviceData.consumesEnergy==0)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
           this.deviceLoaded = true;
@@ -110,6 +112,8 @@ export class DeviceViewComponent {
           this.device = deviceData;
           this.building = deviceData.apartment?.building;
           this.apartment = deviceData.apartment;
+          if(this.device.consumesEnergy==-1)
+            this.isBattery=true;
   
           this.buildingAddress = deviceData.apartment?.building?.address || 'Unknown Address';
           this.communityName = deviceData.apartment?.building?.community?.name || 'Unknown Community';
@@ -121,7 +125,7 @@ export class DeviceViewComponent {
                 value,
               })
             );
-            this.energySimulator.type = (deviceData?.consumesEnergy)? 'Consumption' : 'Production';
+            this.energySimulator.type = (deviceData?.consumesEnergy==0)? 'Consumption' : 'Production';
             this.energySimulator.setEnergyData(energyData);
           }
           this.deviceLoaded = true;
@@ -134,7 +138,11 @@ export class DeviceViewComponent {
   }
 
   energy(device: BuildingDevice | ApartmentDevice): number {
-    return device.energy_curve.energyCurve.reduce((sum, value) => sum + value, 0);
+    return device.energy_curve.energyCurve.reduce((sum, value) => sum + ((value > 1000000) ? value / 1000000 : (value > 1000) ? value / 1000 : value), 0);
+  }
+
+  energyUnit(device: BuildingDevice | ApartmentDevice): string {
+    return device.energy_curve.energyCurve.some((value) => value > 1000000) ? 'MWh' : device.energy_curve.energyCurve.some((value) => value > 1000) ? 'KWh' : 'Wh';
   }
 
   energyClass(device: BuildingDevice | ApartmentDevice): string {

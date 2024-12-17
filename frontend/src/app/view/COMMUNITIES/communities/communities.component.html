@@ -62,7 +62,7 @@
 
     <!-- Communities Section Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-      <h5 class="card-title mb-2 mb-md-0">Your Communities</h5>
+      <h5 class="card-title mb-2 mb-md-0">Communities List</h5>
       <button class="btn btn-primary mt-2 mt-md-0" (click)="openAddCommunityDialog()">
         <i class="bi bi-plus-lg me-2"></i>
         Create New Community
@@ -141,7 +141,7 @@
               <td mat-cell *matCellDef="let community">
                 <span class="text-success me-2">
                   <i class="bi bi-arrow-up-right"></i>
-                </span>{{ community.stats.energyProduction | number:'1.2-2'}} Wh
+                </span>{{ formatEnergyDisplay(community.stats.energyProduction, false) }}
               </td>
             </ng-container>
 
@@ -151,7 +151,7 @@
               <td mat-cell *matCellDef="let community">
                 <span class="text-danger me-2">
                   <i class="bi bi-arrow-down-right"></i>
-                </span>{{ community.stats.energyConsumption | number:'1.2-2' }} Wh
+                </span>{{ formatEnergyDisplay(community.stats.energyConsumption, false) }}
               </td>
             </ng-container>
 
@@ -161,7 +161,7 @@
               <td mat-cell *matCellDef="let community">
                 <span class="me-2">
                   <i class="bi" [ngClass]="energyDifferenceIcon(community)"></i>
-                </span>{{ energyDifference(community) }} Wh
+                </span>{{ formatEnergyDisplay(energyDifference(community), false) }}
               </td>
             </ng-container>
 

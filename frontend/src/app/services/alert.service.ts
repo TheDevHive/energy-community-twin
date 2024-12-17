@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AlertService {
-  
 
   constructor() { }
 
@@ -132,15 +131,59 @@ export class AlertService {
     }, this.timeout);
   }
 
+  alertApartmentBattery = { show: false, type: '', message: '' };
+
+  setAlertApartmentBattery(type: string, message: string) {
+    // Clear any existing timeout to reset the timer
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    // Set the new alert and start a new timeout
+    this.alertApartmentBattery = { show: true, type: type, message: message };
+
+    // Set the timeout to hide the alert after the specified timeout duration
+    this.timeoutId = setTimeout(() => {
+      this.alertApartmentBattery = { show: false, type: '', message: '' };
+    }, this.timeout);
+  }
+
+
+  alertBuildingBattery = { show: false, type: '', message: '' };
+
+  setAlertBuildingBattery(type: string, message: string) {
+    // Clear any existing timeout to reset the timer
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    // Set the new alert and start a new timeout
+    this.alertBuildingBattery = { show: true, type: type, message: message };
+
+    // Set the timeout to hide the alert after the specified timeout duration
+    this.timeoutId = setTimeout(() => {
+      this.alertBuildingBattery = { show: false, type: '', message: '' };
+    }, this.timeout);
+  }
+
   clearAlertDevice() {
-    console.log('clearAlertDevice');
     this.alertBuildingDevices = { show: false, type: '', message: '' };
     this.alertApartmentDevice = { show: false, type: '', message: '' };
     this.alertDevice = { show: false, type: '', message: '' };
   }
 
+  clearAlertBuildingDetails() {
+    this.alertApartments =  { show: false, type: '', message: '' };
+    this.alertBuildingDevices =  { show: false, type: '', message: '' };
+    this.alertBuildingBattery =  { show: false, type: '', message: '' };
+  }
+
+  clearAlertApartment(){
+    this.alertApartmentDevice =  { show: false, type: '', message: '' };
+    this.alertApartmentBattery =  { show: false, type: '', message: '' };
+  }
+
   clearAlertNewSimulation() {
-    console.log('clearAlertNewSimulation');
     this.alertNewSimulation = { show: false, type: '', message: '' };
   }
 }

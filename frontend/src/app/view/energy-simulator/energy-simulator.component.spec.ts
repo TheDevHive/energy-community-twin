@@ -36,10 +36,10 @@ describe('EnergySimulatorComponent', () => {
   });
 
   it('should update selectedScale and data on scale change', () => {
-    const event = { target: { value: '500' } } as unknown as Event;
+    const event = { target: { value: '1000' } } as unknown as Event;
     component.onScaleChange(event);
-    expect(component.selectedScale).toBe(500);
-    expect(component.data.every(d => d.value === 250)).toBeTrue();
+    expect(component.selectedScale).toBe(1000);
+    expect(component.data.every(d => d.value === 50)).toBeTrue();
   });
 
   it('should update chart on scale change', () => {

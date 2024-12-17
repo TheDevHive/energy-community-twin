@@ -22,6 +22,8 @@ import { ConfirmationDialogComponent } from '../SHARED/confirmation-dialog/confi
   styleUrl: './apartment.component.css'
 })
 export class ApartmentComponent implements OnInit, AfterViewInit {
+
+
   apartment?: Apartment;
   apartmentId: number=0;
   communityId?: number;
@@ -32,9 +34,15 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
   devices: ApartmentDevice[] = [];
   deviceColumns: string[] = ['id', 'name', 'energy', 'energyClass', 'actions'];
   deviceDataSource: MatTableDataSource<ApartmentDevice>;
+  batteries: ApartmentDevice[] = [];
+  batteryColumns: string[] = ['id', 'name', 'energy', 'energyClass', 'actions'];
+  batteryDataSource: MatTableDataSource<ApartmentDevice>;
+
 
   @ViewChild('devicePaginator') devicePaginator!: MatPaginator;
   @ViewChild('deviceSort') deviceSort!: MatSort;
+  @ViewChild('batteryPaginator') batteryPaginator!: MatPaginator;
+  @ViewChild('batterySort') batterySort!: MatSort;
 
 
   constructor(
@@ -48,9 +56,11 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     private buildingService: BuildingService
   ) {
     this.deviceDataSource = new MatTableDataSource();
+    this.batteryDataSource = new MatTableDataSource();
   }
 
   ngOnInit(): void {
+    this.alert.clearAlertApartment();
     this.route.paramMap.subscribe(params => {
       const apartmentId = params.get('id');
       this.apartmentId = apartmentId ? parseInt(apartmentId!) : 0;
@@ -68,6 +78,15 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     // Device table sorting
     this.deviceDataSource.paginator = this.devicePaginator;
     this.deviceDataSource.sort = this.deviceSort;
+    this.batteryDataSource.paginator = this.batteryPaginator;
+    this.batteryDataSource.sort = this.batterySort;
+    this.batteryDataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'energy': return item.energy;
+        case 'energyClass': return item.energyClass;
+        default: return item[property];
+      };
+    };
     this.deviceDataSource.sortingDataAccessor = (item: any, property: string) => {
       switch (property) {
         case 'energy': return item.energy;
@@ -111,11 +130,15 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
     this.apartmentService.getApartmentDevices(apartmentId).subscribe({
       next: (devices) => {
-        this.devices = devices;
-        this.deviceDataSource.data = devices;
+        this.devices=devices.filter(device => device.consumesEnergy!=-1);
+        this.batteries=devices.filter(device => device.consumesEnergy==-1);
+        this.deviceDataSource.data = this.devices;
+        this.batteryDataSource.data = this.batteries;
+
 
         setTimeout(() => {
-        this.deviceDataSource.paginator = this.devicePaginator;
+          this.batteryDataSource.paginator = this.devicePaginator;
+          this.deviceDataSource.paginator = this.devicePaginator;
         });
     
         this.loading = false;
@@ -125,6 +148,22 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
+  }
+
+  openAddBatteryDialog() {
+    const modalRef = this.modalService.open(AddDeviceComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    modalRef.componentInstance.isBuildingDevice = false;
+    modalRef.componentInstance.apartment = this.apartment;
+    modalRef.componentInstance.battery=true;
+
+    modalRef.result.then(result => {
+      this.createBattery(result)
+    }
+    );
   }
 
   openAddDeviceDialog(): void {
@@ -139,6 +178,27 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     modalRef.result.then(result => {
       this.createDevice(result)
     }
+    );
+  }
+
+  openEditBatteryDialog(device: ApartmentDevice): void {
+    const modalRef = this.modalService.open(AddDeviceComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    
+    modalRef.componentInstance.isEdit = true;
+    modalRef.componentInstance.isBuildingDevice = false;
+    modalRef.componentInstance.device = device;
+    modalRef.componentInstance.apartment = this.apartment;
+    modalRef.componentInstance.battery=true;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.editBattery(result);
+        }
+      }
     );
   }
 
@@ -182,13 +242,35 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     );
   }
 
+  openDeleteBatteryDialog(device: ApartmentDevice): void {
+    const modalRef = this.modalService.open(ConfirmationDialogComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.title = 'Delete Device';
+    modalRef.componentInstance.message = `Are you sure you want to delete device "${device.name}"?`;
+    modalRef.componentInstance.confirmText = 'Delete';
+    modalRef.componentInstance.cancelText = 'Cancel';
+    modalRef.componentInstance.color = 'red';
+
+    modalRef.result.then(
+      (confirmed) => {
+        if (confirmed) {
+          this.deleteBattery(device.id);
+        }
+      }
+    );
+  }
+
   // CRUD operations
   private createDevice(deviceData: any): void {
     deviceData.apartment = this.apartment;
       this.apartmentDeviceService.createApartmentDevice(deviceData).subscribe({
         next: (newDevice: ApartmentDevice) => {
+          this.devices = [...this.devices, newDevice];
           this.deviceDataSource.data = [...this.deviceDataSource.data, newDevice];
           this.alert.setAlertApartmentDevice('success', `Device <strong>${newDevice.id}</strong> created successfully`);
+         
         },
         error: (error) => {
           this.error = error;
@@ -197,17 +279,46 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
       });
   }
 
+  private createBattery(deviceData: any): void {
+    deviceData.apartment = this.apartment;
+    deviceData.consumesEnergy = -1;
+    this.apartmentDeviceService.createApartmentDevice(deviceData).subscribe({
+      next: (newDevice: ApartmentDevice) => {
+        this.batteries = [...this.batteries, newDevice];
+        this.batteryDataSource.data = [...this.batteryDataSource.data, newDevice];
+        this.alert.setAlertApartmentBattery('success', `Device <strong>${newDevice.id}</strong> created successfully`);
+      },
+      error: (error) => {
+        this.error = error;
+        this.alert.setAlertApartmentBattery('danger', `Failed to create device: ${error.message}`);
+      }
+    });
+  }
+
   private editDevice(deviceData: any): void {
     this.apartmentDeviceService.updateApartmentDevice(deviceData).subscribe({
       next: (updatedDevice) => {
         this.deviceDataSource.data = this.deviceDataSource.data.map(
-          device => device.id === updatedDevice.id ? updatedDevice : device
-        );
+            device => device.id === updatedDevice.id ? updatedDevice : device);
         this.alert.setAlertApartmentDevice('success', `Device <strong>${updatedDevice.id}</strong> updated successfully`);
       },
       error: (error) => {
         this.error = error;
         this.alert.setAlertApartmentDevice('danger', `Failed to update device: ${error.message}`);
+      }
+    });
+  }
+
+  private editBattery(deviceData: any): void {
+    this.apartmentDeviceService.updateApartmentDevice(deviceData).subscribe({
+      next: (updatedDevice) => {
+        this.batteryDataSource.data = this.batteryDataSource.data.map(
+        device => device.id === updatedDevice.id ? updatedDevice : device);
+        this.alert.setAlertApartmentBattery('success', `Device <strong>${updatedDevice.id}</strong> updated successfully`);
+      },
+      error: (error) => {
+        this.error = error;
+        this.alert.setAlertApartmentBattery('danger', `Failed to update device: ${error.message}`);
       }
     });
   }
@@ -225,9 +336,22 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private deleteBattery(id: number): void {
+    this.apartmentDeviceService.removeApartmentDevice(id).subscribe({
+      next: () => {
+        this.batteryDataSource.data = [...this.batteryDataSource.data.filter(device => device.id !== id)];
+        this.alert.setAlertApartmentBattery('success', 'Device deleted successfully');
+      },
+      error: (error) => {
+        this.error = error;
+        this.alert.setAlertApartmentBattery('danger', `Failed to delete device: ${error.message}`);
+      }
+    });
+  }
+
   // Utility methods
   getEnergyDeviceIcon(device: ApartmentDevice): string {
-    if (device.consumesEnergy) {
+    if (device.consumesEnergy==0) {
       return 'bi-arrow-down-right text-danger';
     }
     return 'bi-arrow-up-right text-success';
@@ -253,8 +377,35 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
     return colors[energyClass] || 'secondary';
   }
 
+
+  onBatterySortChange(sort: Sort) {
+    const data2 = this.batteryDataSource.data.slice();
+    if (!sort.active || sort.direction === '') {
+      this.batteryDataSource.data = this.batteries;
+      return;
+    }
+
+    this.batteryDataSource.data = data2.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'energy': return this.compare(this.energy(a), this.energy(b), isAsc);
+        case 'energyClass': return this.compare(this.energy(a), this.energy(b), isAsc);
+        default: {
+          const aValue = a[sort.active as keyof ApartmentDevice];
+          const bValue = b[sort.active as keyof ApartmentDevice];
+          if (typeof aValue === 'string' || typeof aValue === 'number') {
+            return this.compare(aValue, bValue as string | number, isAsc);
+          }
+          return 0;
+        };
+      }
+    });
+
+  }
+
   onDeviceSortChange(sort: Sort): void {
     const data = this.deviceDataSource.data.slice();
+    
     if (!sort.active || sort.direction === '') {
       this.deviceDataSource.data = this.devices;
       return;
@@ -283,14 +434,20 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
   energyClass(device: ApartmentDevice): string {
     let energy = this.energy(device);
-    if (energy < 1000) {
-      return 'A';
-    } else if (energy < 5000) {
-      return 'B';
-    } else if (energy < 10000) {
+    if(device.consumesEnergy==0)
+      energy=-energy;
+    if(energy<0){
+      return 'F'
+    }else if(energy<500){
+      return 'E';
+    } else if (energy < 1000) {
+      return 'D';
+    } else if (energy < 1500) {
       return 'C';
-    }
-    return 'D';
+    } else if (energy < 2000) {
+      return 'B';
+    } 
+    return 'A';
   }
 
 
@@ -313,5 +470,23 @@ export class ApartmentComponent implements OnInit, AfterViewInit {
 
   navigateToDevice(id: number): void {
     this.router.navigate(['/devices', 'A' + id.toString()]);
+  }
+
+  private formatEnergyValue(value: number, should_divide: boolean): { value: number; unit: string } {
+    if (should_divide){
+      value = value / 24;
+    }
+    if (Math.abs(value) >= 1000000) {
+      return { value: value / 1000000, unit: 'MWh' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kWh' };
+    }
+    return { value:( value), unit: 'Wh' };
+  }
+
+  formatEnergyDisplay(value: number, should_divide: boolean): string {
+    const formatted = this.formatEnergyValue(value, should_divide);
+    return `${formatted.value.toFixed(2)} ${formatted.unit}`;
   }
 }

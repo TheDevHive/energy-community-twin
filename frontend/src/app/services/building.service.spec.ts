@@ -91,23 +91,23 @@ describe('BuildingService', () => {
   describe('getApartments', () => {
     it('should get all apartments for a building', () => {
       const building = BUILDINGS[0];
-  
+
       // Define mock apartments
       const mockApartments: Apartment[] = [
-        { id: 1, building: building, residents: 2, squareFootage: 100, userId: 1, stats: { apartmentId: 1, energyProduction: 10, energyConsumption: 5, energyClass: 'A' } },
-        { id: 2, building: building, residents: 3, squareFootage: 150, userId: 2, stats: { apartmentId: 2, energyProduction: 15, energyConsumption: 7, energyClass: 'B' } }
+        { id: 1, building: building, residents: 2, squareFootage: 100, energyCost: 0.20, userId: 1, stats: { apartmentId: 1, energyProduction: 10, energyConsumption: 5, energyClass: 'A' } },
+        { id: 2, building: building, residents: 3, squareFootage: 150, energyCost: 0.25, userId: 2, stats: { apartmentId: 2, energyProduction: 15, energyConsumption: 7, energyClass: 'B' } }
       ];
-  
+
       service.getApartments(building.id).subscribe(apartments => {
         expect(apartments).toEqual(mockApartments);
       });
-  
+
       const req = httpMock.expectOne(`${apiUrl}/${building.id}/apartments`);
       expect(req.request.method).toBe('GET');
       req.flush(mockApartments);
     });
   });
-  
+
 
   describe('addApartment', () => {
     it('should add an apartment to a building', () => {

@@ -6,7 +6,7 @@
           <div class="card border shadow-sm">
             <div class="card-body p-4">
               <h3 *ngIf="device" class="text-primary">
-                <i class="bi bi-cpu me-2"></i>{{ device.name }} - Device Details
+                <i [ngClass]="{'bi bi-battery-full me-2': isBattery, 'bi bi-cpu me-2' : !isBattery }"></i> {{ device.name }} - {{!isBattery? 'Device Details': 'Battery Details'}}
               </h3>
             </div>
           </div>
@@ -17,33 +17,34 @@
       <ol class="breadcrumb mb-2 mb-md-0">
         <li class="breadcrumb-item">
           <a [routerLink]="['/communities']" style="text-decoration-color: var(--color-secondary-dark);">
-            <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
+            <h5 class="card-title mb-0 d-inline">Communities</h5>
           </a>
         </li>
-        <li class="breadcrumb-item">
-          <a
-            [routerLink]="['/communities', building?.community?.id]"
-            style="text-decoration-color: var(--color-secondary-dark);">
-            <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+      <li class="breadcrumb-item">
+          <a [routerLink]="['/communities', building?.community?.id]" style="text-decoration-color: var(--color-secondary-dark);">
+              <h5 class="card-title mb-0 d-inline">{{ communityName }}</h5>
           </a>
-        </li>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <a [routerLink]="['/buildings', building?.id]" style="text-decoration-color: var(--color-secondary-dark);">
+          <h5 class="card-title mb-0 d-inline">{{ building?.address }}</h5>
+        </a>
+      </li>
         <li *ngIf="isBuildingDevice" class="breadcrumb-item">
             <a
-            [routerLink]="['/buildings', building?.id]"
             style="text-decoration-color: var(--color-secondary-dark);">
             <h5 *ngIf="device" class="card-title mb-0 d-inline">{{ device.name }}</h5>
           </a>
         </li>
         <li *ngIf="!isBuildingDevice" class="breadcrumb-item">
           <a
-          [routerLink]="['/buildings', building?.id]"
+          [routerLink]="['/apartments', apartment?.id]"
           style="text-decoration-color: var(--color-secondary-dark);">
           <h5 *ngIf="device" class="card-title mb-0 d-inline"> Apartment {{ apartment?.id }}</h5>
         </a>
       </li>
         <li *ngIf="!isBuildingDevice" class="breadcrumb-item">
           <a
-          [routerLink]="['/apartments', apartment?.id]"
           style="text-decoration-color: var(--color-secondary-dark);">
           <h5 *ngIf="device" class="card-title mb-0 d-inline"> {{ device.name }}</h5>
         </a>
@@ -68,11 +69,11 @@
         <div class="card border shadow-sm h-100 d-flex align-items-center">
           <div class="card-body d-flex flex-column align-items-center justify-content-start custom-card-spacing">
             <div *ngIf="device" class="stats-icon p-4 rounded-circle mb-3"
-              [ngClass]="device.consumesEnergy ? 'bg-danger bg-opacity-10' : 'bg-success bg-opacity-10'">
-              <i class="bi bi-lightning-charge" [ngClass]="device.consumesEnergy ? 'text-danger' : 'text-success'"></i>
+              [ngClass]="device.consumesEnergy==0 ? 'bg-danger bg-opacity-10' : 'bg-success bg-opacity-10'">
+              <i class="bi bi-lightning-charge" [ngClass]="device.consumesEnergy==0 ? 'text-danger' : 'text-success'"></i>
             </div>
             <h6 class="text-muted mb-1">Consumes Energy</h6>
-            <h4 *ngIf="device" class="mb-0">{{ device.consumesEnergy ? 'Yes' : 'No' }}</h4>
+            <h4 *ngIf="device" class="mb-0">{{ device.consumesEnergy==0 ? 'Yes' : 'No' }}</h4>
           </div>
         </div>
 
@@ -83,7 +84,7 @@
               <i class="bi bi-battery-full text-warning"></i>
             </div>
             <h6 class="text-muted mb-1">Energy</h6>
-            <h4 *ngIf="device" class="mb-0">{{ (energy(device) / 24) | number:'1.2-2' }} Wh</h4>
+            <h4 *ngIf="device" class="mb-0">{{ (energy(device) / 24) | number:'1.2-2' }} {{ energyUnit(device) }} </h4>
           </div>
         </div>
 
@@ -101,12 +102,12 @@
       </div>
 
       <!-- Right Column: Chart -->
-      <div class="col-lg-8">
+      <div *ngIf="!isBattery" class="col-lg-8">
         <div class="card border shadow-sm h-100">
           <div class="card-body" style="padding: 5%;">  <!-- Removed d-flex classes here -->
               <app-energy-simulator 
                 [deviceUuid]="isBuildingDevice ? 'B' + deviceId : 'A' + deviceId"
-                [type]="device?.consumesEnergy ? 'Consumption' : 'Production'" 
+                [type]="device?.consumesEnergy==0 ? 'Consumption' : 'Production'" 
                 (patternSaved)="onPatternSaved($event)">
               </app-energy-simulator>
           </div>

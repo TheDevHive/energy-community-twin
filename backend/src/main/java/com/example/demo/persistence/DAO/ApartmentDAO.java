@@ -21,16 +21,17 @@ public class ApartmentDAO {
 
     public boolean saveOrUpdate(Apartment apartment) {
         if (findByPrimaryKey(apartment.getId()) == null) {
-            String sql = "INSERT INTO apartment (residents, square_footage, energy_class, building_id, user_id) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO apartment (residents, square_footage, energy_class, energy_cost, building_id, user_id) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, apartment.getResidents());
                 pstmt.setInt(2, apartment.getSquareFootage());
                 pstmt.setString(3, apartment.getEnergyClass());
-                pstmt.setInt(4, apartment.getBuilding().getId());
+                pstmt.setDouble(4, apartment.getEnergyCost());
+                pstmt.setInt(5, apartment.getBuilding().getId());
                 if (apartment.getUser() == null)
-                    pstmt.setNull(5, java.sql.Types.INTEGER);
+                    pstmt.setNull(6, java.sql.Types.INTEGER);
                 else
-                    pstmt.setInt(5, apartment.getUser().getId());
+                    pstmt.setInt(6, apartment.getUser().getId());
                 pstmt.executeUpdate();
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -41,17 +42,18 @@ public class ApartmentDAO {
                 return false;
             }
         } else {
-            String sql = "UPDATE apartment SET residents = ?, square_footage = ?, energy_class = ?, building_id = ?, user_id = ? WHERE id = ?";
+            String sql = "UPDATE apartment SET residents = ?, square_footage = ?, energy_class = ?, energy_cost = ?, building_id = ?, user_id = ? WHERE id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, apartment.getResidents());
                 pstmt.setInt(2, apartment.getSquareFootage());
                 pstmt.setString(3, apartment.getEnergyClass());
-                pstmt.setInt(4, apartment.getBuilding().getId());
+                pstmt.setDouble(4, apartment.getEnergyCost());
+                pstmt.setInt(5, apartment.getBuilding().getId());
                 if (apartment.getUser() == null)
-                    pstmt.setNull(5, java.sql.Types.INTEGER);
+                    pstmt.setNull(6, java.sql.Types.INTEGER);
                 else
-                    pstmt.setInt(5, apartment.getUser().getId());
-                pstmt.setInt(6, apartment.getId());
+                    pstmt.setInt(6, apartment.getUser().getId());
+                pstmt.setInt(7, apartment.getId());
                 pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -74,7 +76,7 @@ public class ApartmentDAO {
                     return null;
                 }
                 apartment = new Apartment(rs.getInt("id"), building, rs.getInt("residents"),
-                        rs.getInt("square_footage"), rs.getString("energy_class"), user);
+                        rs.getInt("square_footage"), rs.getString("energy_class"), rs.getDouble("energy_cost"), user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,7 +93,7 @@ public class ApartmentDAO {
             while (rs.next()) {
                 User user = DBManager.getInstance().getUserDAO().findByPrimaryKey(rs.getInt("user_id"));
                 apartments.add(new Apartment(rs.getInt("id"), building, rs.getInt("residents"),
-                        rs.getInt("square_footage"), rs.getString("energy_class"), user));
+                        rs.getInt("square_footage"), rs.getString("energy_class"), rs.getDouble("energy_cost"), user));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -111,7 +113,7 @@ public class ApartmentDAO {
                     continue;
                 }
                 apartments.add(new Apartment(rs.getInt("id"), building, rs.getInt("residents"),
-                        rs.getInt("square_footage"), rs.getString("energy_class"), user));
+                        rs.getInt("square_footage"), rs.getString("energy_class"), rs.getDouble("energy_cost"), user));
             }
         } catch (SQLException e) {
             e.printStackTrace();

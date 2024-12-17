@@ -10,6 +10,10 @@ export interface EnergyReport {
     totalProduction: number;
     totalConsumption: number;
     totalDifference: number;
+    batteryUsage: number;
+    batteryEnd: number;
+    totalCost: number;
 
-    timeSeriesData: TimeSeriesData[];
+    timeSeriesDataDevice: TimeSeriesData[];
+    timeSeriesDataBattery: TimeSeriesData[];
 }

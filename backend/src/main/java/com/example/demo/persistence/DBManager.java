@@ -15,7 +15,8 @@ public class DBManager {
 
     private static DBManager instance;
 
-    private DBManager() {}
+    private DBManager() {
+    }
 
     public static synchronized DBManager getInstance() {
         if (instance == null) {
@@ -57,63 +58,73 @@ public class DBManager {
             connection = getConnection();
             statement = connection.createStatement();
 
-            statement.execute("CREATE TABLE IF NOT EXISTS credentials ("+
-                    "email VARCHAR PRIMARY KEY, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS credentials (" +
+                    "email VARCHAR PRIMARY KEY, " +
                     "password VARCHAR NOT NULL);");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS admin ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "email VARCHAR NOT NULL UNIQUE, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS admin (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "email VARCHAR NOT NULL UNIQUE, " +
                     "FOREIGN KEY (email) REFERENCES credentials(email));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS user ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "email VARCHAR NOT NULL UNIQUE, "+
-                    "name VARCHAR NOT NULL, "+
-                    "surname VARCHAR NOT NULL, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS user (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "email VARCHAR NOT NULL UNIQUE, " +
+                    "name VARCHAR NOT NULL, " +
+                    "surname VARCHAR NOT NULL, " +
                     "birth_date DATE NOT NULL, " +
                     "phone VARCHAR, " +
                     "FOREIGN KEY (email) REFERENCES credentials(email));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS community ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "name VARCHAR NOT NULL, "+
-                    "admin_id INTEGER NOT NULL, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS community (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name VARCHAR NOT NULL, " +
+                    "admin_id INTEGER NOT NULL, " +
                     "FOREIGN KEY (admin_id) REFERENCES admin(id));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS building ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "community_id INTEGER NOT NULL, "+
-                    "address VARCHAR NOT NULL, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS building (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "community_id INTEGER NOT NULL, " +
+                    "address VARCHAR NOT NULL, " +
                     "floors INTEGER NOT NULL, " +
+                    "energy_cost FLOAT NOT NULL, " +
                     "FOREIGN KEY (community_id) REFERENCES community(id));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS building_device ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "name VARCHAR NOT NULL, "+
-                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
-                    "building_id INTEGER NOT NULL, "+
-                    "energy_curve BLOB, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS building_device (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name VARCHAR NOT NULL, " +
+                    "consumes_energy INTEGER NOT NULL, " + // Flag for consumption vs. production
+                    "building_id INTEGER NOT NULL, " +
+                    "energy_curve BLOB, " +
+                    "wind_sensitivity FLOAT NOT NULL, " +
+                    "light_sensitivity FLOAT NOT NULL, " +
+                    "temperature_sensitivity FLOAT NOT NULL, " +
+                    "precipitation_sensitivity FLOAT NOT NULL, " +
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS apartment ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "residents INTEGER NOT NULL, "+
-                    "square_footage FLOAT NOT NULL, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS apartment (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "residents INTEGER NOT NULL, " +
+                    "square_footage FLOAT NOT NULL, " +
                     "energy_class CHAR(1), " +
-                    "building_id INTEGER NOT NULL, "+
-                    "user_id INTEGER,"+
-                    "FOREIGN KEY (user_id) REFERENCES user(id), "+
+                    "building_id INTEGER NOT NULL, " +
+                    "user_id INTEGER," +
+                    "energy_cost FLOAT NOT NULL, " +
+                    "FOREIGN KEY (user_id) REFERENCES user(id), " +
                     "FOREIGN KEY (building_id) REFERENCES building(id));");
 
-            statement.execute("CREATE TABLE IF NOT EXISTS apartment_device ("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    "name VARCHAR NOT NULL, "+
-                    "consumes_energy BOOLEAN NOT NULL, " + // Flag for consumption vs. production
-                    "apartment_id INTEGER NOT NULL, "+
-                    "energy_curve BLOB, "+
+            statement.execute("CREATE TABLE IF NOT EXISTS apartment_device (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name VARCHAR NOT NULL, " +
+                    "consumes_energy INTEGER NOT NULL, " + // Flag for consumption vs. production
+                    "apartment_id INTEGER NOT NULL, " +
+                    "energy_curve BLOB, " +
+                    "wind_sensitivity FLOAT NOT NULL, " +
+                    "light_sensitivity FLOAT NOT NULL, " +
+                    "temperature_sensitivity FLOAT NOT NULL, " +
+                    "precipitation_sensitivity FLOAT NOT NULL, " +
                     "FOREIGN KEY (apartment_id) REFERENCES apartment(id));");
-            
+
             statement.execute("CREATE TABLE IF NOT EXISTS energy_report (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "ref_uuid VARCHAR NOT NULL, " +
@@ -123,7 +134,10 @@ public class DBManager {
                     "devices INTEGER NOT NULL, " +
                     "total_production DOUBLE NOT NULL, " +
                     "total_consumption DOUBLE NOT NULL, " +
-                    "total_difference DOUBLE NOT NULL);");
+                    "total_difference DOUBLE NOT NULL, " +
+                    "battery_usage DOUBLE NOT NULL, " +
+                    "battery_end DOUBLE NOT NULL, " +
+                    "total_cost DOUBLE NOT NULL);");
         } catch (SQLException ignored) {
             return false;
         } finally {

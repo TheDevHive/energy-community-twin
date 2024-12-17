@@ -5,7 +5,11 @@ export interface ApartmentDevice
 {
     id: number;
     name: string;
-    consumesEnergy: boolean;
+    consumesEnergy: number;
     energy_curve: EnergyCurve;
     apartment: Apartment | null;
+    lightSensitivity: number;
+    windSensitivity: number;
+    precipitationSensitivity: number;
+    temperatureSensitivity: number;
 }

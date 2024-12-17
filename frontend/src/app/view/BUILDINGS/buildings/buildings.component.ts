@@ -39,7 +39,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   communityId = 0;
   communityName = 'Community Name';
 
-  displayedColumns: string[] = ['id', 'address', 'floors', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
+  displayedColumns: string[] = ['id', 'address', 'floors', 'apartments', 'members', 'energyProduction', 'energyConsumption', 'energyDifference', 'energyCost', 'actions'];
   dataSource: MatTableDataSource<Building>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -96,6 +96,8 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
             this.buildings.forEach((building) => {
               building.stats = stats.find((stat) => stat.buildingId === building.id)!;
             });
+
+            console.log("buildings: ", this.buildings);
             
             // Update the data source
             this.dataSource.data = this.buildings;
@@ -296,7 +298,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(building: Building): number {
-    return Math.floor((building.stats.energyProduction - building.stats.energyConsumption) * 100) / 100;
+    return building.stats.energyProduction - building.stats.energyConsumption;
   }
 
   energyDifferenceIcon(building: Building): string {
@@ -329,6 +331,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
             b.stats.energyProduction - b.stats.energyConsumption,
             isAsc
           );
+          case 'energyCost': return this.compare(a.energyCost, b.energyCost, isAsc);
           default: return 0;
         }
       });
@@ -351,5 +354,22 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
     );
   }
   
+  private formatEnergyValue(value: number, should_divide: boolean): { value: number; unit: string } {
+    if (should_divide){
+      value = value / 24;
+    }
+    if (Math.abs(value) >= 1000000) {
+      return { value: value / 1000000, unit: 'MWh' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kWh' };
+    }
+    return { value:( value), unit: 'Wh' };
+  }
+
+  formatEnergyDisplay(value: number, should_divide: boolean): string {
+    const formatted = this.formatEnergyValue(value, should_divide);
+    return `${formatted.value?.toFixed(2)} ${formatted.unit}`;
+  }
   
 }

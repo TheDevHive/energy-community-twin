@@ -3,6 +3,7 @@ package com.example.demo.persistence.DAO;
 import com.example.demo.model.EnergyReport;
 import com.example.demo.model.TS_Measurement;
 import com.example.demo.model.TimeSeriesData;
+import com.example.demo.persistence.DBManager;
 import com.example.demo.persistence.TS_DBManager;
 
 import java.sql.*;
@@ -19,8 +20,8 @@ public class EnergyReportDAO {
     public boolean saveOrUpdate(EnergyReport report) {
         if (findByPrimaryKey(report.getId()) == null || report.getId() == 0) {
             String sql = "INSERT INTO energy_report (ref_uuid, start_date, end_date, days, devices, " +
-                    "total_production, total_consumption, total_difference) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    "total_production, total_consumption, total_difference, battery_usage, battery_end, total_cost) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 setStatementParameters(pstmt, report);
                 pstmt.executeUpdate();
@@ -28,11 +29,6 @@ public class EnergyReportDAO {
                 if (rs.next()) {
                     report.setId(rs.getInt(1));
                 }
-                
-                // Save associated time series data
-                //if (report.getTimeSeriesData() != null) {
-                //    saveTimeSeriesData(report);
-                //}
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
@@ -40,10 +36,10 @@ public class EnergyReportDAO {
         } else {
             String sql = "UPDATE energy_report SET ref_uuid = ?, start_date = ?, end_date = ?, " +
                     "days = ?, devices = ?, total_production = ?, total_consumption = ?, " +
-                    "total_difference = ? WHERE id = ?";
+                    "total_difference = ?, battery_usage = ?, battery_end = ?, total_cost = ? WHERE id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 setStatementParameters(pstmt, report);
-                pstmt.setInt(9, report.getId());
+                pstmt.setInt(12, report.getId());
                 pstmt.executeUpdate();
                 
             } catch (SQLException e) {
@@ -63,6 +59,9 @@ public class EnergyReportDAO {
         pstmt.setDouble(6, report.getTotalProduction());
         pstmt.setDouble(7, report.getTotalConsumption());
         pstmt.setDouble(8, report.getTotalDifference());
+        pstmt.setDouble(9, report.getBatteryUsage());
+        pstmt.setDouble(10, report.getBatteryEnd());
+        pstmt.setDouble(11, report.getTotalCost());
     }
 
     public EnergyReport findByPrimaryKey(int id) {
@@ -73,7 +72,8 @@ public class EnergyReportDAO {
             if (rs.next()) {
                 EnergyReport report = mapResultSetToEnergyReport(rs);
                 // Load associated time series data
-                report.setTimeSeriesData(loadTimeSeriesData(id));
+                report.setTimeSeriesDataDevice(loadTimeSeriesDataDevice(id));
+                report.setTimeSeriesDataBattery(loadTimeSeriesDataBattary(id));
                 return report;
             }
         } catch (SQLException e) {
@@ -90,7 +90,8 @@ public class EnergyReportDAO {
             List<EnergyReport> reports = new ArrayList<>();
             while (rs.next()) {
                 EnergyReport report = mapResultSetToEnergyReport(rs);
-                report.setTimeSeriesData(loadTimeSeriesData(report.getId()));
+                report.setTimeSeriesDataDevice(loadTimeSeriesDataDevice(report.getId()));
+                report.setTimeSeriesDataBattery(loadTimeSeriesDataBattary(report.getId()));
                 reports.add(report);
             }
             return reports;
@@ -123,7 +124,8 @@ public class EnergyReportDAO {
             List<EnergyReport> reports = new ArrayList<>();
             while (rs.next()) {
                 EnergyReport report = mapResultSetToEnergyReport(rs);
-                report.setTimeSeriesData(loadTimeSeriesData(report.getId()));
+                report.setTimeSeriesDataDevice(loadTimeSeriesDataDevice(report.getId()));
+                report.setTimeSeriesDataBattery(loadTimeSeriesDataBattary(report.getId()));
                 reports.add(report);
             }
             return reports;
@@ -144,24 +146,59 @@ public class EnergyReportDAO {
             rs.getDouble("total_production"),
             rs.getDouble("total_consumption"),
             rs.getDouble("total_difference"),
+            rs.getDouble("battery_usage"),
+            rs.getDouble("battery_end"),
+            rs.getDouble("total_cost"),
+            new ArrayList<>(), // Time series data will be loaded separately
             new ArrayList<>() // Time series data will be loaded separately
         );
     }
 
-    /* private void deleteTimeSeriesData(int reportId) {
-        String sql = "DELETE FROM time_series_data WHERE report_id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setint(1, reportId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    } */
-
-    private List<TimeSeriesData> loadTimeSeriesData(int reportId) {
+    private List<TimeSeriesData> loadTimeSeriesDataDevice(int reportId) {
         TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
+        BuildingDeviceDAO bdd = DBManager.getInstance().getBuildingDeviceDAO();
+        ApartmentDeviceDAO add = DBManager.getInstance().getApartmentDeviceDAO();
+        TS_DeviceDAO tdd = TS_DBManager.getInstance().getTS_DeviceDAO();
         List<TimeSeriesData> timeSeriesDataList = new ArrayList<>();
         for (TS_Measurement measurement : tsmd.findByReportId(reportId)) {
+            if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("B")) {
+                if (bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()) != null && bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() == -1) {
+                    continue;
+                }
+            } else if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("A")) {
+                if (add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)) != null && add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)).getConsumesEnergy() == -1) {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+            TimeSeriesData tsd = new TimeSeriesData(
+                measurement.getTimestamp(),
+                measurement.getValue()
+            );
+            timeSeriesDataList.add(tsd);
+        }
+
+        return timeSeriesDataList;
+    }
+    private List<TimeSeriesData> loadTimeSeriesDataBattary(int reportId) {
+        TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
+        BuildingDeviceDAO bdd = DBManager.getInstance().getBuildingDeviceDAO();
+        ApartmentDeviceDAO add = DBManager.getInstance().getApartmentDeviceDAO();
+        TS_DeviceDAO tdd = TS_DBManager.getInstance().getTS_DeviceDAO();
+        List<TimeSeriesData> timeSeriesDataList = new ArrayList<>();
+        for (TS_Measurement measurement : tsmd.findByReportId(reportId)) {
+            if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("B")) {
+                if (bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()) != null && bdd.findByPrimaryKey(tdd.findByPrimaryKey(measurement.getDeviceId()).getId()).getConsumesEnergy() != -1) {
+                    continue;
+                }
+            } else if (tdd.findByPrimaryKey(measurement.getDeviceId()) != null && tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().startsWith("A")) {
+                if (add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)) != null && add.findByPrimaryKey(Integer.parseInt(tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid(), 1, tdd.findByPrimaryKey(measurement.getDeviceId()).getUuid().length(), 10)).getConsumesEnergy() != -1) {
+                    continue;
+                }
+            } else {
+                continue;
+            }
             TimeSeriesData tsd = new TimeSeriesData(
                 measurement.getTimestamp(),
                 measurement.getValue()

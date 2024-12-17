@@ -6,7 +6,11 @@ export interface BuildingDevice
 {
     id: number;
     name: string;
-    consumesEnergy: boolean;
+    consumesEnergy: number;
     energy_curve: EnergyCurve;
     building: Building | null;
+    lightSensitivity: number;
+    windSensitivity: number;
+    precipitationSensitivity: number;
+    temperatureSensitivity: number;
 }

@@ -1,53 +1,50 @@
 <div class="modal-header modal-dark">
     <h4 class="modal-title">{{ isEdit ? 'Edit Apartment' : 'Add Apartment' }}</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
-  </div>
-  
-  <form [formGroup]="apartmentForm" (ngSubmit)="onSubmit()">
+</div>
+
+<form [formGroup]="apartmentForm" (ngSubmit)="onSubmit()">
     <div class="modal-body">
         <div class="mb-3">
             <label for="address" class="form-label">Residents</label>
-            <input type="number"
-                class="form-control"
-                id="residents"
-                formControlName="residents"
+            <input type="number" class="form-control" id="residents" formControlName="residents"
                 placeholder="Insert the number of residents"
                 [class.is-invalid]="apartmentForm.get('residents')?.invalid && apartmentForm.get('residents')?.touched">
             <div class="invalid-feedback"
                 *ngIf="apartmentForm.get('residents')?.invalid && apartmentForm.get('residents')?.touched">
                 The number of residents is required
             </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="squareFootage" class="form-label">Square footage</label>
+            <input type="number" class="form-control" id="squareFootage" formControlName="squareFootage"
+                placeholder="Insert the square footage"
+                [class.is-invalid]="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
+            <div class="invalid-feedback"
+                *ngIf="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
+                The square footage is required
             </div>
-  
-            <div class="mb-3">
-                <label for="squareFootage" class="form-label">Square footage</label>
-                <input type="number"
-                    class="form-control"
-                    id="squareFootage"
-                    formControlName="squareFootage"
-                    placeholder="Insert the square footage"
-                    [class.is-invalid]="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
-                <div class="invalid-feedback"
-                    *ngIf="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
-                    The square footage is required
-                </div>
+        </div>
+        <div class="mb-3">
+            <label for="energyCost" class="form-label">Energy Cost [€/kWh]</label>
+            <input type="number" class="form-control" id="energyCost" formControlName="energyCost" step="0.1"
+                placeholder="Insert the square footage"
+                [class.is-invalid]="apartmentForm.get('energyCost')?.invalid && apartmentForm.get('energyCost')?.touched">
+            <div class="invalid-feedback"
+                *ngIf="apartmentForm.get('energyCost')?.invalid && apartmentForm.get('energyCost')?.touched">
+                The cost of energy is required and must be valid
+            </div>
         </div>
     </div>
-  
+
     <div class="modal-footer">
-        <button type="button" 
-                class="btn btn-outline-secondary" 
-                (click)="dismiss()"
-                [disabled]="loading">
+        <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" [disabled]="loading">
             Cancel
         </button>
-        <button type="submit" 
-                class="btn btn-primary submit-btn"
-                [disabled]="apartmentForm.invalid || loading">
-            <span class="spinner-border spinner-border-sm me-2" 
-                  *ngIf="loading" 
-                  role="status"></span>
+        <button type="submit" class="btn btn-primary submit-btn" [disabled]="apartmentForm.invalid || loading">
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
             {{ isEdit ? 'Update Apartment' : 'Add Apartment' }}
         </button>
     </div>
-  </form>
+</form>
