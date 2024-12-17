@@ -65,7 +65,9 @@
               </div>
               <div>
                 <h6 class="text-muted mb-1">Total Energy Production</h6>
-                <h4 class="mb-0">{{totalEnergyProduction()}} Wh</h4>
+                <h4 class="mb-0">
+                  {{ formatEnergyDisplay(totalEnergyProduction(), false) }}
+                </h4>
               </div>
             </div>
           </div>
@@ -81,7 +83,9 @@
               </div>
               <div>
                 <h6 class="text-muted mb-1">Total Energy Consumption</h6>
-                <h4 class="mb-0">{{totalEnergyConsumption()}} Wh</h4>
+                <h4 class="mb-0">
+                  {{ formatEnergyDisplay(totalEnergyConsumption(), false) }}
+                </h4>
               </div>
             </div>
           </div>
@@ -208,7 +212,7 @@
               <td mat-cell *matCellDef="let building">
                 <span class="me-2">
                   <i class="bi" [ngClass]="energyDifferenceIcon(building)"></i>
-                </span>{{ formatEnergyDisplay(building.stats.energyDifference, false) }}
+                </span>{{ formatEnergyDisplay(energyDifference(building), false) }}
               </td>
             </ng-container>
 

@@ -258,7 +258,8 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(community: Community): number {
-    return Math.round((community.stats.energyProduction - community.stats.energyConsumption) * 100) / 100;
+    console.log(community.stats.energyProduction - community.stats.energyConsumption);
+    return community.stats.energyProduction - community.stats.energyConsumption;
   }
 
   energyDifferenceIcon(community: Community): string {

@@ -298,7 +298,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(building: Building): number {
-    return Math.floor((building.stats.energyProduction - building.stats.energyConsumption) * 100) / 100;
+    return building.stats.energyProduction - building.stats.energyConsumption;
   }
 
   energyDifferenceIcon(building: Building): string {
@@ -369,7 +369,7 @@ export class BuildingsComponent implements OnInit, AfterViewInit {
 
   formatEnergyDisplay(value: number, should_divide: boolean): string {
     const formatted = this.formatEnergyValue(value, should_divide);
-    return `${formatted.value.toFixed(2)} ${formatted.unit}`;
+    return `${formatted.value?.toFixed(2)} ${formatted.unit}`;
   }
   
 }
