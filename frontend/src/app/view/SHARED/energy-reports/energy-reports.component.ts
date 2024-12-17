@@ -10,10 +10,12 @@ import { AddSimulationComponent } from '../add-simulation/add-simulation.compone
 
 import { EnergyReport } from '../../../models/energy-report';
 import { TimeSeriesData } from '../../../models/time-series-data';
-import { WeatherData } from '../../../models/time-series-data';
+import { WeatherData } from '../../../models/weather-data';
 import { EnergyReportService } from '../../../services/energy-report.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { AlertService } from '../../../services/alert.service';
+import { WeatherService } from '../../../services/weather.service';
+import { TimeRange } from '../../../models/time_range';
 
 
 // This is important! Register Chart.js components
@@ -30,12 +32,13 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   // Table configuration
-  displayedColumns: string[] = ['id', 'startDate', 'endDate', 'days', 'devices', 'totalProduction', 'totalConsumption', 'totalDifference', 'actions'];
+  displayedColumns: string[] = ['id', 'startDate', 'endDate', 'days', 'devices', 'totalProduction', 'totalConsumption', 'totalDifference', 'totalCost', 'actions'];
   dataSource: MatTableDataSource<EnergyReport> = new MatTableDataSource<EnergyReport>();
 
   // Chart configuration
   timeSeriesChart: any;
 
+  weatherDataList: WeatherData[] = [];
   // Date range form controls
   dateRange = new FormGroup({
     start: new FormControl<Date | null>(null),
@@ -59,6 +62,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     totalDifference: 0,
     batteryUsage: 0,
     batteryEnd: 0,
+    totalCost: 0,
     timeSeriesDataDevice: [],
     timeSeriesDataBattery: []
   };
@@ -68,7 +72,8 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   constructor(
     private modalService: NgbModal,
     private reportService: EnergyReportService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private weatherService: WeatherService
   ) {
     // Check initial dark mode preference
     this.checkDarkModePreference();
@@ -92,11 +97,11 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
   // Add these utility functions at the top of the class
   private formatEnergyValue(value: number): { value: number; unit: string } {
-    if (Math.abs(value) >= 1000) {
-      return { value: value / 1000, unit: 'kW' };
-    }
-    else if (Math.abs(value) >= 1000000) {
+    if (Math.abs(value) >= 1000000) {
       return { value: value / 1000000, unit: 'MW' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kW' };
     }
     return { value: value, unit: 'W' };
   }
@@ -104,6 +109,10 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
   formatEnergyDisplay(value: number): string {
     const formatted = this.formatEnergyValue(value);
     return `${formatted.value.toFixed(2)} ${formatted.unit}`;
+  }
+
+  formatTotalCost(value:number): string {
+    return Math.abs(value).toFixed(2) + ' €';
   }
 
   // Modify selectLastReport() to handle chart updates
@@ -256,31 +265,32 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
     });
   }
 
+
   initializeChart() {
     const ctx = document.getElementById('timeSeriesChart') as HTMLCanvasElement;
-
+  
     if (!ctx) {
       console.error('Chart canvas element not found');
       this.retryChartInitialization();
       return;
     }
-
+  
     const chartConfig: ChartConfiguration = {
       type: 'line',
       data: {
         labels: [],
         datasets: [
           {
-            label: 'Device Energy Production',
+            label: 'Devices Energy',
             data: [],
             borderColor: this.isDarkMode ? '#3498db' : '#2980b9',
             tension: 0.1,
             fill: false,
           },
           {
-            label: 'Battery Energy Production',
+            label: 'Battery Energy',
             data: [],
-            borderColor: '#FFD700', // Yellow color
+            borderColor: '#FFD700',
             tension: 0.1,
             fill: false,
           }
@@ -302,7 +312,6 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
             ticks: {
               color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
               callback: (value) => {
-                // Display value with one decimal
                 const formatted = this.formatEnergyValue(value as number);
                 return `${formatted.value.toFixed(1)} ${formatted.unit}`;
               }
@@ -328,37 +337,65 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
             callbacks: {
               label: (context) => {
                 const dataPoint = context.raw;
-                const weather = (dataPoint as any).weather;
+                const datasetLabel = context.dataset.label;
                 const production = this.formatEnergyDisplay((dataPoint as any).y);
 
-                const datasetLabel = context.dataset.label;
-
-                if (weather) {
+                const matchingWeather = this.weatherDataList.find(w => {
+                  const weatherDate = new Date(w.date).getTime(); // Use the correct property
+                  const dataPointDate = new Date((dataPoint as any).x).getTime();
+                
+                  return weatherDate === dataPointDate;
+                });
+                
+                if (matchingWeather) {
                   return [
                     `${datasetLabel}: ${production}`,
-                    `Temperature: ${weather.temperature.toFixed(1)}°C`,
-                    `Precipitation: ${weather.precipitation.toFixed(1)} mm`,
-                    `Cloud Cover: ${weather.cloudCover.toFixed(0)}%`,
-                    `Wind Speed: ${weather.windSpeed.toFixed(1)} km/h`
+                    `Temperature: ${matchingWeather.temperature.toFixed(1)}°C`,
+                    `Precipitation: ${matchingWeather.precipitation.toFixed(1)} mm`,
+                    `Cloud Cover: ${matchingWeather.cloudCover.toFixed(0)}%`,
+                    `Wind Speed: ${matchingWeather.windSpeed.toFixed(1)} km/h`
                   ];
                 }
+                else
                 return `${datasetLabel}: ${production}`;
               }
             }
           },
           legend: {
-            display: true, // Changed to true to show dataset labels
+            display: true,
             labels: {
-              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+              color: this.isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
+              usePointStyle: true,
+              pointStyle: 'line',
+              font: {
+                size: 14
+              }
             }
           }
         },
         backgroundColor: this.isDarkMode ? 'rgba(20,20,20,0.9)' : 'rgba(255,255,255,0.9)'
       }
     };
-
+  
     this.timeSeriesChart = new Chart(ctx, chartConfig);
     this.updateChartData();
+  }
+
+  fetchWeatherList()
+  {
+    const timeRange: TimeRange = {
+      start: this.selectedReport.startDate.toString(),
+      end: this.selectedReport.endDate.toString()
+    };
+  
+    this.weatherService.getWeatherByTimeRange(timeRange).subscribe({
+      next: (data: WeatherData[]) => {
+        this.weatherDataList = data;
+      },
+      error: (error) => {
+        console.error('Error fetching weather list:', error);
+      }
+    });
   }
 
   private retryChartInitialization(attempts: number = 3) {
@@ -390,6 +427,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
 
   updateChartData() {
+    this.fetchWeatherList();
     const startDateValue = this.dateRange.get('start')?.value;
     const originalEndDateValue = this.dateRange.get('end')?.value;
 
@@ -649,6 +687,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           date: data.date,
           production: data.production,
           weather: {
+            date: data.date,
             temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
             precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
             cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
@@ -661,6 +700,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
           date: data.date,
           production: data.productions.reduce((a: number, b: number) => a + b, 0) / data.productions.length, // Calculate average
           weather: {
+            date: data.date,
             temperature: 0,
             precipitation: 0,
             cloudCover: 0,
@@ -765,6 +805,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
 
       // Ensure default weather data if not present
       const safeWeather = item.weather || {
+        date: date,
         temperature: 0,
         precipitation: 0,
         cloudCover: 0,
@@ -774,6 +815,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       const current = monthlyData.get(monthKey) || {
         sum: 0,
         weatherSum: {
+          date: date,
           temperature: 0,
           precipitation: 0,
           cloudCover: 0,
@@ -798,6 +840,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         date: new Date(year, month - 1, 1),
         production: data.sum,
         weather: {
+          date: new Date(year, month - 1, 1),
           temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
           precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
           cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,
@@ -829,6 +872,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
       const current = monthlyData.get(monthKey) || {
         productions: [],
         weatherSum: {
+          date: date,
           temperature: 0,
           precipitation: 0,
           cloudCover: 0,
@@ -857,6 +901,7 @@ export class EnergyReportsComponent implements OnInit, AfterViewInit {
         date: new Date(year, month - 1, 1),
         production: averageProduction,
         weather: {
+          date: new Date(year, month - 1, 1),
           temperature: data.count > 0 ? data.weatherSum.temperature / data.count : 0,
           precipitation: data.count > 0 ? data.weatherSum.precipitation / data.count : 0,
           cloudCover: data.count > 0 ? data.weatherSum.cloudCover / data.count : 0,

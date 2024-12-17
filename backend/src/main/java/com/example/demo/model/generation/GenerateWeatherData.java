@@ -1,6 +1,8 @@
 package com.example.demo.model.generation;
 
 import com.example.demo.model.WeatherData;
+import com.example.demo.persistence.TS_DBManager;
+import com.example.demo.persistence.DAO.TS_WeatherDAO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -64,12 +66,55 @@ public class GenerateWeatherData {
             data.setTemperature(temperatures.get(i).floatValue());
             data.setPrecipitation(precipitations.get(i).floatValue());
             data.setCloudCover(cloudCovers.get(i).floatValue());
-            data.setWindSpeed(windSpeeds.get(i).doubleValue());
+            data.setWindSpeed(((float)windSpeeds.get(i).doubleValue()));
 
             weatherDataList.add(data);
         }
 
         return weatherDataList;
+    }
+
+    public static List<WeatherData> generate(LocalDateTime dateStart, LocalDateTime dateEnd) throws IOException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<WeatherData> weatherData = fetchWeatherData(dateStart.format(formatter), dateEnd.format(formatter), "https://api.open-meteo.com/v1/forecast");
+        TS_WeatherDAO ts_weatherDAO = TS_DBManager.getInstance().getTS_WeatherDao();
+        for (WeatherData data : weatherData) {
+            ts_weatherDAO.saveOrUpdate(data);
+        }
+        return weatherData;
+    }
+
+    public static List<WeatherData> getFromDb(LocalDateTime dateStart, LocalDateTime dateEnd) {
+        TS_WeatherDAO ts_weatherDAO = TS_DBManager.getInstance().getTS_WeatherDao();
+        for (TimeRange gap : ts_weatherDAO.findGaps(dateStart, dateEnd)) {
+            try{
+                List<WeatherData> weatherData = generate(gap.getStart(), gap.getEnd());
+                for (WeatherData data : weatherData) {
+                    ts_weatherDAO.saveOrUpdate(data);
+                }
+            } catch (IOException e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return ts_weatherDAO.findByInterval(dateStart, dateEnd);
+    }
+
+    public static boolean generateOrGet(LocalDateTime dateStart, LocalDateTime dateEnd) {
+        try{
+            LocalDateTime today = LocalDateTime.now();
+            if (dateEnd.isBefore(today)){
+                getFromDb(dateStart, dateEnd);
+            } else if (dateStart.isBefore(today) && dateEnd.isAfter(today)){
+                getFromDb(dateStart, today);
+                generate(today, dateEnd);
+            } else {
+                generate(dateStart, dateEnd);
+            }
+            return true;
+        } catch (IOException e){
+            return false;
+        }
     }
 }
 

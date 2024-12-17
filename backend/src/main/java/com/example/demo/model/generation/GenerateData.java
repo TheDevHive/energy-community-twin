@@ -15,12 +15,15 @@ import com.example.demo.model.EnergyReport;
 import com.example.demo.model.TS_Device;
 import com.example.demo.model.TS_Measurement;
 import com.example.demo.model.TimeSeriesData;
+import com.example.demo.model.WeatherData;
 import com.example.demo.persistence.DBManager;
 import com.example.demo.persistence.TS_DBManager;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DAO.BuildingDAO;
 import com.example.demo.persistence.DAO.BuildingDeviceDAO;
+import com.example.demo.persistence.DAO.TS_DeviceDAO;
+import com.example.demo.persistence.DAO.TS_MeasurementDAO;
 
 public class GenerateData {
 
@@ -28,11 +31,42 @@ public class GenerateData {
         if(device.getConsumesEnergy() == -1){
             return 0;
         } else {
+            WeatherData weatherData = TS_DBManager.getInstance().getTS_WeatherDao().findByPrimaryKey(timestamp);
+            if (weatherData == null){
+                return 0;
+            }
             int prodCons = (device.getConsumesEnergy() == 1) ? 1 : -1;
             Random random = new Random();
             double energy = random.nextGaussian(device.getEnergyCurve().getEnergyCurve().get(timestamp.getHour()),
-            device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
+                    device.getEnergyCurve().getEnergyCurve().stream().mapToDouble(Integer::doubleValue).average().getAsDouble() * 0.1);
+            // influenza della luce:
+            
+            double litghtInfluence = (device.getLightSensitivity() * (weatherData.getCloudCover() <= 100 ? (100-weatherData.getCloudCover()) / 100 : 1.0));
+            if (device.getLightSensitivity() == 0){
+                litghtInfluence = 1;
+            }
+            
+            // influenza del vento:
+            double windInfluence = (device.getWindSensitivity() * (weatherData.getWindSpeed() <= 100 ? (weatherData.getWindSpeed() / 100.0) : 1.0) );
+            if (device.getWindSensitivity() == 0){
+                windInfluence = 1;
+            }
+            
+            // influenza della temperatura:
+            float temperatureInfluence = (device.getTemperatureSensitivity() * ((weatherData.getTemperature() + 50) / 100));
+            if (device.getTemperatureSensitivity() == 0){
+                temperatureInfluence = 1;
+            }
+            
+            // influenza della pioggia:
+            double rainInfluence = (device.getPrecipitationSensitivity() * (weatherData.getPrecipitation() <= 100 ? (weatherData.getPrecipitation() / 100.0) : 1.0));
+            if (device.getPrecipitationSensitivity() == 0){
+                rainInfluence = 1;
+            }
+            
+            energy *= litghtInfluence * windInfluence * temperatureInfluence * rainInfluence;
             energy *= prodCons;
+            
             TS_Device ts_device = null;
             if(device instanceof BuildingDevice){
                 ts_device = TS_DBManager.getInstance().getTS_DeviceDAO().findByUuid("B" + device.getId());
@@ -46,8 +80,17 @@ public class GenerateData {
 
     public static List<String> generateData(List<Device> batteries, List<Device> otherDevices, LocalDateTime dateStart, LocalDateTime dateEnd, int reportId) {
         List<String> uuids = new ArrayList<>();
+        if (dateEnd.getHour() == 22){
+            dateEnd = dateEnd.plusHours(2);
+        }
+        else if (dateEnd.getHour() == 23){
+            dateEnd = dateEnd.plusHours(1);
+        }
         int hours = CalculateDate.dateDifferenceHours(dateEnd, dateStart);
         double lastEnergy = 0;
+        if(!GenerateWeatherData.generateOrGet(dateStart, dateEnd)){
+            return null;
+        }
         for(int hour = 0;hour < hours;hour++){
             LocalDateTime date = CalculateDate.hoursAdd(dateStart, hour);
             double energy = 0;
@@ -61,7 +104,9 @@ public class GenerateData {
                     continue;
                 }
                 energy += GenerateData.generate(device, date, reportId);
-                uuids.add(uuid);
+                if(!uuids.contains(uuid)){
+                    uuids.add(uuid);
+                }
             }
             double energyToDo = energy;
             for(Device device : batteries){
@@ -146,6 +191,7 @@ public class GenerateData {
     public static boolean generateReport(EnergyReport report, List<String> deviceList, LocalDateTime start,
             LocalDateTime end, String refUUID) {
         report = DBManager.getInstance().getEnergyReportDAO().findByPrimaryKey(report.getId());
+        final int reportId = report.getId();
         List<TimeSeriesData> ltsdd = report.getTimeSeriesDataDevice();
         List<TimeSeriesData> ltsdb = report.getTimeSeriesDataBattery();
         double production = ltsdd.stream().map(tsd -> tsd.getProduction()).filter(num -> num > 0).mapToDouble(Double::doubleValue).sum();
@@ -162,9 +208,49 @@ public class GenerateData {
             }
             batteryEnd = tsdb.getProduction();
         }
+        double totalCost = 0;
+        BuildingDeviceDAO deviceDao = DBManager.getInstance().getBuildingDeviceDAO();
+        ApartmentDeviceDAO apartmentDeviceDAO = DBManager.getInstance().getApartmentDeviceDAO();
+        TS_MeasurementDAO tsmd = TS_DBManager.getInstance().getTS_MeasurementDAO();
+        TS_DeviceDAO tsdd = TS_DBManager.getInstance().getTS_DeviceDAO();
+        for (String uuid : deviceList) {
+            if (uuid.startsWith("B")) {
+                BuildingDevice device = deviceDao.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
+                if(device.getConsumesEnergy() != -1){
+                    totalCost += device.getBuilding().getEnergyCost() * tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).mapToDouble(TS_Measurement::getValue).sum();
+                } else {
+                    TS_Measurement old = null;
+                    for(TS_Measurement measurement : tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).toList()){
+                        if (old != null){
+                            if(old.getValue() - measurement.getValue() > 0){
+                                totalCost += (old.getValue() - measurement.getValue()) * device.getBuilding().getEnergyCost();
+                            }
+                        }
+                        old = measurement;
+                    }
+                }
+            } else if (uuid.startsWith("A")) {
+                ApartmentDevice device = apartmentDeviceDAO.findByPrimaryKey(Integer.parseInt(uuid, 1, uuid.length(), 10));
+                if(device.getConsumesEnergy() != -1){
+                    totalCost += device.getApartment().getEnergyCost() * tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).mapToDouble(TS_Measurement::getValue).sum();
+                } else {
+                    TS_Measurement old = null;
+                    for(TS_Measurement measurement : tsmd.findByDeviceIdAndTimeRange(tsdd.findByUuid(uuid).getId(), start, end).stream().filter(measurement -> measurement.getReportId() == reportId).toList()){
+                        if (old != null){
+                            if(old.getValue() - measurement.getValue() > 0){
+                                totalCost += (old.getValue() - measurement.getValue()) * device.getApartment().getEnergyCost();
+                            }
+                        }
+                        old = measurement;
+
+                    }
+                }
+            }
+        }
         report.setTotalProduction(production);
         report.setTotalConsumption(consumption);
         report.setTotalDifference(production + consumption);
+        report.setTotalCost(-totalCost / 1000);
         report.setRefUUID(refUUID);
         report.setDevices(deviceList.size());
         report.setStartDate(start);

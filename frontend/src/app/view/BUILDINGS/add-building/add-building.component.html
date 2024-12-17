@@ -30,8 +30,8 @@
 
         <!-- Cost of energy field -->
         <div class="mb-3">
-            <label for="energyCost" class="form-label">Energy Cost</label>
-            <input type="number" class="form-control" id="energyCost" formControlName="energyCost"
+            <label for="energyCost" class="form-label">Energy Cost [€/kWh]</label>
+            <input type="number" class="form-control" id="energyCost" formControlName="energyCost" step="0.1"
                 placeholder="Enter the cost of energy"
                 [class.is-invalid]="buildingForm.get('energyCost')?.invalid && buildingForm.get('energyCost')?.touched">
             <div class="invalid-feedback"

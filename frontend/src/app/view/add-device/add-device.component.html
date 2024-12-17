@@ -1,65 +1,79 @@
 <div class="modal-header modal-dark">
-    <h4 *ngIf="!battery" class="modal-title">{{ isEdit ? 'Edit Device' : 'Add Device' }}</h4>
-    <h4 *ngIf="battery" class="modal-title">{{ isEdit ? 'Edit Battery' : 'Add Battery' }}</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+  <h4 *ngIf="!battery" class="modal-title">{{ isEdit ? 'Edit Device' : 'Add Device' }}</h4>
+  <h4 *ngIf="battery" class="modal-title">{{ isEdit ? 'Edit Battery' : 'Add Battery' }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+</div>
+
+<form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <!-- Field for device name -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" formControlName="name"
+        placeholder="{{!battery? 'Enter device name' : 'Enter battery name'}}"
+        [ngClass]="{ 'is-invalid': deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched }" />
+      <div class="invalid-feedback" *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
+        Name is mandatory
+      </div>
+    </div>
+
+    <div *ngIf="battery" class="mb-3">
+      <label for="capacity" class="form-label">Maximum Capacity [W]</label>
+      <input type="number" class="form-control" id="capacity" formControlName="capacity"
+        placeholder="Enter battery capacity"
+        [ngClass]="{ 'is-invalid': deviceForm.get('capacity')?.invalid && deviceForm.get('capacity')?.touched }" />
+      <div class="invalid-feedback" *ngIf="deviceForm.get('capacity')?.invalid && deviceForm.get('capacity')?.touched">
+        Capacity is mandatory
+      </div>
+    </div>
+
+    <!-- Checkbox for Consumes energy -->
+    <div *ngIf="!battery" style="padding-left: 0px; display: flex; align-items: center !important;">
+      <input type="checkbox" class="checkbox-input" id="customCheckbox"
+        [checked]="deviceForm.get('consumesEnergy')?.value==0" (change)="onCheckboxChange($event)" />
+      <label for="customCheckbox" class="checkbox-label">Consumes energy</label>
+    </div>
+
+    <!-- Sensitivity Checkboxes -->
+    <div *ngIf="!battery">
+      <div class="form-check" style="padding-left: 0px; display: flex; align-items: center !important;">
+        <input type="checkbox" class="checkbox-input" id="windSensitivity"
+          [checked]="deviceForm.get('windSensitivity')?.value == 1"
+          (change)="onSensitivityChange($event, 'windSensitivity')" />
+        <label class="checkbox-label" for="windSensitivity">Wind Sensitivity</label>
+      </div>
+      <div class="form-check" style="padding-left: 0px; display: flex; align-items: center !important;">
+        <input type="checkbox" class="checkbox-input" id="lightSensitivity"
+          [checked]="deviceForm.get('lightSensitivity')?.value == 1"
+          (change)="onSensitivityChange($event, 'lightSensitivity')" />
+        <label class="checkbox-label" for="lightSensitivity">Light Sensitivity</label>
+      </div>
+      <div class="form-check" style="padding-left: 0px; display: flex; align-items: center !important;">
+        <input type="checkbox" class="checkbox-input" id="temperatureSensitivity"
+          [checked]="deviceForm.get('temperatureSensitivity')?.value == 1"
+          (change)="onSensitivityChange($event, 'temperatureSensitivity')" />
+        <label class="checkbox-label" for="temperatureSensitivity">Temperature Sensitivity</label>
+      </div>
+      <div class="form-check" style="padding-left: 0px; display: flex; align-items: center !important;">
+        <input type="checkbox" class="checkbox-input" id="precipitationSensitivity"
+          [checked]="deviceForm.get('precipitationSensitivity')?.value == 1"
+          (change)="onSensitivityChange($event, 'precipitationSensitivity')" />
+        <label class="checkbox-label" for="precipitationSensitivity">Precipitation Sensitivity</label>
+      </div>
+    </div>
   </div>
-  
-  <form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
-    <div class="modal-body">
-      <!-- Field for device name -->
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          formControlName="name"
-          placeholder="{{!battery? 'Enter device name' : 'Enter battery name'}}"
-          [ngClass]="{ 'is-invalid': deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched }"
-        />
-        <div class="invalid-feedback" *ngIf="deviceForm.get('name')?.invalid && deviceForm.get('name')?.touched">
-          Name is mandatory
-        </div>
-      </div>
 
-      <div *ngIf="battery" class="mb-3">
-        <label for="capacity" class="form-label">Maximum Capacity</label>
-        <input
-          type="number"
-          class="form-control"
-          id="capacity"
-          formControlName="capacity"
-          placeholder="Enter battery capacity"
-          [ngClass]="{ 'is-invalid': deviceForm.get('capacity')?.invalid && deviceForm.get('capacity')?.touched }"
-        />
-        <div class="invalid-feedback" *ngIf="deviceForm.get('capacity')?.invalid && deviceForm.get('capacity')?.touched">
-          Capacity is mandatory
-        </div>
-      </div>
-
-      <!-- Checkbox for Consumes energy -->
-      <div *ngIf="!battery" class="checkbox-container">
-        <input
-          type="checkbox"
-          id="customCheckbox"
-          [checked]="deviceForm.get('consumesEnergy')?.value==0"
-          (change)="onCheckboxChange($event)"
-        />
-        <label for="customCheckbox">Consumes energy</label>
-      </div>  
-    </div>
-  
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" [disabled]="loading">
-        Cancel
-      </button>
-      <button *ngIf="!battery" type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || loading">
-        <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
-        {{ isEdit ? 'Edit Device' : 'Add Device' }}
-      </button>
-      <button *ngIf="battery" type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || loading">
-        <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
-        {{ isEdit ? 'Edit Battery' : 'Add Battery' }}
-      </button>
-    </div>
-  </form>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="dismiss()" [disabled]="loading">
+      Cancel
+    </button>
+    <button *ngIf="!battery" type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || loading">
+      <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
+      {{ isEdit ? 'Edit Device' : 'Add Device' }}
+    </button>
+    <button *ngIf="battery" type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || loading">
+      <span class="spinner-border spinner-border-sm me-2" *ngIf="loading" role="status"></span>
+      {{ isEdit ? 'Edit Battery' : 'Add Battery' }}
+    </button>
+  </div>
+</form>

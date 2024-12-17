@@ -37,7 +37,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   deviceDataSource: MatTableDataSource<BuildingDevice>;
 
   apartments: Apartment[] = [];
-  apartmentColumns: string[] = ['id', 'residents', 'squareFootage', 'energyClass', 'energyProduction', 'energyConsumption', 'energyDifference', 'actions'];
+  apartmentColumns: string[] = ['id', 'residents', 'squareFootage', 'energyClass', 'energyProduction', 'energyConsumption', 'energyDifference', 'energyCost', 'actions'];
   apartmentDataSource: MatTableDataSource<Apartment>;
 
   batteries:BuildingDevice[] = [];
@@ -113,6 +113,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
         case 'energyProduction': return item.stats.energyProduction;
         case 'energyConsumption': return item.stats.energyConsumption;
         case 'energyDifference': return this.calculateEnergyDifference(item);
+        case 'energyCost': return item.energyCost;
         default: return item[property];
       }
     };
@@ -562,7 +563,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
   }
 
   calculateEnergyDifference(apartment: Apartment): number {
-    return Math.round((apartment.stats.energyProduction - apartment.stats.energyConsumption) * 100) / 100;
+    return apartment.stats.energyProduction - apartment.stats.energyConsumption;
   }
 
   getEnergyClassColor(energyClass: string): string {
@@ -669,6 +670,7 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
           this.calculateEnergyDifference(b),
           isAsc
         );
+        case 'energyCost': return this.compare(a.energyCost, b.energyCost, isAsc);
         default: {
           const aValue = a[sort.active as keyof Apartment];
           const bValue = b[sort.active as keyof Apartment];
@@ -698,5 +700,23 @@ export class BuildingDetailsComponent implements OnInit, AfterViewInit {
 
   navigateToApartment(id: number): void {
     this.router.navigate(['/apartments', id]);
+  }
+
+  private formatEnergyValue(value: number, should_divide: boolean): { value: number; unit: string } {
+    if (should_divide){
+      value = value / 24;
+    }
+    if (Math.abs(value) >= 1000000) {
+      return { value: value / 1000000, unit: 'MWh' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kWh' };
+    }
+    return { value:( value), unit: 'Wh' };
+  }
+
+  formatEnergyDisplay(value: number, should_divide: boolean): string {
+    const formatted = this.formatEnergyValue(value, should_divide);
+    return `${formatted.value.toFixed(2)} ${formatted.unit}`;
   }
 }

@@ -20,8 +20,8 @@ public class EnergyReportDAO {
     public boolean saveOrUpdate(EnergyReport report) {
         if (findByPrimaryKey(report.getId()) == null || report.getId() == 0) {
             String sql = "INSERT INTO energy_report (ref_uuid, start_date, end_date, days, devices, " +
-                    "total_production, total_consumption, total_difference, battery_usage, battery_end) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "total_production, total_consumption, total_difference, battery_usage, battery_end, total_cost) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 setStatementParameters(pstmt, report);
                 pstmt.executeUpdate();
@@ -36,10 +36,10 @@ public class EnergyReportDAO {
         } else {
             String sql = "UPDATE energy_report SET ref_uuid = ?, start_date = ?, end_date = ?, " +
                     "days = ?, devices = ?, total_production = ?, total_consumption = ?, " +
-                    "total_difference = ?, battery_usage = ?, battery_end = ? WHERE id = ?";
+                    "total_difference = ?, battery_usage = ?, battery_end = ?, total_cost = ? WHERE id = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 setStatementParameters(pstmt, report);
-                pstmt.setInt(11, report.getId());
+                pstmt.setInt(12, report.getId());
                 pstmt.executeUpdate();
                 
             } catch (SQLException e) {
@@ -61,6 +61,7 @@ public class EnergyReportDAO {
         pstmt.setDouble(8, report.getTotalDifference());
         pstmt.setDouble(9, report.getBatteryUsage());
         pstmt.setDouble(10, report.getBatteryEnd());
+        pstmt.setDouble(11, report.getTotalCost());
     }
 
     public EnergyReport findByPrimaryKey(int id) {
@@ -147,6 +148,7 @@ public class EnergyReportDAO {
             rs.getDouble("total_difference"),
             rs.getDouble("battery_usage"),
             rs.getDouble("battery_end"),
+            rs.getDouble("total_cost"),
             new ArrayList<>(), // Time series data will be loaded separately
             new ArrayList<>() // Time series data will be loaded separately
         );

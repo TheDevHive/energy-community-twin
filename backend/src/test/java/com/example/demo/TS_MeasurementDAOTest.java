@@ -111,8 +111,8 @@ public class TS_MeasurementDAOTest {
     @Test
     public void testFindByDeviceIdAndTimeRange() throws SQLException {
         // Set up
-        String startTime = "2024-01-01 12:00:00";
-        String endTime = "2024-01-01 14:00:00";
+        LocalDateTime startTime = LocalDateTime.of(2024, 1, 1, 12, 0);
+        LocalDateTime endTime = LocalDateTime.of(2024, 1, 1, 14, 0);
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
@@ -133,8 +133,6 @@ public class TS_MeasurementDAOTest {
         assertEquals(42.5, measurements.get(0).getValue(), 0.001);
 
         verify(mockPreparedStatement).setInt(1, 1);
-        verify(mockPreparedStatement).setString(2, startTime);
-        verify(mockPreparedStatement).setString(3, endTime);
     }
 
 

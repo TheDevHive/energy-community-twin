@@ -84,7 +84,7 @@
               <i class="bi bi-battery-full text-warning"></i>
             </div>
             <h6 class="text-muted mb-1">Energy</h6>
-            <h4 *ngIf="device" class="mb-0">{{ (energy(device) / 24) | number:'1.2-2' }} Wh</h4>
+            <h4 *ngIf="device" class="mb-0">{{ (energy(device) / 24) | number:'1.2-2' }} {{ energyUnit(device) }} </h4>
           </div>
         </div>
 

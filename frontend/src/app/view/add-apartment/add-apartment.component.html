@@ -23,17 +23,17 @@
                 [class.is-invalid]="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
             <div class="invalid-feedback"
                 *ngIf="apartmentForm.get('squareFootage')?.invalid && apartmentForm.get('squareFootage')?.touched">
-                The cost of energy is required and must be valid
+                The square footage is required
             </div>
         </div>
         <div class="mb-3">
-            <label for="energyCost" class="form-label">Energy Cost</label>
-            <input type="number" class="form-control" id="energyCost" formControlName="energyCost"
+            <label for="energyCost" class="form-label">Energy Cost [€/kWh]</label>
+            <input type="number" class="form-control" id="energyCost" formControlName="energyCost" step="0.1"
                 placeholder="Insert the square footage"
                 [class.is-invalid]="apartmentForm.get('energyCost')?.invalid && apartmentForm.get('energyCost')?.touched">
             <div class="invalid-feedback"
                 *ngIf="apartmentForm.get('energyCost')?.invalid && apartmentForm.get('energyCost')?.touched">
-                The square footage is required
+                The cost of energy is required and must be valid
             </div>
         </div>
     </div>

@@ -8,8 +8,8 @@ export interface ApartmentDevice
     consumesEnergy: number;
     energy_curve: EnergyCurve;
     apartment: Apartment | null;
-    light_sensitivity: number;
-    wind_sensitivity: number;
-    precipitation_sensitivity: number;
-    temperature_sensitivity: number;
+    lightSensitivity: number;
+    windSensitivity: number;
+    precipitationSensitivity: number;
+    temperatureSensitivity: number;
 }

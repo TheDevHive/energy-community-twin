@@ -6,7 +6,6 @@ import com.example.demo.model.EnergyCurve;
 import com.example.demo.persistence.DAO.ApartmentDAO;
 import com.example.demo.persistence.DAO.ApartmentDeviceDAO;
 import com.example.demo.persistence.DBManager;
-import com.example.demo.utility.JSONBlobConverter;
 import com.example.demo.utility.SQLiteBlobConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;

@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import com.example.demo.persistence.DAO.TS_DeviceDAO;
 import com.example.demo.persistence.DAO.TS_MeasurementDAO;
+import com.example.demo.persistence.DAO.TS_WeatherDAO;
 
 public class TS_DBManager {
     private final String dbPath = "src/main/resources/";
@@ -83,6 +84,15 @@ public class TS_DBManager {
             //            CREATE INDEX IF NOT EXISTS idx_device_name
             //            ON device(device_name)
             //        """);
+            statement.execute("""
+                        CREATE TABLE IF NOT EXISTS weather_data (
+                            date TIMESTAMP PRIMARY KEY,
+                            temperature REAL NOT NULL,
+                            precipitation REAL NOT NULL,
+                            cloud_cover REAL NOT NULL,
+                            wind_speed REAL NOT NULL
+                        )
+                    """);
 
             statement.execute("""
                         CREATE INDEX IF NOT EXISTS idx_measurement_device_timestamp
@@ -113,5 +123,9 @@ public class TS_DBManager {
 
     public TS_MeasurementDAO getTS_MeasurementDAO() {
         return new TS_MeasurementDAO(getConnection());
+    }
+
+    public TS_WeatherDAO getTS_WeatherDao() {
+        return new TS_WeatherDAO(getConnection());
     }
 }

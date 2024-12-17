@@ -138,7 +138,11 @@ export class DeviceViewComponent {
   }
 
   energy(device: BuildingDevice | ApartmentDevice): number {
-    return device.energy_curve.energyCurve.reduce((sum, value) => sum + value, 0);
+    return device.energy_curve.energyCurve.reduce((sum, value) => sum + ((value > 1000000) ? value / 1000000 : (value > 1000) ? value / 1000 : value), 0);
+  }
+
+  energyUnit(device: BuildingDevice | ApartmentDevice): string {
+    return device.energy_curve.energyCurve.some((value) => value > 1000000) ? 'MWh' : device.energy_curve.energyCurve.some((value) => value > 1000) ? 'KWh' : 'Wh';
   }
 
   energyClass(device: BuildingDevice | ApartmentDevice): string {

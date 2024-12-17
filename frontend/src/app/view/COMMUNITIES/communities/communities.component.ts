@@ -258,7 +258,8 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
   }
 
   energyDifference(community: Community): number {
-    return Math.round((community.stats.energyProduction - community.stats.energyConsumption) * 100) / 100;
+    console.log(community.stats.energyProduction - community.stats.energyConsumption);
+    return community.stats.energyProduction - community.stats.energyConsumption;
   }
 
   energyDifferenceIcon(community: Community): string {
@@ -295,6 +296,24 @@ export class CommunitiesComponent implements OnInit, AfterViewInit {
 
   private compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  private formatEnergyValue(value: number, should_divide: boolean): { value: number; unit: string } {
+    if (should_divide){
+      value = value / 24;
+    }
+    if (Math.abs(value) >= 1000000) {
+      return { value: value / 1000000, unit: 'MWh' };
+    }
+    else if (Math.abs(value) >= 1000) {
+      return { value: value / 1000, unit: 'kWh' };
+    }
+    return { value:( value), unit: 'Wh' };
+  }
+
+  formatEnergyDisplay(value: number, should_divide: boolean): string {
+    const formatted = this.formatEnergyValue(value, should_divide);
+    return `${formatted.value.toFixed(2)} ${formatted.unit}`;
   }
   
 }

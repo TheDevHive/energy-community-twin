@@ -83,7 +83,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted mb-1">Energy Cost</h6>
-                                <h4 class="mb-0">{{apartment?.energyCost}}</h4>
+                                <h4 class="mb-0">{{apartment?.energyCost}} €/kWh</h4>
                             </div>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
                                 </span>
-                                {{ (energy(device) / 24) | number:'1.2-2' }} Wh
+                                {{ formatEnergyDisplay(energy(device), true) }}
                             </td>
                         </ng-container>
 
@@ -308,7 +308,7 @@
                                 <span class="me-2">
                                     <i class="bi" [ngClass]="getEnergyDeviceIcon(device)"></i>
                                 </span>
-                                {{ (energy(device) / 24) | number:'1.2-2' }} Wh
+                                {{ formatEnergyDisplay(energy(device), true) }}
                             </td>
                         </ng-container>
 
